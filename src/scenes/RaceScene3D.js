@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-import { BFInjection } from '../vehicles/BFInjection.js';
+import { RaceSubaru } from '../vehicles/RaceSubaru.js';
 import { getTrack } from '../racing/TrackRegistry.js';
 import { getFaction } from '../racing/Factions.js';
 
@@ -10,7 +10,7 @@ export class RaceScene3D {
     this.container = options.container ?? document.body;
     this.session = options.session ?? {
       raceNumber: 1,
-      trackId: 'track_01',
+      trackId: 'barcelona',
       factionA: 'azure',
       factionB: 'crimson',
       scoreA: 0,
@@ -109,18 +109,24 @@ export class RaceScene3D {
       this.session.factionB
     );
 
-    this.playerCar = new BFInjection({
+    this.playerCar = new RaceSubaru({
       maxSpeed: 22,
-      acceleration: 9,
-      brakePower: 12,
-      turnRate: 1.8
+      acceleration: 8.8,
+      brakePower: 14,
+      turnRate:
+        THREE.MathUtils.degToRad(
+          72
+        )
     });
 
-    this.opponentCar = new BFInjection({
+    this.opponentCar = new RaceSubaru({
       maxSpeed: 21,
-      acceleration: 8.5,
-      brakePower: 11,
-      turnRate: 1.7
+      acceleration: 8.4,
+      brakePower: 13.5,
+      turnRate:
+        THREE.MathUtils.degToRad(
+          70
+        )
     });
 
     this.tintVehicle(
@@ -142,23 +148,9 @@ export class RaceScene3D {
   tintVehicle(vehicle, faction) {
     if (!vehicle) return;
 
-    if (vehicle.bodyPaint) {
-      vehicle.bodyPaint.color.setHex(
-        faction.primary
-      );
-    }
-
-    if (vehicle.bodyLight) {
-      vehicle.bodyLight.color.setHex(
-        faction.accent
-      );
-    }
-
-    if (vehicle.bodyDark) {
-      vehicle.bodyDark.color.setHex(
-        faction.secondary
-      );
-    }
+    vehicle.setFactionColor(
+      faction.primary
+    );
   }
 
   createOverlay() {
@@ -253,7 +245,7 @@ export class RaceScene3D {
         font-size:13px;
         line-height:1.55;
       ">
-        <strong>3D Race Foundation</strong><br>
+        <strong>Subaru Race Test</strong><br>
         W/S accelerate & reverse · A/D steer<br>
         R reset to grid · G save current grid position<br>
         Esc return home
