@@ -1,8 +1,8 @@
 const DEFAULT_TRACK_ORDER = [
-  'track_01',
-  'track_02',
-  'track_03',
-  'track_04',
+  'barcelona',
+  'glen_canyon_dam',
+  'lake_como',
+  'mount_rainier',
   'track_05'
 ];
 
