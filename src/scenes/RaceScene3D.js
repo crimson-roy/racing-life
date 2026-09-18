@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { RaceSubaru } from '../vehicles/RaceSubaru.js';
 import { getTrack } from '../racing/TrackRegistry.js';
@@ -27,6 +28,17 @@ export class RaceScene3D {
     this.keys = new Set();
     this.trackRoot = null;
     this.trackBounds = null;
+
+    // Development setup mode: show the entire imported venue first.
+    // This prevents the camera from spawning somewhere useless before
+    // we know the real start-grid coordinates of each downloaded track.
+    this.setupMode = true;
+    this.trackSize = new THREE.Vector3();
+    this.trackCenter = new THREE.Vector3();
+
+    this.trackRaycaster = new THREE.Raycaster();
+    this.trackRayOrigin = new THREE.Vector3();
+    this.trackRayDirection = new THREE.Vector3(0, -1, 0);
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x8eb8ce);
@@ -69,6 +81,16 @@ export class RaceScene3D {
     this.container.appendChild(
       this.renderer.domElement
     );
+
+    this.controls = new OrbitControls(
+      this.camera,
+      this.renderer.domElement
+    );
+
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.enablePan = true;
+    this.controls.enabled = true;
 
     this.loader = new GLTFLoader();
 
@@ -246,8 +268,9 @@ export class RaceScene3D {
         line-height:1.55;
       ">
         <strong>Subaru Race Test</strong><br>
-        W/S accelerate & reverse · A/D steer<br>
-        R reset to grid · G save current grid position<br>
+        <strong>SETUP:</strong> orbit/pan with mouse · P place cars at view target<br>
+        C toggle overview/driving · G save grid · R reset<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer<br>
         Esc return home
         <div id="race-debug-status" style="
           margin-top:6px;
@@ -287,6 +310,14 @@ export class RaceScene3D {
 
         if (event.code === 'KeyG') {
           this.saveGridFromPlayer();
+        }
+
+        if (event.code === 'KeyP') {
+          this.placeGridAtViewTarget();
+        }
+
+        if (event.code === 'KeyC') {
+          this.toggleSetupMode();
         }
       };
 
@@ -385,13 +416,51 @@ export class RaceScene3D {
             new THREE.Vector3()
           );
 
+        this.trackSize.copy(
+          size
+        );
+
+        this.trackCenter.copy(
+          center
+        );
+
+        console.log(
+          'RaceScene3D: track loaded.',
+          {
+            track: track.name,
+            path: track.path,
+            center: {
+              x: center.x,
+              y: center.y,
+              z: center.z
+            },
+            size: {
+              x: size.x,
+              y: size.y,
+              z: size.z
+            },
+            min: {
+              x: this.trackBounds.min.x,
+              y: this.trackBounds.min.y,
+              z: this.trackBounds.min.z
+            },
+            max: {
+              x: this.trackBounds.max.x,
+              y: this.trackBounds.max.y,
+              z: this.trackBounds.max.z
+            }
+          }
+        );
+
         this.applyInitialGrid(
           center,
           size
         );
 
+        this.frameTrackOverview();
+
         this.setStatus(
-          `Loaded · ${size.x.toFixed(1)} × ${size.z.toFixed(1)} world units`
+          `Loaded ${track.name} · ${size.x.toFixed(1)} × ${size.z.toFixed(1)} · P place grid · C drive`
         );
       },
 
@@ -437,6 +506,244 @@ export class RaceScene3D {
     );
   }
 
+  frameTrackOverview() {
+    if (
+      !this.trackBounds ||
+      this.trackBounds.isEmpty()
+    ) {
+      return;
+    }
+
+    const center =
+      this.trackBounds.getCenter(
+        new THREE.Vector3()
+      );
+
+    const size =
+      this.trackBounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const radius =
+      Math.max(
+        size.x,
+        size.y,
+        size.z,
+        20
+      );
+
+    this.camera.near =
+      Math.max(
+        0.1,
+        radius / 10000
+      );
+
+    this.camera.far =
+      Math.max(
+        8000,
+        radius * 10
+      );
+
+    this.camera
+      .updateProjectionMatrix();
+
+    this.controls.target.copy(
+      center
+    );
+
+    this.camera.position.set(
+      center.x + radius * 0.72,
+      center.y + radius * 0.55,
+      center.z + radius * 0.72
+    );
+
+    this.camera.lookAt(
+      center
+    );
+
+    this.controls.enabled =
+      true;
+
+    this.controls.update();
+
+    this.setupMode =
+      true;
+  }
+
+  toggleSetupMode() {
+    if (!this.trackRoot) {
+      return;
+    }
+
+    this.setupMode =
+      !this.setupMode;
+
+    this.controls.enabled =
+      this.setupMode;
+
+    if (this.setupMode) {
+      this.frameTrackOverview();
+
+      this.setStatus(
+        'Overview mode · orbit/pan with mouse · P places grid at view target'
+      );
+    } else {
+      this.updateCamera(
+        true
+      );
+
+      this.setStatus(
+        'Driving mode · W/S drive · A/D steer · C returns to overview'
+      );
+    }
+  }
+
+  placeGridAtViewTarget() {
+    if (
+      !this.trackRoot ||
+      !this.controls
+    ) {
+      return;
+    }
+
+    const target =
+      this.controls.target.clone();
+
+    const rayHeight =
+      Math.max(
+        this.trackSize.y * 2,
+        Math.max(
+          this.trackSize.x,
+          this.trackSize.z
+        ) * 0.25,
+        100
+      );
+
+    this.trackRayOrigin.set(
+      target.x,
+      this.trackBounds.max.y +
+        rayHeight,
+      target.z
+    );
+
+    this.trackRaycaster.set(
+      this.trackRayOrigin,
+      this.trackRayDirection
+    );
+
+    this.trackRaycaster.near =
+      0;
+
+    this.trackRaycaster.far =
+      rayHeight * 3 +
+      this.trackSize.y;
+
+    const hits =
+      this.trackRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    const groundY =
+      hits.length > 0
+        ? hits[0].point.y
+        : target.y;
+
+    const viewDirection =
+      target
+        .clone()
+        .sub(
+          this.camera.position
+        );
+
+    viewDirection.y =
+      0;
+
+    if (
+      viewDirection.lengthSq() <
+      0.0001
+    ) {
+      viewDirection.set(
+        0,
+        0,
+        1
+      );
+    }
+
+    viewDirection.normalize();
+
+    const yaw =
+      Math.atan2(
+        viewDirection.x,
+        viewDirection.z
+      );
+
+    const spawn = {
+      x: target.x,
+      y: groundY + 0.05,
+      z: target.z,
+      yaw
+    };
+
+    this.setCarsFromSpawn(
+      spawn
+    );
+
+    this.setStatus(
+      `Grid preview at X ${spawn.x.toFixed(1)} Z ${spawn.z.toFixed(1)} · G saves it`
+    );
+  }
+
+  setCarsFromSpawn(spawn) {
+    const right =
+      new THREE.Vector3(
+        1,
+        0,
+        0
+      ).applyAxisAngle(
+        new THREE.Vector3(
+          0,
+          1,
+          0
+        ),
+        spawn.yaw
+      );
+
+    this.playerCar.position.set(
+      spawn.x,
+      spawn.y,
+      spawn.z
+    );
+
+    this.playerCar.position
+      .addScaledVector(
+        right,
+        -2.1
+      );
+
+    this.playerCar.rotation.y =
+      spawn.yaw;
+
+    this.opponentCar.position.set(
+      spawn.x,
+      spawn.y,
+      spawn.z
+    );
+
+    this.opponentCar.position
+      .addScaledVector(
+        right,
+        2.1
+      );
+
+    this.opponentCar.rotation.y =
+      spawn.yaw;
+
+    this.playerCar.speed = 0;
+    this.opponentCar.speed = 0;
+  }
+
   applyInitialGrid(center, size) {
     const saved =
       this.loadSavedGrid();
@@ -451,28 +758,17 @@ export class RaceScene3D {
       yaw: 0
     };
 
-    this.playerCar.position.set(
-      spawn.x - 2.1,
-      spawn.y,
-      spawn.z
+    this.setCarsFromSpawn(
+      spawn
     );
 
-    this.playerCar.rotation.y =
-      spawn.yaw;
-
-    this.opponentCar.position.set(
-      spawn.x + 2.1,
-      spawn.y,
-      spawn.z
-    );
-
-    this.opponentCar.rotation.y =
-      spawn.yaw;
-
-    this.playerCar.speed = 0;
-    this.opponentCar.speed = 0;
-
-    this.updateCamera(true);
+    if (
+      !this.setupMode
+    ) {
+      this.updateCamera(
+        true
+      );
+    }
   }
 
   saveGridFromPlayer() {
@@ -670,15 +966,19 @@ export class RaceScene3D {
         const input =
           this.readPlayerControls();
 
-        this.playerCar.drive(
-          input.throttle,
-          input.brake,
-          input.steering,
-          dt
-        );
+        if (!this.setupMode) {
+          this.playerCar.drive(
+            input.throttle,
+            input.brake,
+            input.steering,
+            dt
+          );
 
-        this.updateCamera();
-        this.readStatus();
+          this.updateCamera();
+          this.readStatus();
+        } else {
+          this.controls.update();
+        }
 
         this.renderer.render(
           this.scene,
