@@ -453,7 +453,7 @@ export class RaceScene3D {
       x: center.x,
       y:
         this.trackBounds
-          ? this.trackBounds.max.y + 1
+          ? this.trackBounds.min.y + 1
           : center.y + Math.max(0.6, size.y * 0.02),
       z: center.z,
       yaw: 0
@@ -622,7 +622,10 @@ export class RaceScene3D {
   }
 
   readStatus() {
-    if (!this.playerCar) {
+    if (
+      !this.playerCar ||
+      !this.trackRoot
+    ) {
       return;
     }
 
