@@ -3,6 +3,8 @@ import * as THREE from 'three';
 
 import { HomeScene } from './scenes/HomeScene.js';
 import { FreeRoamScene } from './scenes/FreeRoamScene.js';
+import { RaceScene3D } from './scenes/RaceScene3D.js';
+import { MatchManager } from './racing/MatchManager.js';
 
 const STORAGE_KEY =
   'racingLifeProfile';
@@ -34,6 +36,15 @@ const state = {
 let homeScene = null;
 
 let freeRoamScene = null;
+
+let raceScene3D = null;
+
+const matchManager =
+  new MatchManager({
+    factionA: 'azure',
+    factionB: 'crimson',
+    winTarget: 3
+  });
 
 // ============================================================
 // CHARACTER CREATOR OPTIONS
@@ -634,33 +645,7 @@ function startHomeScene() {
             'Racing Life: NEXT MATCH selected.'
           );
 
-          const title =
-            document.getElementById(
-              'placeholder-title'
-            );
-
-          const text =
-            document.getElementById(
-              'placeholder-text'
-            );
-
-          if (title) {
-
-            title.textContent =
-              'Next Match';
-
-          }
-
-          if (text) {
-
-            text.textContent =
-              'The race scene will be connected here next.';
-
-          }
-
-          showScreen(
-            'placeholder'
-          );
+          enterNextMatch();
 
         },
 
@@ -782,6 +767,138 @@ function startHomeScene() {
       'block';
 
   }
+
+}
+
+// ============================================================
+// ENTER NEXT 3D RACE
+// ============================================================
+
+function enterNextMatch() {
+
+  const homeScreen =
+    root.querySelector(
+      '[data-screen="home"]'
+    );
+
+  if (homeScreen) {
+    homeScreen.classList.remove(
+      'active'
+    );
+  }
+
+  const uiLayer =
+    root.querySelector(
+      '.ui-layer'
+    );
+
+  if (uiLayer) {
+    uiLayer.style.pointerEvents =
+      'none';
+  }
+
+  state.screen =
+    'race-3d';
+
+  if (homeScene) {
+
+    homeScene.dispose();
+
+    homeScene =
+      null;
+
+  }
+
+  const homeContainer =
+    document.getElementById(
+      'home-3d-root'
+    );
+
+  if (homeContainer) {
+
+    homeContainer.innerHTML =
+      '';
+
+  }
+
+  if (
+    matchManager.completed
+  ) {
+
+    matchManager.reset();
+
+  }
+
+  const session =
+    matchManager.getCurrentRace();
+
+  if (!session) {
+
+    console.warn(
+      'Racing Life: no race session available.'
+    );
+
+    exitRace3D();
+
+    return;
+
+  }
+
+  if (!raceScene3D) {
+
+    raceScene3D =
+      new RaceScene3D({
+
+        container:
+          document.body,
+
+        session,
+
+        onExit: () => {
+
+          exitRace3D();
+
+        }
+
+      });
+
+  }
+
+}
+
+// ============================================================
+// EXIT 3D RACE
+// ============================================================
+
+function exitRace3D() {
+
+  if (raceScene3D) {
+
+    raceScene3D.dispose();
+
+    raceScene3D =
+      null;
+
+  }
+
+  const uiLayer =
+    root.querySelector(
+      '.ui-layer'
+    );
+
+  if (uiLayer) {
+
+    uiLayer.style.pointerEvents =
+      'auto';
+
+  }
+
+  state.screen =
+    'home';
+
+  showScreen(
+    'home'
+  );
 
 }
 
