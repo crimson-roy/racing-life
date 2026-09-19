@@ -352,7 +352,8 @@ def publish_reports(repo_root, json_path, md_path):
         return False
 
     for attempt in range(1, 4):
-        temp_dir = Path(tempfile.mkdtemp(prefix="racing-life-blender-report-"))
+        temp_base = Path(tempfile.mkdtemp(prefix="racing-life-blender-report-"))
+        temp_dir = temp_base / "worktree"
         added_worktree = False
         try:
             run(["git", "fetch", "origin", BRANCH], cwd=repo_root)
@@ -394,7 +395,7 @@ def publish_reports(repo_root, json_path, md_path):
         finally:
             if added_worktree:
                 run(["git", "worktree", "remove", "--force", str(temp_dir)], cwd=repo_root, check=False)
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            shutil.rmtree(temp_base, ignore_errors=True)
 
     print("Local reports were created, but automatic GitHub publication failed.")
     print("Rerun the worker later; no source FBX files were uploaded.")
@@ -409,7 +410,7 @@ def main():
 
     if not input_dir.exists():
         raise SystemExit("Input folder does not exist: {}".format(input_dir))
-    if not list(input_dir.glob("*.fbx")):
+    if not any(p.is_file() and p.suffix.lower() == ".fbx" for p in input_dir.iterdir()):
         raise SystemExit("No FBX files found in: {}".format(input_dir))
 
     output_dir.mkdir(parents=True, exist_ok=True)
