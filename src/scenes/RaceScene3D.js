@@ -114,7 +114,30 @@ export class RaceScene3D {
 
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
+
+    // Setup camera should feel like a map/editor camera:
+    // - wheel zooms toward the mouse cursor, not the old water-center target
+    // - right-drag pans freely
+    // - left-drag orbits
     this.controls.enablePan = true;
+    this.controls.screenSpacePanning = true;
+    this.controls.zoomToCursor = true;
+    this.controls.zoomSpeed = 1.15;
+    this.controls.panSpeed = 1.0;
+    this.controls.rotateSpeed = 0.65;
+
+    this.controls.minDistance = 3;
+    this.controls.maxDistance = 20000;
+
+    this.controls.mouseButtons.LEFT =
+      THREE.MOUSE.ROTATE;
+
+    this.controls.mouseButtons.MIDDLE =
+      THREE.MOUSE.DOLLY;
+
+    this.controls.mouseButtons.RIGHT =
+      THREE.MOUSE.PAN;
+
     this.controls.enabled = true;
 
     this.loader = new GLTFLoader();
@@ -293,7 +316,7 @@ export class RaceScene3D {
         line-height:1.55;
       ">
         <strong>Subaru Race Test</strong><br>
-        <strong>SETUP:</strong> orbit/pan/zoom with mouse<br>
+        <strong>SETUP:</strong> wheel = zoom toward cursor · left-drag = orbit · right-drag = pan<br>
         Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
         <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · surface collision ON<br>
