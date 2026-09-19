@@ -68,3 +68,9 @@ Blender/human-base-meshes-bundle-v1.4.1/
 *.log
 npm-debug.log*
 Blender/human-base-meshes-bundle-v1.4.1/
+
+# ==================================================
+# Local Blender worker inbox/output (source assets stay local)
+# ==================================================
+Blender/worker_input/
+Blender/worker_output/
