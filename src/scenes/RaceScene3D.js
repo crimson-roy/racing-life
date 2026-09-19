@@ -36,8 +36,17 @@ export class RaceScene3D {
     // These are lightweight world-space AABBs for buildings, barriers,
     // poles, walls, trees, etc. Roads/ground/background are excluded.
     this.solidColliders = [];
-    this.PLAYER_COLLISION_RADIUS = 0.95;
+
+    // Give the Subaru a little breathing room so it cannot visually clip
+    // half-way into walls/buildings before collision stops it.
+    this.PLAYER_COLLISION_RADIUS = 1.18;
     this.PLAYER_COLLISION_HEIGHT = 1.45;
+    this.OBSTACLE_COLLISION_PADDING = 0.32;
+
+    // Chase-camera terrain protection.
+    this.CAMERA_MIN_GROUND_CLEARANCE = 1.65;
+    this.CAMERA_FOLLOW_HEIGHT = 4.6;
+    this.CAMERA_FOLLOW_DISTANCE = 9.5;
     this.denseOverviewCenter = null;
     this.denseOverviewRadius = null;
 
@@ -334,7 +343,7 @@ export class RaceScene3D {
         <strong>SETUP:</strong> wheel = free zoom to cursor · left-drag = orbit · right-drag = pan<br>
         Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
-        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · ground + object collision ON<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · ground + buildings + sidewalk collision ON<br>
         Esc return home
         <div id="race-debug-status" style="
           margin-top:6px;
@@ -520,10 +529,28 @@ export class RaceScene3D {
           event.deltaY <
           0;
 
+        // Browser wheel events can fire in large bursts. Use a bounded,
+        // exponential step so mouse wheels and touchpads both zoom smoothly.
+        const wheelStrength =
+          THREE.MathUtils.clamp(
+            Math.abs(
+              event.deltaY
+            ) /
+              100,
+            0.20,
+            1
+          );
+
         const factor =
-          zoomIn
-            ? 0.82
-            : 1.22;
+          Math.exp(
+            (
+              zoomIn
+                ? -1
+                : 1
+            ) *
+              0.055 *
+              wheelStrength
+          );
 
         const nextDistance =
           THREE.MathUtils.clamp(
@@ -563,8 +590,8 @@ export class RaceScene3D {
         // around THAT area instead of snapping back to the old water center.
         const targetFollow =
           zoomIn
-            ? 0.72
-            : 0.45;
+            ? 0.32
+            : 0.18;
 
         this.controls.target.lerp(
           focusPoint,
@@ -1024,8 +1051,18 @@ export class RaceScene3D {
         object
       );
 
+    // Sidewalks/footpaths are deliberately NOT considered driveable.
+    // They become pedestrian-zone colliders below.
     if (
-      /road|street|asphalt|tarmac|ground|floor|track|lane|crosswalk|pavement|sidewalk|terrain|landscape|grass|sand|dirt|soil|water|sea|ocean|sky|cloud|background|dome/.test(
+      /sidewalk|footpath|pedestrian|curb|kerb/.test(
+        descriptor
+      )
+    ) {
+      return false;
+    }
+
+    if (
+      /road|street|asphalt|tarmac|ground|floor|track|lane|crosswalk|pavement|terrain|landscape|grass|sand|dirt|soil|water|sea|ocean|sky|cloud|background|dome/.test(
         descriptor
       )
     ) {
@@ -1096,7 +1133,7 @@ export class RaceScene3D {
     }
 
     const explicitObstacle =
-      /building|house|wall|barrier|guard|rail|fence|tree|pole|lamp|light|sign|bollard|gate|garage|stand|grandstand|bridge|column|pillar|container|crate/.test(
+      /building|house|wall|barrier|guard|rail|fence|tree|pole|lamp|light|sign|bollard|gate|garage|stand|grandstand|bridge|column|pillar|container|crate|sidewalk|footpath|pedestrian|curb|kerb/.test(
         descriptor
       );
 
@@ -1149,9 +1186,10 @@ export class RaceScene3D {
           return;
         }
 
-        // Expand a tiny amount so thin walls/rails are not easy to tunnel through.
+        // Expand outward so the car stops before its visible body clips into
+        // walls/buildings/curbs. This also makes thin barriers reliable.
         box.expandByScalar(
-          0.08
+          this.OBSTACLE_COLLISION_PADDING
         );
 
         this.solidColliders.push({
@@ -1952,6 +1990,111 @@ export class RaceScene3D {
     return best;
   }
 
+  findGroundHitAt(
+    x,
+    z,
+    referenceY,
+    rayHeight = 24,
+    rayDepth = 70
+  ) {
+    if (!this.trackRoot) {
+      return null;
+    }
+
+    this.trackRayOrigin.set(
+      x,
+      referenceY +
+        rayHeight,
+      z
+    );
+
+    this.trackRaycaster.set(
+      this.trackRayOrigin,
+      this.trackRayDirection
+    );
+
+    this.trackRaycaster.near =
+      0;
+
+    this.trackRaycaster.far =
+      rayHeight +
+      rayDepth;
+
+    const hits =
+      this.trackRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    const candidates =
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (!hit.face) {
+            return true;
+          }
+
+          const normal =
+            hit.face.normal
+              .clone()
+              .transformDirection(
+                hit.object.matrixWorld
+              );
+
+          return normal.y >
+            0.25;
+        }
+      );
+
+    if (
+      candidates.length ===
+        0
+    ) {
+      return null;
+    }
+
+    let best =
+      candidates[0];
+
+    let bestDelta =
+      Math.abs(
+        best.point.y -
+        referenceY
+      );
+
+    for (
+      const hit
+      of candidates
+    ) {
+      const delta =
+        Math.abs(
+          hit.point.y -
+          referenceY
+        );
+
+      if (
+        delta <
+        bestDelta
+      ) {
+        best =
+          hit;
+
+        bestDelta =
+          delta;
+      }
+    }
+
+    return best;
+  }
+
   snapCarToSurface(
     car
   ) {
@@ -2170,8 +2313,13 @@ export class RaceScene3D {
     };
   }
 
-  updateCamera(force = false) {
-    if (!this.playerCar) return;
+  updateCamera(
+    force = false,
+    dt = 1 / 60
+  ) {
+    if (!this.playerCar) {
+      return;
+    }
 
     const target =
       this.playerCar.position
@@ -2179,16 +2327,16 @@ export class RaceScene3D {
         .add(
           new THREE.Vector3(
             0,
-            1.1,
+            1.15,
             0
           )
         );
 
-    const behind =
+    const desired =
       new THREE.Vector3(
         0,
-        4.6,
-        -9.5
+        this.CAMERA_FOLLOW_HEIGHT,
+        -this.CAMERA_FOLLOW_DISTANCE
       )
         .applyQuaternion(
           this.playerCar.quaternion
@@ -2197,15 +2345,94 @@ export class RaceScene3D {
           this.playerCar.position
         );
 
+    // Keep the chase camera above whatever surface sits under its own X/Z.
+    // This prevents the camera from cutting through the road on downhill
+    // sections while it is catching up to the car's new elevation.
+    const cameraGround =
+      this.findGroundHitAt(
+        desired.x,
+        desired.z,
+        this.playerCar.position.y,
+        30,
+        90
+      );
+
+    if (cameraGround) {
+      desired.y =
+        Math.max(
+          desired.y,
+          cameraGround.point.y +
+            this.CAMERA_MIN_GROUND_CLEARANCE
+        );
+    }
+
     if (force) {
       this.camera.position.copy(
-        behind
+        desired
       );
     } else {
-      this.camera.position.lerp(
-        behind,
-        0.12
+      // Frame-rate independent smoothing. Vertical movement follows faster
+      // than horizontal movement so slopes do not leave the camera behind.
+      const horizontalAlpha =
+        1 -
+        Math.exp(
+          -7.5 *
+          Math.max(
+            0.001,
+            dt
+          )
+        );
+
+      const verticalAlpha =
+        1 -
+        Math.exp(
+          -15 *
+          Math.max(
+            0.001,
+            dt
+          )
+        );
+
+      this.camera.position.x =
+        THREE.MathUtils.lerp(
+          this.camera.position.x,
+          desired.x,
+          horizontalAlpha
+        );
+
+      this.camera.position.z =
+        THREE.MathUtils.lerp(
+          this.camera.position.z,
+          desired.z,
+          horizontalAlpha
+        );
+
+      this.camera.position.y =
+        THREE.MathUtils.lerp(
+          this.camera.position.y,
+          desired.y,
+          verticalAlpha
+        );
+    }
+
+    // Final safety clamp after smoothing in case an old camera position was
+    // already below the road.
+    const currentGround =
+      this.findGroundHitAt(
+        this.camera.position.x,
+        this.camera.position.z,
+        this.playerCar.position.y,
+        30,
+        90
       );
+
+    if (currentGround) {
+      this.camera.position.y =
+        Math.max(
+          this.camera.position.y,
+          currentGround.point.y +
+            this.CAMERA_MIN_GROUND_CLEARANCE
+        );
     }
 
     this.camera.lookAt(
@@ -2341,7 +2568,10 @@ export class RaceScene3D {
               this.playerCar.rotation.y;
           }
 
-          this.updateCamera();
+          this.updateCamera(
+            false,
+            dt
+          );
           this.readStatus();
         } else {
           this.controls.update();
