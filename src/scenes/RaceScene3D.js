@@ -39,9 +39,9 @@ export class RaceScene3D {
 
     // Give the Subaru a little breathing room so it cannot visually clip
     // half-way into walls/buildings before collision stops it.
-    this.PLAYER_COLLISION_RADIUS = 1.18;
+    this.PLAYER_COLLISION_RADIUS = 1.28;
     this.PLAYER_COLLISION_HEIGHT = 1.45;
-    this.OBSTACLE_COLLISION_PADDING = 0.32;
+    this.OBSTACLE_COLLISION_PADDING = 0.48;
 
     // Chase-camera terrain protection.
     this.CAMERA_MIN_GROUND_CLEARANCE = 1.65;
@@ -63,6 +63,9 @@ export class RaceScene3D {
 
     this.pointerRaycaster = new THREE.Raycaster();
     this.pointerNdc = new THREE.Vector2();
+
+    this.vehicleRaycaster = new THREE.Raycaster();
+    this.cameraCollisionRaycaster = new THREE.Raycaster();
 
     this.lastValidPlayerPosition =
       new THREE.Vector3();
@@ -1125,15 +1128,15 @@ export class RaceScene3D {
     // Barcelona contains anti-flickering pivot meshes that sit around walls
     // and were being mistaken for real collision geometry.
     if (
-      /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder|collision[_\s-]?helper/.test(
-        descriptor
+      this.isHelperLikeMesh(
+        object
       )
     ) {
       return false;
     }
 
     const explicitObstacle =
-      /building|house|wall|barrier|guard|rail|fence|tree|pole|lamp|light|sign|bollard|gate|garage|stand|grandstand|bridge|column|pillar|container|crate|sidewalk|footpath|pedestrian|curb|kerb/.test(
+      /building|house|wall|barrier|guard|rail|fence|tree|palm|trunk|vegetation|bush|pole|lamp|light|sign|bollard|gate|garage|shop|store|storefront|stand|grandstand|bridge|column|pillar|container|crate|sidewalk|footpath|pedestrian|curb|kerb/.test(
         descriptor
       );
 
@@ -1330,6 +1333,355 @@ export class RaceScene3D {
     }
 
     return null;
+  }
+
+  isHelperLikeMesh(
+    object
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    return /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder|collision[_\s-]?helper/.test(
+      descriptor
+    );
+  }
+
+  isPedestrianZoneMesh(
+    object
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    return /sidewalk|footpath|pedestrian|walkway|walk_path|curb|kerb|pavement/.test(
+      descriptor
+    );
+  }
+
+  getWorldNormalFromHit(
+    hit
+  ) {
+    if (
+      !hit?.face ||
+      !hit?.object
+    ) {
+      return null;
+    }
+
+    return hit.face.normal
+      .clone()
+      .transformDirection(
+        hit.object.matrixWorld
+      );
+  }
+
+  isSolidRayHit(
+    hit
+  ) {
+    if (
+      !hit?.object ||
+      this.isBackgroundLikeMesh(
+        hit.object
+      ) ||
+      this.isHelperLikeMesh(
+        hit.object
+      )
+    ) {
+      return false;
+    }
+
+    if (
+      this.isPedestrianZoneMesh(
+        hit.object
+      )
+    ) {
+      return true;
+    }
+
+    const descriptor =
+      this.getMeshDescriptor(
+        hit.object
+      );
+
+    if (
+      /building|house|wall|barrier|guard|rail|fence|tree|palm|trunk|vegetation|bush|pole|lamp|light|sign|bollard|gate|garage|shop|store|storefront|stand|grandstand|bridge|column|pillar|container|crate/.test(
+        descriptor
+      )
+    ) {
+      return true;
+    }
+
+    const normal =
+      this.getWorldNormalFromHit(
+        hit
+      );
+
+    // Any steep/vertical face behaves like a wall even if the imported
+    // object has a useless generated name.
+    if (
+      normal &&
+      Math.abs(
+        normal.y
+      ) <
+        0.72
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  getSweptVehicleCollision(
+    car,
+    beforeMove
+  ) {
+    if (
+      !car ||
+      !beforeMove ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    const movement =
+      car.position
+        .clone()
+        .sub(
+          beforeMove
+        );
+
+    movement.y =
+      0;
+
+    const distance =
+      movement.length();
+
+    if (
+      distance <
+      0.0005
+    ) {
+      return null;
+    }
+
+    const direction =
+      movement
+        .clone()
+        .normalize();
+
+    const right =
+      new THREE.Vector3(
+        -direction.z,
+        0,
+        direction.x
+      );
+
+    const baseY =
+      Math.max(
+        beforeMove.y,
+        car.position.y
+      ) +
+      0.72;
+
+    const sideOffset =
+      this.PLAYER_COLLISION_RADIUS *
+      0.72;
+
+    const origins = [
+      beforeMove.clone(),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          sideOffset
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          -sideOffset
+        )
+    ];
+
+    const far =
+      distance +
+      this.PLAYER_COLLISION_RADIUS +
+      0.35;
+
+    for (
+      const origin
+      of origins
+    ) {
+      origin.y =
+        baseY;
+
+      this.vehicleRaycaster.set(
+        origin,
+        direction
+      );
+
+      this.vehicleRaycaster.near =
+        0;
+
+      this.vehicleRaycaster.far =
+        far;
+
+      const hits =
+        this.vehicleRaycaster
+          .intersectObject(
+            this.trackRoot,
+            true
+          );
+
+      const blocker =
+        hits.find(
+          (hit) =>
+            hit.distance <=
+              far &&
+            this.isSolidRayHit(
+              hit
+            )
+        );
+
+      if (blocker) {
+        return {
+          object:
+            blocker.object,
+          hit:
+            blocker,
+          type:
+            'swept'
+        };
+      }
+    }
+
+    return null;
+  }
+
+  getPedestrianZoneCollision(
+    car
+  ) {
+    const hit =
+      this.findGroundHitForCar(
+        car
+      );
+
+    if (
+      hit &&
+      this.isPedestrianZoneMesh(
+        hit.object
+      )
+    ) {
+      return {
+        object:
+          hit.object,
+        hit,
+        type:
+          'pedestrian-zone'
+      };
+    }
+
+    return null;
+  }
+
+  getCameraObstruction(
+    target,
+    cameraPoint
+  ) {
+    if (
+      !this.trackRoot ||
+      !target ||
+      !cameraPoint
+    ) {
+      return null;
+    }
+
+    const direction =
+      cameraPoint
+        .clone()
+        .sub(
+          target
+        );
+
+    const distance =
+      direction.length();
+
+    if (
+      distance <
+      0.01
+    ) {
+      return null;
+    }
+
+    direction.normalize();
+
+    this.cameraCollisionRaycaster
+      .set(
+        target,
+        direction
+      );
+
+    this.cameraCollisionRaycaster.near =
+      0.35;
+
+    this.cameraCollisionRaycaster.far =
+      distance;
+
+    const hits =
+      this.cameraCollisionRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    return hits.find(
+      (hit) =>
+        hit.distance <
+          distance &&
+        this.isSolidRayHit(
+          hit
+        )
+    ) ??
+      null;
+  }
+
+  clampCameraAgainstGeometry(
+    target,
+    cameraPoint
+  ) {
+    const obstruction =
+      this.getCameraObstruction(
+        target,
+        cameraPoint
+      );
+
+    if (!obstruction) {
+      return cameraPoint;
+    }
+
+    const direction =
+      cameraPoint
+        .clone()
+        .sub(
+          target
+        )
+        .normalize();
+
+    const safeDistance =
+      Math.max(
+        1.25,
+        obstruction.distance -
+          0.65
+      );
+
+    return target
+      .clone()
+      .addScaledVector(
+        direction,
+        safeDistance
+      );
   }
 
   computeDenseOverview() {
@@ -2366,9 +2718,15 @@ export class RaceScene3D {
         );
     }
 
+    const collisionSafeDesired =
+      this.clampCameraAgainstGeometry(
+        target,
+        desired
+      );
+
     if (force) {
       this.camera.position.copy(
-        desired
+        collisionSafeDesired
       );
     } else {
       // Frame-rate independent smoothing. Vertical movement follows faster
@@ -2396,21 +2754,21 @@ export class RaceScene3D {
       this.camera.position.x =
         THREE.MathUtils.lerp(
           this.camera.position.x,
-          desired.x,
+          collisionSafeDesired.x,
           horizontalAlpha
         );
 
       this.camera.position.z =
         THREE.MathUtils.lerp(
           this.camera.position.z,
-          desired.z,
+          collisionSafeDesired.z,
           horizontalAlpha
         );
 
       this.camera.position.y =
         THREE.MathUtils.lerp(
           this.camera.position.y,
-          desired.y,
+          collisionSafeDesired.y,
           verticalAlpha
         );
     }
@@ -2434,6 +2792,16 @@ export class RaceScene3D {
             this.CAMERA_MIN_GROUND_CLEARANCE
         );
     }
+
+    const safeCurrentCamera =
+      this.clampCameraAgainstGeometry(
+        target,
+        this.camera.position
+      );
+
+    this.camera.position.copy(
+      safeCurrentCamera
+    );
 
     this.camera.lookAt(
       target
@@ -2524,12 +2892,32 @@ export class RaceScene3D {
               this.playerCar
             );
 
-          const objectCollision =
+          const sweptCollision =
+            grounded
+              ? this.getSweptVehicleCollision(
+                  this.playerCar,
+                  beforeMove
+                )
+              : null;
+
+          const pedestrianCollision =
+            grounded
+              ? this.getPedestrianZoneCollision(
+                  this.playerCar
+                )
+              : null;
+
+          const boxCollision =
             grounded
               ? this.getCarObjectCollision(
                   this.playerCar
                 )
               : null;
+
+          const objectCollision =
+            sweptCollision ??
+            pedestrianCollision ??
+            boxCollision;
 
           if (
             !grounded ||
