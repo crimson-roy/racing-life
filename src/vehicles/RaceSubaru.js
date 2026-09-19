@@ -92,15 +92,17 @@ export class RaceSubaru extends THREE.Group {
           model
         );
 
+        // Find wheel nodes BEFORE orientation testing.
+        // We use their vertical position to reject upside-down candidates.
+        this.findWheels(
+          model
+        );
+
         this.normalizeOrientation(
           model
         );
 
         this.findFrontDirection(
-          model
-        );
-
-        this.findWheels(
           model
         );
 
@@ -141,6 +143,9 @@ export class RaceSubaru extends THREE.Group {
     const size =
       new THREE.Vector3();
 
+    const wheelWorld =
+      new THREE.Vector3();
+
     for (
       const candidate
       of candidates
@@ -165,8 +170,49 @@ export class RaceSubaru extends THREE.Group {
         size
       );
 
-      const score =
-        size.y;
+      let score =
+        size.y *
+        10;
+
+      // Upright candidates should have the wheels close to the
+      // bottom of the vehicle bounds. A 180° flipped candidate has
+      // almost the same dimensions, so height alone cannot detect it.
+      if (
+        this.wheelObjects.length >
+          0 &&
+        size.y >
+          0.001
+      ) {
+        let wheelYTotal =
+          0;
+
+        for (
+          const wheel
+          of this.wheelObjects
+        ) {
+          wheel.getWorldPosition(
+            wheelWorld
+          );
+
+          wheelYTotal +=
+            wheelWorld.y;
+        }
+
+        const averageWheelY =
+          wheelYTotal /
+          this.wheelObjects.length;
+
+        const normalizedWheelHeight =
+          (
+            averageWheelY -
+            box.min.y
+          ) /
+          size.y;
+
+        score +=
+          normalizedWheelHeight *
+          8;
+      }
 
       if (
         score <
@@ -228,6 +274,22 @@ export class RaceSubaru extends THREE.Group {
 
     this.updateMatrixWorld(
       true
+    );
+
+    console.log(
+      'RaceSubaru: orientation normalized.',
+      {
+        rotationX:
+          THREE.MathUtils.radToDeg(
+            this.visualRoot.rotation.x
+          ),
+        rotationZ:
+          THREE.MathUtils.radToDeg(
+            this.visualRoot.rotation.z
+          ),
+        wheels:
+          this.wheelObjects.length
+      }
     );
   }
 
