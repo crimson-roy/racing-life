@@ -347,7 +347,7 @@ export class RaceScene3D {
         <strong>SETUP:</strong> wheel = free zoom to cursor · left-drag = orbit · right-drag = pan<br>
         Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
-        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · ground + buildings + sidewalk collision ON<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · optimized collision ON<br>
         Esc return home
         <div id="race-debug-status" style="
           margin-top:6px;
@@ -1435,6 +1435,42 @@ export class RaceScene3D {
     return false;
   }
 
+  isBlockingHorizontalHit(
+    hit
+  ) {
+    if (
+      !hit?.object ||
+      this.isBackgroundLikeMesh(
+        hit.object
+      ) ||
+      this.isHelperLikeMesh(
+        hit.object
+      )
+    ) {
+      return false;
+    }
+
+    const normal =
+      this.getWorldNormalFromHit(
+        hit
+      );
+
+    // A nearly-horizontal face is road/ground. Anything significantly
+    // steeper behaves like an obstacle, even when the imported mesh has
+    // a useless generated name.
+    if (
+      normal &&
+      Math.abs(
+        normal.y
+      ) >
+        0.80
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   getSweptVehicleCollision(
     car,
     beforeMove
@@ -1496,6 +1532,18 @@ export class RaceScene3D {
         .clone()
         .addScaledVector(
           right,
+          sideOffset * 0.55
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          -sideOffset * 0.55
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
           sideOffset
         ),
       beforeMove
@@ -1541,7 +1589,7 @@ export class RaceScene3D {
           (hit) =>
             hit.distance <=
               far &&
-            this.isSolidRayHit(
+            this.isBlockingHorizontalHit(
               hit
             )
         );
@@ -2989,13 +3037,6 @@ export class RaceScene3D {
                 )
               : null;
 
-          const radialCollision =
-            grounded
-              ? this.getRadialGeometryCollision(
-                  this.playerCar
-                )
-              : null;
-
           const pedestrianCollision =
             grounded
               ? this.getPedestrianZoneCollision(
@@ -3012,7 +3053,6 @@ export class RaceScene3D {
 
           const objectCollision =
             sweptCollision ??
-            radialCollision ??
             pedestrianCollision ??
             boxCollision;
 
