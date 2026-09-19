@@ -39,9 +39,10 @@ export class RaceScene3D {
 
     // Give the Subaru a little breathing room so it cannot visually clip
     // half-way into walls/buildings before collision stops it.
-    this.PLAYER_COLLISION_RADIUS = 1.28;
+    this.PLAYER_COLLISION_RADIUS = 1.38;
     this.PLAYER_COLLISION_HEIGHT = 1.45;
     this.OBSTACLE_COLLISION_PADDING = 0.48;
+    this.RADIAL_COLLISION_RADIUS = 1.55;
 
     // Chase-camera terrain protection.
     this.CAMERA_MIN_GROUND_CLEARANCE = 1.65;
@@ -1560,6 +1561,94 @@ export class RaceScene3D {
     return null;
   }
 
+  getRadialGeometryCollision(
+    car
+  ) {
+    if (
+      !car ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    // Some imported tree packs are merged into large meshes with useless
+    // names/AABBs. Probe the real triangles around the car instead of
+    // relying on object names or bounding boxes.
+    const directions = [
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(0, 0, 1),
+      new THREE.Vector3(0, 0, -1),
+      new THREE.Vector3(1, 0, 1).normalize(),
+      new THREE.Vector3(-1, 0, 1).normalize(),
+      new THREE.Vector3(1, 0, -1).normalize(),
+      new THREE.Vector3(-1, 0, -1).normalize()
+    ];
+
+    const probeHeights = [
+      0.48,
+      0.95
+    ];
+
+    for (
+      const height
+      of probeHeights
+    ) {
+      const origin =
+        car.position
+          .clone();
+
+      origin.y +=
+        height;
+
+      for (
+        const direction
+        of directions
+      ) {
+        this.vehicleRaycaster.set(
+          origin,
+          direction
+        );
+
+        this.vehicleRaycaster.near =
+          0.02;
+
+        this.vehicleRaycaster.far =
+          this.RADIAL_COLLISION_RADIUS;
+
+        const hits =
+          this.vehicleRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
+
+        const blocker =
+          hits.find(
+            (hit) =>
+              hit.distance <=
+                this.RADIAL_COLLISION_RADIUS &&
+              this.isSolidRayHit(
+                hit
+              )
+          );
+
+        if (blocker) {
+          return {
+            object:
+              blocker.object,
+            hit:
+              blocker,
+            type:
+              'radial-geometry'
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
   getPedestrianZoneCollision(
     car
   ) {
@@ -2900,6 +2989,13 @@ export class RaceScene3D {
                 )
               : null;
 
+          const radialCollision =
+            grounded
+              ? this.getRadialGeometryCollision(
+                  this.playerCar
+                )
+              : null;
+
           const pedestrianCollision =
             grounded
               ? this.getPedestrianZoneCollision(
@@ -2916,6 +3012,7 @@ export class RaceScene3D {
 
           const objectCollision =
             sweptCollision ??
+            radialCollision ??
             pedestrianCollision ??
             boxCollision;
 
@@ -2943,7 +3040,7 @@ export class RaceScene3D {
                 500;
 
               this.setStatus(
-                `Collision: ${objectCollision.object?.name || 'track object'}`
+                `Collision (${objectCollision.type || 'object'}): ${objectCollision.object?.name || 'track object'}`
               );
             }
           } else {
