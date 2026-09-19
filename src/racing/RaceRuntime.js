@@ -1,6 +1,7 @@
 import { RaceController } from './RaceController.js';
 import { TrackSetupStore } from './TrackSetupStore.js';
 import { TrackAuthoringSession } from './TrackAuthoringSession.js';
+import { commitRaceToMatch, createCareerRaceResult } from './RaceSession.js';
 
 // Thin scene-facing P0 bridge. It keeps persistence, authoring and race state
 // out of RaceScene3D so the Three.js scene only needs to provide car positions
@@ -21,6 +22,7 @@ export class RaceRuntime {
       minSpacing: options.authoringSpacing ?? 8
     });
     this.resultCommitted = false;
+    this.completion = null;
   }
 
   load() {
@@ -60,10 +62,12 @@ export class RaceRuntime {
     this.store.clearRacingLine();
     this.controller.configure([]);
     this.resultCommitted = false;
+    this.completion = null;
   }
 
   start(nowMs = performance.now()) {
     this.resultCommitted = false;
+    this.completion = null;
     return this.controller.start(nowMs);
   }
 
@@ -82,6 +86,43 @@ export class RaceRuntime {
     if (this.resultCommitted) return false;
     this.resultCommitted = true;
     return true;
+  }
+
+  // Scene-facing completion bridge. It is deliberately idempotent because a
+  // render loop can observe the completed race for many frames. The first call
+  // commits the 1v1 result; later calls return the same completion payload.
+  // Career mutation remains injected so RaceRuntime does not own reward rules.
+  commitCompletion(options = {}) {
+    const snapshot = this.controller.getSnapshot();
+    if (!snapshot.completed || !snapshot.winnerSide) return null;
+    if (this.resultCommitted) return this.completion;
+
+    const matchSummary = options.matchManager
+      ? commitRaceToMatch(
+          options.matchManager,
+          this.controller,
+          {
+            trackId: this.trackId,
+            ...(options.details ?? {})
+          }
+        )
+      : null;
+
+    const careerResult = createCareerRaceResult(this.controller);
+    if (typeof options.applyCareerResult === 'function') {
+      options.applyCareerResult(careerResult);
+    }
+
+    this.resultCommitted = true;
+    this.completion = {
+      trackId: this.trackId,
+      winnerSide: snapshot.winnerSide,
+      finishOrder: [...snapshot.finishOrder],
+      careerResult,
+      matchSummary
+    };
+
+    return this.completion;
   }
 
   getSnapshot() {
