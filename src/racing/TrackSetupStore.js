@@ -4,6 +4,10 @@ function storageKey(trackId) {
   return `racingLifeTrackSetup:v${VERSION}:${trackId}`;
 }
 
+function legacyGridKey(trackId) {
+  return `racingLifeGrid:v2:${trackId}`;
+}
+
 function finitePoint(point) {
   return point && Number.isFinite(point.x) && Number.isFinite(point.z);
 }
@@ -41,7 +45,7 @@ export class TrackSetupStore {
   load() {
     try {
       const raw = this.storage?.getItem(storageKey(this.trackId));
-      if (!raw) return this.empty();
+      if (!raw) return this.loadLegacyOrEmpty();
       const parsed = JSON.parse(raw);
       return {
         version: VERSION,
@@ -50,6 +54,27 @@ export class TrackSetupStore {
           ? parsed.racingLine.map(normalizePoint).filter(Boolean)
           : []
       };
+    } catch {
+      return this.loadLegacyOrEmpty();
+    }
+  }
+
+  loadLegacyOrEmpty() {
+    try {
+      const legacyRaw = this.storage?.getItem(legacyGridKey(this.trackId));
+      const legacyGrid = legacyRaw ? normalizeSpawn(JSON.parse(legacyRaw)) : null;
+      if (!legacyGrid) return this.empty();
+
+      const setup = {
+        version: VERSION,
+        grid: legacyGrid,
+        racingLine: []
+      };
+
+      // Preserve the old key for rollback, but immediately write the unified
+      // setup so future reads use one source of truth.
+      this.save(setup);
+      return setup;
     } catch {
       return this.empty();
     }
