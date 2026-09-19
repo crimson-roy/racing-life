@@ -1156,16 +1156,48 @@ export class RaceScene3D {
       return null;
     }
 
-    const preferred =
+    const normalWorld =
+      new THREE.Vector3();
+
+    const usable =
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !hit.face
+          ) {
+            return true;
+          }
+
+          normalWorld
+            .copy(
+              hit.face.normal
+            )
+            .transformDirection(
+              hit.object.matrixWorld
+            );
+
+          // Reject near-vertical walls for car placement.
+          return normalWorld.y >
+            0.30;
+        }
+      );
+
+    return usable[0] ??
       hits.find(
         (hit) =>
           !this.isBackgroundLikeMesh(
             hit.object
           )
-      );
-
-    return preferred ??
-      hits[0];
+      ) ??
+      null;
   }
 
   placeGridFromCameraRay(
@@ -1189,19 +1221,15 @@ export class RaceScene3D {
         this.camera
       );
 
+    // Always raycast the complete imported hierarchy recursively.
+    // Some downloaded tracks wrap road meshes inside nested groups, so
+    // raycasting only our filtered mesh list can miss visible road pieces.
     const hits =
-      this.trackSurfaceObjects.length >
-        0
-        ? this.pointerRaycaster
-            .intersectObjects(
-              this.trackSurfaceObjects,
-              false
-            )
-        : this.pointerRaycaster
-            .intersectObject(
-              this.trackRoot,
-              true
-            );
+      this.pointerRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
 
     const hit =
       this.choosePlacementHit(
@@ -1209,12 +1237,54 @@ export class RaceScene3D {
       );
 
     if (!hit) {
+      console.warn(
+        'RaceScene3D: pointer ray hit nothing usable.',
+        {
+          totalHits:
+            hits.length,
+          hitNames:
+            hits
+              .slice(
+                0,
+                12
+              )
+              .map(
+                (entry) =>
+                  entry.object?.name ||
+                  '(unnamed)'
+              )
+        }
+      );
+
       this.setStatus(
-        'No track surface under pointer. Aim directly at a road and try again.'
+        'No usable road surface there. Double-click directly on the visible road.'
       );
 
       return;
     }
+
+    console.log(
+      'RaceScene3D: grid surface selected.',
+      {
+        object:
+          hit.object?.name ||
+          '(unnamed)',
+        point: {
+          x:
+            hit.point.x.toFixed(
+              2
+            ),
+          y:
+            hit.point.y.toFixed(
+              2
+            ),
+          z:
+            hit.point.z.toFixed(
+              2
+            )
+        }
+      }
+    );
 
     const cameraDirection =
       this.camera.getWorldDirection(
@@ -1299,32 +1369,38 @@ export class RaceScene3D {
       45;
 
     const hits =
-      this.trackSurfaceObjects.length >
-        0
-        ? this.trackRaycaster
-            .intersectObjects(
-              this.trackSurfaceObjects,
-              false
-            )
-        : this.trackRaycaster
-            .intersectObject(
-              this.trackRoot,
-              true
-            );
-
-    const validHits =
-      hits.filter(
-        (hit) =>
-          !this.isBackgroundLikeMesh(
-            hit.object
-          )
-      );
+      this.trackRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
 
     const candidates =
-      validHits.length >
-        0
-        ? validHits
-        : hits;
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (!hit.face) {
+            return true;
+          }
+
+          const normal =
+            hit.face.normal
+              .clone()
+              .transformDirection(
+                hit.object.matrixWorld
+              );
+
+          return normal.y >
+            0.25;
+        }
+      );
 
     if (
       candidates.length ===
