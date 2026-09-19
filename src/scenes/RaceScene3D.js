@@ -131,7 +131,12 @@ export class RaceScene3D {
     // - left-drag orbits
     this.controls.enablePan = true;
     this.controls.screenSpacePanning = true;
-    this.controls.zoomToCursor = true;
+    // OrbitControls' normal wheel zoom always remains tied to its orbit
+    // target. On these huge imported maps that makes the camera feel like
+    // it is being dragged back to one fixed point. We disable its wheel
+    // zoom and handle wheel navigation ourselves below.
+    this.controls.zoomToCursor = false;
+    this.controls.enableZoom = false;
     this.controls.zoomSpeed = 1.15;
     this.controls.panSpeed = 1.0;
     this.controls.rotateSpeed = 0.65;
@@ -326,7 +331,7 @@ export class RaceScene3D {
         line-height:1.55;
       ">
         <strong>Subaru Race Test</strong><br>
-        <strong>SETUP:</strong> wheel = zoom toward cursor · left-drag = orbit · right-drag = pan<br>
+        <strong>SETUP:</strong> wheel = free zoom to cursor · left-drag = orbit · right-drag = pan<br>
         Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
         <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · ground + object collision ON<br>
@@ -392,6 +397,185 @@ export class RaceScene3D {
         this.keys.delete(
           event.code
         );
+      };
+
+    this.handleWheelZoom =
+      (event) => {
+        if (
+          !this.setupMode ||
+          !this.trackRoot
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        const rect =
+          this.renderer.domElement
+            .getBoundingClientRect();
+
+        const ndcX =
+          (
+            (
+              event.clientX -
+              rect.left
+            ) /
+            Math.max(
+              1,
+              rect.width
+            )
+          ) *
+            2 -
+          1;
+
+        const ndcY =
+          -(
+            (
+              event.clientY -
+              rect.top
+            ) /
+            Math.max(
+              1,
+              rect.height
+            )
+          ) *
+            2 +
+          1;
+
+        this.pointerNdc.set(
+          ndcX,
+          ndcY
+        );
+
+        this.pointerRaycaster
+          .setFromCamera(
+            this.pointerNdc,
+            this.camera
+          );
+
+        const hits =
+          this.pointerRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
+
+        const hit =
+          this.choosePlacementHit(
+            hits
+          );
+
+        let focusPoint =
+          null;
+
+        if (hit) {
+          focusPoint =
+            hit.point.clone();
+        } else {
+          // Fallback for sky/empty-space scrolling: intersect the cursor ray
+          // with a horizontal plane passing through the current orbit target.
+          const plane =
+            new THREE.Plane(
+              new THREE.Vector3(
+                0,
+                1,
+                0
+              ),
+              -this.controls.target.y
+            );
+
+          const fallback =
+            new THREE.Vector3();
+
+          if (
+            this.pointerRaycaster.ray
+              .intersectPlane(
+                plane,
+                fallback
+              )
+          ) {
+            focusPoint =
+              fallback;
+          }
+        }
+
+        if (!focusPoint) {
+          return;
+        }
+
+        const fromFocus =
+          this.camera.position
+            .clone()
+            .sub(
+              focusPoint
+            );
+
+        const distance =
+          Math.max(
+            0.001,
+            fromFocus.length()
+          );
+
+        const zoomIn =
+          event.deltaY <
+          0;
+
+        const factor =
+          zoomIn
+            ? 0.82
+            : 1.22;
+
+        const nextDistance =
+          THREE.MathUtils.clamp(
+            distance *
+              factor,
+            this.controls.minDistance,
+            this.controls.maxDistance
+          );
+
+        if (
+          fromFocus.lengthSq() <
+          0.000001
+        ) {
+          fromFocus.set(
+            0,
+            1,
+            1
+          );
+        }
+
+        fromFocus
+          .normalize()
+          .multiplyScalar(
+            nextDistance
+          );
+
+        this.camera.position
+          .copy(
+            focusPoint
+          )
+          .add(
+            fromFocus
+          );
+
+        // Crucial bit: the orbit target follows the point under the cursor.
+        // After zooming into a street/building area, future orbiting happens
+        // around THAT area instead of snapping back to the old water center.
+        const targetFollow =
+          zoomIn
+            ? 0.72
+            : 0.45;
+
+        this.controls.target.lerp(
+          focusPoint,
+          targetFollow
+        );
+
+        this.camera.lookAt(
+          this.controls.target
+        );
+
+        this.controls.update();
       };
 
     this.handleDoubleClick =
@@ -481,6 +665,15 @@ export class RaceScene3D {
       .addEventListener(
         'dblclick',
         this.handleDoubleClick
+      );
+
+    this.renderer.domElement
+      .addEventListener(
+        'wheel',
+        this.handleWheelZoom,
+        {
+          passive: false
+        }
       );
   }
 
@@ -2202,6 +2395,12 @@ export class RaceScene3D {
       ?.removeEventListener(
         'dblclick',
         this.handleDoubleClick
+      );
+
+    this.renderer?.domElement
+      ?.removeEventListener(
+        'wheel',
+        this.handleWheelZoom
       );
 
     if (
