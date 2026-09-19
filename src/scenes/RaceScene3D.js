@@ -30,6 +30,9 @@ export class RaceScene3D {
     this.trackBounds = null;
     this.playableBounds = null;
     this.trackSurfaceObjects = [];
+    this.playableMeshCenters = [];
+    this.denseOverviewCenter = null;
+    this.denseOverviewRadius = null;
 
     // Development setup mode: show the entire imported venue first.
     // This prevents the camera from spawning somewhere useless before
@@ -611,7 +614,11 @@ export class RaceScene3D {
 
         candidates.push({
           object,
-          box
+          box,
+          center:
+            box.getCenter(
+              new THREE.Vector3()
+            )
         });
       }
     );
@@ -668,6 +675,16 @@ export class RaceScene3D {
           )
         : [];
 
+    this.playableMeshCenters =
+      usable
+        ? candidates.map(
+            (entry) =>
+              entry.center.clone()
+          )
+        : [];
+
+    this.computeDenseOverview();
+
     console.log(
       'RaceScene3D: excluded huge background meshes from setup bounds.',
       excluded
@@ -676,6 +693,178 @@ export class RaceScene3D {
     console.log(
       'RaceScene3D: playable geometry meshes:',
       this.trackSurfaceObjects.length
+    );
+  }
+
+  computeDenseOverview() {
+    if (
+      this.playableMeshCenters.length <
+      6
+    ) {
+      this.denseOverviewCenter =
+        null;
+
+      this.denseOverviewRadius =
+        null;
+
+      return;
+    }
+
+    const xs =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            point.x
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const zs =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            point.z
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const median = (
+      values
+    ) => {
+      const middle =
+        Math.floor(
+          values.length /
+          2
+        );
+
+      return values.length %
+        2 ===
+        0
+        ? (
+            values[
+              middle - 1
+            ] +
+            values[
+              middle
+            ]
+          ) /
+            2
+        : values[
+            middle
+          ];
+    };
+
+    const centerX =
+      median(
+        xs
+      );
+
+    const centerZ =
+      median(
+        zs
+      );
+
+    const distances =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            Math.hypot(
+              point.x -
+                centerX,
+              point.z -
+                centerZ
+            )
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const percentileIndex =
+      Math.min(
+        distances.length -
+          1,
+        Math.floor(
+          distances.length *
+            0.62
+        )
+      );
+
+    const clusterRadius =
+      Math.max(
+        220,
+        distances[
+          percentileIndex
+        ] *
+          1.15
+      );
+
+    const closePoints =
+      this.playableMeshCenters
+        .filter(
+          (point) =>
+            Math.hypot(
+              point.x -
+                centerX,
+              point.z -
+                centerZ
+            ) <=
+            clusterRadius
+        );
+
+    const centerY =
+      closePoints.length >
+        0
+        ? closePoints.reduce(
+            (
+              total,
+              point
+            ) =>
+              total +
+              point.y,
+            0
+          ) /
+          closePoints.length
+        : this.trackCenter.y;
+
+    this.denseOverviewCenter =
+      new THREE.Vector3(
+        centerX,
+        centerY,
+        centerZ
+      );
+
+    this.denseOverviewRadius =
+      clusterRadius;
+
+    console.log(
+      'RaceScene3D: dense overview.',
+      {
+        center: {
+          x:
+            centerX.toFixed(
+              1
+            ),
+          y:
+            centerY.toFixed(
+              1
+            ),
+          z:
+            centerZ.toFixed(
+              1
+            )
+        },
+        radius:
+          clusterRadius.toFixed(
+            1
+          ),
+        meshes:
+          closePoints.length
+      }
     );
   }
 
@@ -691,7 +880,7 @@ export class RaceScene3D {
       return;
     }
 
-    const center =
+    const boundsCenter =
       bounds.getCenter(
         new THREE.Vector3()
       );
@@ -701,13 +890,32 @@ export class RaceScene3D {
         new THREE.Vector3()
       );
 
-    const radius =
+    const fullRadius =
       Math.max(
         size.x,
         size.y,
         size.z,
         20
       );
+
+    const center =
+      this.denseOverviewCenter
+        ? this.denseOverviewCenter
+            .clone()
+        : boundsCenter;
+
+    const radius =
+      this.denseOverviewRadius
+        ? Math.max(
+            220,
+            Math.min(
+              this.denseOverviewRadius,
+              fullRadius *
+                0.32
+            )
+          )
+        : fullRadius *
+            0.24;
 
     this.camera.near =
       Math.max(
@@ -728,14 +936,19 @@ export class RaceScene3D {
       center
     );
 
-    // Start much closer than a full-map fit.
-    // These downloaded circuits include large mountains, coast and scenery;
-    // fitting the entire playable bounds makes the actual race area tiny.
+    // Focus on the dense cluster of track/city meshes rather than
+    // the whole mountain/coast environment.
     const horizontalDistance =
-      radius * 0.28;
+      Math.max(
+        170,
+        radius * 0.95
+      );
 
     const verticalDistance =
-      radius * 0.20;
+      Math.max(
+        120,
+        radius * 0.58
+      );
 
     this.camera.position.set(
       center.x + horizontalDistance,
