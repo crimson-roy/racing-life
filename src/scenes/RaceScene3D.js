@@ -281,8 +281,8 @@ export class RaceScene3D {
         line-height:1.55;
       ">
         <strong>Subaru Race Test</strong><br>
-        <strong>SETUP:</strong> orbit/pan with mouse · P place cars at view target<br>
-        C toggle overview/driving · G save grid · R reset<br>
+        <strong>SETUP:</strong> orbit/pan/zoom with mouse · P place cars at view target<br>
+        F refocus track · C toggle overview/driving · G save grid · R reset<br>
         <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer<br>
         Esc return home
         <div id="race-debug-status" style="
@@ -331,6 +331,10 @@ export class RaceScene3D {
 
         if (event.code === 'KeyC') {
           this.toggleSetupMode();
+        }
+
+        if (event.code === 'KeyF') {
+          this.frameTrackOverview();
         }
       };
 
@@ -724,10 +728,19 @@ export class RaceScene3D {
       center
     );
 
+    // Start much closer than a full-map fit.
+    // These downloaded circuits include large mountains, coast and scenery;
+    // fitting the entire playable bounds makes the actual race area tiny.
+    const horizontalDistance =
+      radius * 0.28;
+
+    const verticalDistance =
+      radius * 0.20;
+
     this.camera.position.set(
-      center.x + radius * 0.72,
-      center.y + radius * 0.55,
-      center.z + radius * 0.72
+      center.x + horizontalDistance,
+      center.y + verticalDistance,
+      center.z + horizontalDistance
     );
 
     this.camera.lookAt(
