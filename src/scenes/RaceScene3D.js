@@ -31,6 +31,13 @@ export class RaceScene3D {
     this.playableBounds = null;
     this.trackSurfaceObjects = [];
     this.playableMeshCenters = [];
+
+    // Static obstacle collision generated from the imported venue.
+    // These are lightweight world-space AABBs for buildings, barriers,
+    // poles, walls, trees, etc. Roads/ground/background are excluded.
+    this.solidColliders = [];
+    this.PLAYER_COLLISION_RADIUS = 0.95;
+    this.PLAYER_COLLISION_HEIGHT = 1.45;
     this.denseOverviewCenter = null;
     this.denseOverviewRadius = null;
 
@@ -52,6 +59,9 @@ export class RaceScene3D {
       new THREE.Vector3();
 
     this.lastValidPlayerRotationY =
+      0;
+
+    this.collisionStatusUntil =
       0;
 
     this.scene = new THREE.Scene();
@@ -319,7 +329,7 @@ export class RaceScene3D {
         <strong>SETUP:</strong> wheel = zoom toward cursor · left-drag = orbit · right-drag = pan<br>
         Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
-        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · surface collision ON<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · ground + object collision ON<br>
         Esc return home
         <div id="race-debug-status" style="
           margin-top:6px;
@@ -516,6 +526,7 @@ export class RaceScene3D {
             );
 
         this.analyzePlayableGeometry();
+        this.buildStaticColliders();
 
         const activeBounds =
           this.playableBounds ??
@@ -783,6 +794,276 @@ export class RaceScene3D {
       'RaceScene3D: playable geometry meshes:',
       this.trackSurfaceObjects.length
     );
+  }
+
+  getMeshDescriptor(object) {
+    const materialNames =
+      (
+        Array.isArray(
+          object?.material
+        )
+          ? object.material
+          : [
+              object?.material
+            ]
+      )
+        .map(
+          (material) =>
+            String(
+              material?.name ||
+              ''
+            )
+        )
+        .join(
+          ' '
+        );
+
+    return `${object?.name || ''} ${materialNames}`
+      .toLowerCase();
+  }
+
+  isDriveableLikeMesh(
+    object,
+    size
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    if (
+      /road|street|asphalt|tarmac|ground|floor|track|lane|crosswalk|pavement|sidewalk|terrain|landscape|grass|sand|dirt|soil|water|sea|ocean|sky|cloud|background|dome/.test(
+        descriptor
+      )
+    ) {
+      return true;
+    }
+
+    // Very flat meshes are normally ground/road decals, not solid walls.
+    return size.y <
+      0.38;
+  }
+
+  shouldUseAsSolidCollider(
+    object,
+    box,
+    fullSize
+  ) {
+    if (
+      !object?.isMesh ||
+      !box ||
+      box.isEmpty() ||
+      this.isBackgroundLikeMesh(
+        object
+      )
+    ) {
+      return false;
+    }
+
+    const size =
+      box.getSize(
+        new THREE.Vector3()
+      );
+
+    if (
+      this.isDriveableLikeMesh(
+        object,
+        size
+      )
+    ) {
+      return false;
+    }
+
+    // Ignore enormous scenery chunks/mountains. Their AABBs can cover
+    // roads even when the real triangles do not.
+    const tooWide =
+      size.x >
+        fullSize.x * 0.16 ||
+      size.z >
+        fullSize.z * 0.16;
+
+    if (tooWide) {
+      return false;
+    }
+
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    const explicitObstacle =
+      /building|house|wall|barrier|guard|rail|fence|tree|pole|lamp|light|sign|bollard|gate|garage|stand|grandstand|bridge|column|pillar|container|crate/.test(
+        descriptor
+      );
+
+    // Unknown meshes still become colliders if they have meaningful height.
+    // This catches oddly named imported buildings without hardcoding Barcelona.
+    const tallEnough =
+      size.y >=
+        0.85;
+
+    return explicitObstacle ||
+      tallEnough;
+  }
+
+  buildStaticColliders() {
+    this.solidColliders = [];
+
+    if (
+      !this.trackRoot ||
+      !this.trackBounds
+    ) {
+      return;
+    }
+
+    const fullSize =
+      this.trackBounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const names = [];
+
+    this.trackRoot.traverse(
+      (object) => {
+        if (!object.isMesh) {
+          return;
+        }
+
+        const box =
+          new THREE.Box3()
+            .setFromObject(
+              object
+            );
+
+        if (
+          !this.shouldUseAsSolidCollider(
+            object,
+            box,
+            fullSize
+          )
+        ) {
+          return;
+        }
+
+        // Expand a tiny amount so thin walls/rails are not easy to tunnel through.
+        box.expandByScalar(
+          0.08
+        );
+
+        this.solidColliders.push({
+          object,
+          box
+        });
+
+        if (
+          names.length <
+          30
+        ) {
+          names.push(
+            object.name ||
+            '(unnamed)'
+          );
+        }
+      }
+    );
+
+    console.log(
+      'RaceScene3D: static object colliders built.',
+      {
+        count:
+          this.solidColliders.length,
+        examples:
+          names
+      }
+    );
+  }
+
+  circleOverlapsBoxXZ(
+    x,
+    z,
+    radius,
+    box
+  ) {
+    const closestX =
+      THREE.MathUtils.clamp(
+        x,
+        box.min.x,
+        box.max.x
+      );
+
+    const closestZ =
+      THREE.MathUtils.clamp(
+        z,
+        box.min.z,
+        box.max.z
+      );
+
+    const dx =
+      x -
+      closestX;
+
+    const dz =
+      z -
+      closestZ;
+
+    return (
+      dx * dx +
+      dz * dz
+    ) <=
+      radius * radius;
+  }
+
+  getCarObjectCollision(
+    car
+  ) {
+    if (
+      !car ||
+      this.solidColliders.length ===
+        0
+    ) {
+      return null;
+    }
+
+    const carBottom =
+      car.position.y +
+      0.08;
+
+    const carTop =
+      carBottom +
+      this.PLAYER_COLLISION_HEIGHT;
+
+    for (
+      const collider
+      of this.solidColliders
+    ) {
+      const box =
+        collider.box;
+
+      // Cheap Y rejection first.
+      if (
+        box.max.y <
+          carBottom ||
+        box.min.y >
+          carTop
+      ) {
+        continue;
+      }
+
+      if (
+        !this.circleOverlapsBoxXZ(
+          car.position.x,
+          car.position.z,
+          this.PLAYER_COLLISION_RADIUS,
+          box
+        )
+      ) {
+        continue;
+      }
+
+      return collider;
+    }
+
+    return null;
   }
 
   computeDenseOverview() {
@@ -1712,6 +1993,13 @@ export class RaceScene3D {
       return;
     }
 
+    if (
+      performance.now() <
+      this.collisionStatusUntil
+    ) {
+      return;
+    }
+
     const speed =
       Math.abs(
         this.playerCar.speed ?? 0
@@ -1781,7 +2069,17 @@ export class RaceScene3D {
               this.playerCar
             );
 
-          if (!grounded) {
+          const objectCollision =
+            grounded
+              ? this.getCarObjectCollision(
+                  this.playerCar
+                )
+              : null;
+
+          if (
+            !grounded ||
+            objectCollision
+          ) {
             this.playerCar.position
               .copy(
                 beforeMove
@@ -1792,6 +2090,19 @@ export class RaceScene3D {
 
             this.playerCar.speed =
               0;
+
+            if (
+              objectCollision &&
+              this.statusElement
+            ) {
+              this.collisionStatusUntil =
+                performance.now() +
+                500;
+
+              this.setStatus(
+                `Collision: ${objectCollision.object?.name || 'track object'}`
+              );
+            }
           } else {
             this.lastValidPlayerPosition
               .copy(
