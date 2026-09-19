@@ -29,18 +29,35 @@ export class RaceController {
       1,
       Math.floor(options.totalLaps ?? this.progress.totalLaps)
     );
-    this.progress.setCheckpoints(points);
+
+    // Point 0 is the authored start/finish. Racers spawn close to it, so using
+    // it as checkpoint zero would award progress before they have moved. Make
+    // the first target point 1 and require point 0 last to complete each lap.
+    const lapCheckpoints = count > 1
+      ? [...points.slice(1), points[0]]
+      : points;
+
+    this.progress.setCheckpoints(lapCheckpoints);
     this.opponentWaypointIndex = count > 1 ? 1 : 0;
     this.startedAtMs = null;
     this.completed = false;
     return count;
   }
 
+  get ready() {
+    return this.racingLine.length >= 2;
+  }
+
   start(nowMs = performance.now()) {
+    if (!this.ready) {
+      return false;
+    }
+
     this.progress.resetRace();
     this.opponentWaypointIndex = this.racingLine.length > 1 ? 1 : 0;
     this.startedAtMs = nowMs;
     this.completed = false;
+    return true;
   }
 
   get elapsedMs() {
@@ -49,7 +66,7 @@ export class RaceController {
   }
 
   getOpponentControls(car) {
-    if (!car || this.completed || this.racingLine.length < 2) {
+    if (!car || !this.ready || !Number.isFinite(this.startedAtMs) || this.completed) {
       return { throttle: 0, brake: 1, steering: 0 };
     }
 
@@ -62,8 +79,18 @@ export class RaceController {
     return getWaypointControls(car, target);
   }
 
+  // Convenience used by Three.js scenes: vehicle physics remains on the
+  // vehicle itself while the race controller decides the AI inputs.
+  driveOpponent(car, dt) {
+    const controls = this.getOpponentControls(car);
+    if (car?.drive && Number.isFinite(dt) && dt > 0) {
+      car.drive(controls.throttle, controls.brake, controls.steering, dt);
+    }
+    return controls;
+  }
+
   update(playerPosition, opponentPosition, elapsedMs = this.elapsedMs) {
-    if (this.racingLine.length === 0) return this.getSnapshot();
+    if (!this.ready || !Number.isFinite(this.startedAtMs)) return this.getSnapshot();
 
     this.progress.updateRacer(this.playerId, playerPosition, elapsedMs);
     this.progress.updateRacer(this.opponentId, opponentPosition, elapsedMs);
@@ -80,10 +107,12 @@ export class RaceController {
 
   getSnapshot() {
     return {
+      ready: this.ready,
       started: Number.isFinite(this.startedAtMs),
       completed: this.completed,
       winnerSide: this.getWinnerSide(),
       opponentWaypointIndex: this.opponentWaypointIndex,
+      racingLinePointCount: this.racingLine.length,
       ...this.progress.getSnapshot()
     };
   }
