@@ -45,6 +45,15 @@ export class RaceScene3D {
     this.trackRayOrigin = new THREE.Vector3();
     this.trackRayDirection = new THREE.Vector3(0, -1, 0);
 
+    this.pointerRaycaster = new THREE.Raycaster();
+    this.pointerNdc = new THREE.Vector2();
+
+    this.lastValidPlayerPosition =
+      new THREE.Vector3();
+
+    this.lastValidPlayerRotationY =
+      0;
+
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x8eb8ce);
 
@@ -284,9 +293,10 @@ export class RaceScene3D {
         line-height:1.55;
       ">
         <strong>Subaru Race Test</strong><br>
-        <strong>SETUP:</strong> orbit/pan/zoom with mouse · P place cars at view target<br>
+        <strong>SETUP:</strong> orbit/pan/zoom with mouse<br>
+        Double-click the road = place cars there · P = place at screen center<br>
         F refocus track · C toggle overview/driving · G save grid · R reset<br>
-        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · surface collision ON<br>
         Esc return home
         <div id="race-debug-status" style="
           margin-top:6px;
@@ -329,7 +339,10 @@ export class RaceScene3D {
         }
 
         if (event.code === 'KeyP') {
-          this.placeGridAtViewTarget();
+          this.placeGridFromCameraRay(
+            0,
+            0
+          );
         }
 
         if (event.code === 'KeyC') {
@@ -345,6 +358,53 @@ export class RaceScene3D {
       (event) => {
         this.keys.delete(
           event.code
+        );
+      };
+
+    this.handleDoubleClick =
+      (event) => {
+        if (
+          !this.setupMode ||
+          !this.trackRoot
+        ) {
+          return;
+        }
+
+        const rect =
+          this.renderer.domElement
+            .getBoundingClientRect();
+
+        const x =
+          (
+            (
+              event.clientX -
+              rect.left
+            ) /
+            Math.max(
+              1,
+              rect.width
+            )
+          ) *
+            2 -
+          1;
+
+        const y =
+          -(
+            (
+              event.clientY -
+              rect.top
+            ) /
+            Math.max(
+              1,
+              rect.height
+            )
+          ) *
+            2 +
+          1;
+
+        this.placeGridFromCameraRay(
+          x,
+          y
         );
       };
 
@@ -383,6 +443,12 @@ export class RaceScene3D {
       'resize',
       this.handleResize
     );
+
+    this.renderer.domElement
+      .addEventListener(
+        'dblclick',
+        this.handleDoubleClick
+      );
   }
 
   loadTrack() {
@@ -1023,36 +1089,179 @@ export class RaceScene3D {
     }
   }
 
-  placeGridAtViewTarget() {
+  isBackgroundLikeMesh(object) {
+    if (!object) {
+      return false;
+    }
+
+    const materialNames =
+      (
+        Array.isArray(
+          object.material
+        )
+          ? object.material
+          : [
+              object.material
+            ]
+      )
+        .map(
+          (material) =>
+            String(
+              material?.name ||
+              ''
+            )
+        )
+        .join(
+          ' '
+        );
+
+    const descriptor =
+      `${object.name || ''} ${materialNames}`
+        .toLowerCase();
+
+    return /sky|cloud|water|sea|ocean|background|dome/.test(
+      descriptor
+    );
+  }
+
+  choosePlacementHit(hits) {
     if (
-      !this.trackRoot ||
-      !this.controls
+      !hits ||
+      hits.length ===
+        0
+    ) {
+      return null;
+    }
+
+    const preferred =
+      hits.find(
+        (hit) =>
+          !this.isBackgroundLikeMesh(
+            hit.object
+          )
+      );
+
+    return preferred ??
+      hits[0];
+  }
+
+  placeGridFromCameraRay(
+    ndcX,
+    ndcY
+  ) {
+    if (
+      !this.trackRoot
     ) {
       return;
     }
 
-    const target =
-      this.controls.target.clone();
+    this.pointerNdc.set(
+      ndcX,
+      ndcY
+    );
 
-    const rayHeight =
-      Math.max(
-        this.trackSize.y * 2,
-        Math.max(
-          this.trackSize.x,
-          this.trackSize.z
-        ) * 0.25,
-        100
+    this.pointerRaycaster
+      .setFromCamera(
+        this.pointerNdc,
+        this.camera
       );
 
-    const rayBounds =
-      this.playableBounds ??
-      this.trackBounds;
+    const hits =
+      this.trackSurfaceObjects.length >
+        0
+        ? this.pointerRaycaster
+            .intersectObjects(
+              this.trackSurfaceObjects,
+              false
+            )
+        : this.pointerRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
+
+    const hit =
+      this.choosePlacementHit(
+        hits
+      );
+
+    if (!hit) {
+      this.setStatus(
+        'No track surface under pointer. Aim directly at a road and try again.'
+      );
+
+      return;
+    }
+
+    const cameraDirection =
+      this.camera.getWorldDirection(
+        new THREE.Vector3()
+      );
+
+    cameraDirection.y =
+      0;
+
+    if (
+      cameraDirection.lengthSq() <
+      0.0001
+    ) {
+      cameraDirection.set(
+        0,
+        0,
+        1
+      );
+    }
+
+    cameraDirection.normalize();
+
+    const spawn = {
+      x:
+        hit.point.x,
+      y:
+        hit.point.y +
+        0.04,
+      z:
+        hit.point.z,
+      yaw:
+        Math.atan2(
+          cameraDirection.x,
+          cameraDirection.z
+        )
+    };
+
+    this.setCarsFromSpawn(
+      spawn
+    );
+
+    this.controls.target.copy(
+      hit.point
+    );
+
+    this.controls.update();
+
+    this.setStatus(
+      `Grid preview on ${hit.object?.name || 'track surface'} · X ${spawn.x.toFixed(1)} Z ${spawn.z.toFixed(1)} · G saves`
+    );
+  }
+
+  findGroundHitForCar(
+    car
+  ) {
+    if (
+      !car ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    const rayHeight =
+      18;
 
     this.trackRayOrigin.set(
-      target.x,
-      rayBounds.max.y +
+      car.position.x,
+      car.position.y +
         rayHeight,
-      target.z
+      car.position.z
     );
 
     this.trackRaycaster.set(
@@ -1064,8 +1273,7 @@ export class RaceScene3D {
       0;
 
     this.trackRaycaster.far =
-      rayHeight * 3 +
-      this.trackSize.y;
+      45;
 
     const hits =
       this.trackSurfaceObjects.length >
@@ -1081,54 +1289,78 @@ export class RaceScene3D {
               true
             );
 
-    const groundY =
-      hits.length > 0
-        ? hits[0].point.y
-        : target.y;
+    const validHits =
+      hits.filter(
+        (hit) =>
+          !this.isBackgroundLikeMesh(
+            hit.object
+          )
+      );
 
-    const viewDirection =
-      target
-        .clone()
-        .sub(
-          this.camera.position
-        );
-
-    viewDirection.y =
-      0;
+    const candidates =
+      validHits.length >
+        0
+        ? validHits
+        : hits;
 
     if (
-      viewDirection.lengthSq() <
-      0.0001
+      candidates.length ===
+        0
     ) {
-      viewDirection.set(
-        0,
-        0,
-        1
-      );
+      return null;
     }
 
-    viewDirection.normalize();
+    let best =
+      candidates[0];
 
-    const yaw =
-      Math.atan2(
-        viewDirection.x,
-        viewDirection.z
+    let bestDelta =
+      Math.abs(
+        best.point.y -
+        car.position.y
       );
 
-    const spawn = {
-      x: target.x,
-      y: groundY + 0.05,
-      z: target.z,
-      yaw
-    };
+    for (
+      const hit
+      of candidates
+    ) {
+      const delta =
+        Math.abs(
+          hit.point.y -
+          car.position.y
+        );
 
-    this.setCarsFromSpawn(
-      spawn
-    );
+      if (
+        delta <
+        bestDelta
+      ) {
+        best =
+          hit;
 
-    this.setStatus(
-      `Grid preview at X ${spawn.x.toFixed(1)} Z ${spawn.z.toFixed(1)} · G saves it`
-    );
+        bestDelta =
+          delta;
+      }
+    }
+
+    return best;
+  }
+
+  snapCarToSurface(
+    car
+  ) {
+    const hit =
+      this.findGroundHitForCar(
+        car
+      );
+
+    if (!hit) {
+      return false;
+    }
+
+    car.position.y =
+      hit.point.y +
+      0.035;
+
+    return true;
   }
 
   setCarsFromSpawn(spawn) {
@@ -1178,6 +1410,22 @@ export class RaceScene3D {
 
     this.playerCar.speed = 0;
     this.opponentCar.speed = 0;
+
+    this.snapCarToSurface(
+      this.playerCar
+    );
+
+    this.snapCarToSurface(
+      this.opponentCar
+    );
+
+    this.lastValidPlayerPosition
+      .copy(
+        this.playerCar.position
+      );
+
+    this.lastValidPlayerRotationY =
+      this.playerCar.rotation.y;
   }
 
   applyInitialGrid(center, size) {
@@ -1210,19 +1458,29 @@ export class RaceScene3D {
   }
 
   saveGridFromPlayer() {
+    const midpoint =
+      this.playerCar.position
+        .clone()
+        .add(
+          this.opponentCar.position
+        )
+        .multiplyScalar(
+          0.5
+        );
+
     const value = {
       x:
-        this.playerCar.position.x + 2.1,
+        midpoint.x,
       y:
-        this.playerCar.position.y,
+        midpoint.y,
       z:
-        this.playerCar.position.z,
+        midpoint.z,
       yaw:
         this.playerCar.rotation.y
     };
 
     localStorage.setItem(
-      `racingLifeGrid:${this.session.trackId}`,
+      `racingLifeGrid:v2:${this.session.trackId}`,
       JSON.stringify(value)
     );
 
@@ -1235,7 +1493,7 @@ export class RaceScene3D {
     try {
       return JSON.parse(
         localStorage.getItem(
-          `racingLifeGrid:${this.session.trackId}`
+          `racingLifeGrid:v2:${this.session.trackId}`
         ) || 'null'
       );
     } catch {
@@ -1405,12 +1663,45 @@ export class RaceScene3D {
           this.readPlayerControls();
 
         if (!this.setupMode) {
+          const beforeMove =
+            this.playerCar.position
+              .clone();
+
+          const beforeRotation =
+            this.playerCar.rotation.y;
+
           this.playerCar.drive(
             input.throttle,
             input.brake,
             input.steering,
             dt
           );
+
+          const grounded =
+            this.snapCarToSurface(
+              this.playerCar
+            );
+
+          if (!grounded) {
+            this.playerCar.position
+              .copy(
+                beforeMove
+              );
+
+            this.playerCar.rotation.y =
+              beforeRotation;
+
+            this.playerCar.speed =
+              0;
+          } else {
+            this.lastValidPlayerPosition
+              .copy(
+                this.playerCar.position
+              );
+
+            this.lastValidPlayerRotationY =
+              this.playerCar.rotation.y;
+          }
 
           this.updateCamera();
           this.readStatus();
@@ -1461,6 +1752,12 @@ export class RaceScene3D {
       'resize',
       this.handleResize
     );
+
+    this.renderer?.domElement
+      ?.removeEventListener(
+        'dblclick',
+        this.handleDoubleClick
+      );
 
     if (
       this.renderer?.domElement
