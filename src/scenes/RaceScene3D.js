@@ -42,7 +42,18 @@ export class RaceScene3D {
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x8eb8ce);
-    this.scene.fog = new THREE.Fog(0x8eb8ce, 500, 5000);
+
+    // Keep a reusable driving fog, but disable it while we are in
+    // track-overview setup mode. Some downloaded circuits are several
+    // kilometres wide, so a fixed 5,000-unit fog distance can hide the
+    // entire venue even though the GLB loaded correctly.
+    this.drivingFog = new THREE.Fog(
+      0x8eb8ce,
+      500,
+      5000
+    );
+
+    this.scene.fog = null;
 
     this.camera = new THREE.PerspectiveCamera(
       58,
@@ -564,6 +575,10 @@ export class RaceScene3D {
     this.controls.enabled =
       true;
 
+    // Overview must stay clear regardless of map size.
+    this.scene.fog =
+      null;
+
     this.controls.update();
 
     this.setupMode =
@@ -588,6 +603,28 @@ export class RaceScene3D {
         'Overview mode · orbit/pan with mouse · P places grid at view target'
       );
     } else {
+      const mapRadius =
+        Math.max(
+          this.trackSize.x,
+          this.trackSize.z,
+          100
+        );
+
+      this.drivingFog.near =
+        Math.max(
+          500,
+          mapRadius * 0.10
+        );
+
+      this.drivingFog.far =
+        Math.max(
+          5000,
+          mapRadius * 1.75
+        );
+
+      this.scene.fog =
+        this.drivingFog;
+
       this.updateCamera(
         true
       );
