@@ -42,7 +42,10 @@ export class MatchManager {
     };
   }
 
-  recordResult(winnerSide) {
+  // `details` is intentionally optional so existing callers remain valid.
+  // RaceScene3D/RaceController can attach lap, finish-time and racer metadata
+  // without MatchManager needing to know about Three.js or checkpoint state.
+  recordResult(winnerSide, details = {}) {
     if (this.completed) {
       return this.getSummary();
     }
@@ -55,12 +58,16 @@ export class MatchManager {
       throw new Error('winnerSide must be "A" or "B".');
     }
 
+    const raceNumber = this.currentRaceIndex + 1;
+    const trackId = this.trackOrder[this.currentRaceIndex];
+
     this.results.push({
-      raceNumber: this.currentRaceIndex + 1,
-      trackId: this.trackOrder[this.currentRaceIndex],
+      raceNumber,
+      trackId,
       winnerSide,
       scoreA: this.scoreA,
-      scoreB: this.scoreB
+      scoreB: this.scoreB,
+      ...details
     });
 
     if (
@@ -96,7 +103,7 @@ export class MatchManager {
               ? 'B'
               : null
           : null,
-      results: [...this.results]
+      results: this.results.map((result) => ({ ...result }))
     };
   }
 }
