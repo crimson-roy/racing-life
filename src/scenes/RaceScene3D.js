@@ -891,6 +891,17 @@ export class RaceScene3D {
         object
       );
 
+    // Decorative/helper meshes from imported scenes should never block cars.
+    // Barcelona contains anti-flickering pivot meshes that sit around walls
+    // and were being mistaken for real collision geometry.
+    if (
+      /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder|collision[_\s-]?helper/.test(
+        descriptor
+      )
+    ) {
+      return false;
+    }
+
     const explicitObstacle =
       /building|house|wall|barrier|guard|rail|fence|tree|pole|lamp|light|sign|bollard|gate|garage|stand|grandstand|bridge|column|pillar|container|crate/.test(
         descriptor
@@ -976,6 +987,30 @@ export class RaceScene3D {
           names
       }
     );
+
+    const helperColliders =
+      this.solidColliders
+        .filter(
+          ({ object }) =>
+            /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder/i.test(
+              this.getMeshDescriptor(
+                object
+              )
+            )
+        );
+
+    if (
+      helperColliders.length >
+        0
+    ) {
+      console.warn(
+        'RaceScene3D: unexpected helper colliders remain:',
+        helperColliders.map(
+          ({ object }) =>
+            object.name
+        )
+      );
+    }
   }
 
   circleOverlapsBoxXZ(
