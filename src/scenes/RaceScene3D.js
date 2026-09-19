@@ -28,6 +28,8 @@ export class RaceScene3D {
     this.keys = new Set();
     this.trackRoot = null;
     this.trackBounds = null;
+    this.playableBounds = null;
+    this.trackSurfaceObjects = [];
 
     // Development setup mode: show the entire imported venue first.
     // This prevents the camera from spawning somewhere useless before
@@ -417,13 +419,19 @@ export class RaceScene3D {
               this.trackRoot
             );
 
+        this.analyzePlayableGeometry();
+
+        const activeBounds =
+          this.playableBounds ??
+          this.trackBounds;
+
         const size =
-          this.trackBounds.getSize(
+          activeBounds.getSize(
             new THREE.Vector3()
           );
 
         const center =
-          this.trackBounds.getCenter(
+          activeBounds.getCenter(
             new THREE.Vector3()
           );
 
@@ -450,16 +458,30 @@ export class RaceScene3D {
               y: size.y,
               z: size.z
             },
-            min: {
+            fullMin: {
               x: this.trackBounds.min.x,
               y: this.trackBounds.min.y,
               z: this.trackBounds.min.z
             },
-            max: {
+            fullMax: {
               x: this.trackBounds.max.x,
               y: this.trackBounds.max.y,
               z: this.trackBounds.max.z
-            }
+            },
+            playableMin: this.playableBounds
+              ? {
+                  x: this.playableBounds.min.x,
+                  y: this.playableBounds.min.y,
+                  z: this.playableBounds.min.z
+                }
+              : null,
+            playableMax: this.playableBounds
+              ? {
+                  x: this.playableBounds.max.x,
+                  y: this.playableBounds.max.y,
+                  z: this.playableBounds.max.z
+                }
+              : null
           }
         );
 
@@ -517,21 +539,161 @@ export class RaceScene3D {
     );
   }
 
-  frameTrackOverview() {
+  analyzePlayableGeometry() {
     if (
+      !this.trackRoot ||
       !this.trackBounds ||
       this.trackBounds.isEmpty()
     ) {
       return;
     }
 
+    const fullSize =
+      this.trackBounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const candidates = [];
+    const excluded = [];
+
+    this.trackRoot.traverse(
+      (object) => {
+        if (!object.isMesh) {
+          return;
+        }
+
+        const box =
+          new THREE.Box3()
+            .setFromObject(
+              object
+            );
+
+        if (box.isEmpty()) {
+          return;
+        }
+
+        const size =
+          box.getSize(
+            new THREE.Vector3()
+          );
+
+        const coversMostOfMap =
+          size.x >=
+            fullSize.x * 0.72 &&
+          size.z >=
+            fullSize.z * 0.72;
+
+        if (coversMostOfMap) {
+          excluded.push({
+            name:
+              object.name ||
+              '(unnamed mesh)',
+            x:
+              Number(
+                size.x.toFixed(1)
+              ),
+            y:
+              Number(
+                size.y.toFixed(1)
+              ),
+            z:
+              Number(
+                size.z.toFixed(1)
+              )
+          });
+
+          return;
+        }
+
+        candidates.push({
+          object,
+          box
+        });
+      }
+    );
+
+    if (
+      candidates.length ===
+      0
+    ) {
+      this.playableBounds =
+        this.trackBounds.clone();
+
+      this.trackSurfaceObjects =
+        [];
+
+      return;
+    }
+
+    const playable =
+      new THREE.Box3();
+
+    playable.makeEmpty();
+
+    for (
+      const candidate
+      of candidates
+    ) {
+      playable.union(
+        candidate.box
+      );
+    }
+
+    const playableSize =
+      playable.getSize(
+        new THREE.Vector3()
+      );
+
+    const usable =
+      !playable.isEmpty() &&
+      playableSize.x >
+        fullSize.x * 0.05 &&
+      playableSize.z >
+        fullSize.z * 0.05;
+
+    this.playableBounds =
+      usable
+        ? playable
+        : this.trackBounds.clone();
+
+    this.trackSurfaceObjects =
+      usable
+        ? candidates.map(
+            (entry) =>
+              entry.object
+          )
+        : [];
+
+    console.log(
+      'RaceScene3D: excluded huge background meshes from setup bounds.',
+      excluded
+    );
+
+    console.log(
+      'RaceScene3D: playable geometry meshes:',
+      this.trackSurfaceObjects.length
+    );
+  }
+
+  frameTrackOverview() {
+    const bounds =
+      this.playableBounds ??
+      this.trackBounds;
+
+    if (
+      !bounds ||
+      bounds.isEmpty()
+    ) {
+      return;
+    }
+
     const center =
-      this.trackBounds.getCenter(
+      bounds.getCenter(
         new THREE.Vector3()
       );
 
     const size =
-      this.trackBounds.getSize(
+      bounds.getSize(
         new THREE.Vector3()
       );
 
@@ -656,9 +818,13 @@ export class RaceScene3D {
         100
       );
 
+    const rayBounds =
+      this.playableBounds ??
+      this.trackBounds;
+
     this.trackRayOrigin.set(
       target.x,
-      this.trackBounds.max.y +
+      rayBounds.max.y +
         rayHeight,
       target.z
     );
@@ -676,11 +842,18 @@ export class RaceScene3D {
       this.trackSize.y;
 
     const hits =
-      this.trackRaycaster
-        .intersectObject(
-          this.trackRoot,
-          true
-        );
+      this.trackSurfaceObjects.length >
+        0
+        ? this.trackRaycaster
+            .intersectObjects(
+              this.trackSurfaceObjects,
+              false
+            )
+        : this.trackRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
 
     const groundY =
       hits.length > 0
@@ -788,9 +961,11 @@ export class RaceScene3D {
     const spawn = saved ?? {
       x: center.x,
       y:
-        this.trackBounds
-          ? this.trackBounds.min.y + 1
-          : center.y + Math.max(0.6, size.y * 0.02),
+        this.playableBounds
+          ? this.playableBounds.min.y + 1
+          : this.trackBounds
+            ? this.trackBounds.min.y + 1
+            : center.y + Math.max(0.6, size.y * 0.02),
       z: center.z,
       yaw: 0
     };
