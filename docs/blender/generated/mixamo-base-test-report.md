@@ -4,7 +4,7 @@
 - Blender: **5.2.0 LTS**
 - Source Mixamo asset: **Surprise Uppercut.fbx**
 - Prototype target: **male_base_mesh.glb**
-- Strategy: **rebind-prototype-to-canonical-mixamo-skeleton**
+- Strategy: **reuse-prototype-skin-weights-on-canonical-mixamo-skeleton**
 
 ## Alignment
 
@@ -16,8 +16,9 @@
 ## Binding
 
 - Meshes found: 2
-- Meshes rebound: 1
-- Meshes left unbound: 1
+- Weighted meshes remapped: 1
+- Rigid helper meshes attached: 1
+- Meshes left unbound: 0
 - Mesh names: mesh, Icosphere
 
 ## Animation

@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T08:42:42.185414+00:00",
+  "generated_at_utc": "2026-09-20T08:54:47.249725+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
-  "strategy": "rebind-prototype-to-canonical-mixamo-skeleton",
+  "strategy": "reuse-prototype-skin-weights-on-canonical-mixamo-skeleton",
   "status": "ok",
   "alignment": {
     "source_height": 0.083266,
@@ -14,8 +14,9 @@
   },
   "binding": {
     "mesh_count": 2,
-    "bound_count": 1,
-    "unbound_count": 1,
+    "weighted_mesh_count": 1,
+    "rigid_mesh_count": 1,
+    "unbound_count": 0,
     "meshes": [
       "mesh",
       "Icosphere"
@@ -24,23 +25,29 @@
       {
         "mesh": "mesh",
         "vertices": 1226,
-        "method": "automatic",
-        "status": "bound",
-        "vertex_groups": 65
+        "status": "weight-groups-remapped",
+        "mapped_groups": 52,
+        "unmapped_groups": [
+          "pelvis.L",
+          "heel.02.L",
+          "pelvis.R",
+          "heel.02.R"
+        ],
+        "method": "reuse-prototype-skin-weights",
+        "vertex_groups": 56
       },
       {
         "mesh": "Icosphere",
         "vertices": 42,
-        "method": null,
-        "status": "unbound",
-        "vertex_groups": 0,
-        "error": "envelope produced no usable armature binding (modifiers=0, groups=0)"
+        "status": "rigid-bone-parent",
+        "mapped_groups": 0,
+        "unmapped_groups": [],
+        "method": "nearest-body-bone",
+        "canonical_bone": "hips",
+        "source_bone": "mixamorig:Hips",
+        "distance": 0.031353
       }
-    ],
-    "vertex_group_counts": {
-      "mesh": 65,
-      "Icosphere": 0
-    }
+    ]
   },
   "runtime_test_asset": "/assets/characters/retarget-tests/surprise-uppercut-prototype.glb",
   "output_glb": "mixamo-base-test/prototype_mixamo_uppercut.glb",
