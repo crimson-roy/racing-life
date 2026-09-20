@@ -216,9 +216,8 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     target_height = skeleton_height_world(target_arm)
     translation_scale = target_height / source_height if source_height > 1e-8 else 1.0
 
-    # First-pass production-safe set: body + hands + toe bases.
-    # Finger chains are deliberately excluded for now because the source
-    # and target finger rigs differ in detail and were amplifying errors.
+    # Validate the body first. Finger chains stay passive and simply follow
+    # their animated hand parent until the major body mapping is correct.
     body_canonicals = {
         "hips", "spine", "spine1", "spine2", "neck", "head",
         "leftshoulder", "leftarm", "leftforearm", "lefthand",
@@ -239,21 +238,63 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
 
     source_rest_local = {}
     target_rest_local = {}
+    correction_rotations = {}
+    correction_report = []
 
     for canonical in mapped:
         source_bone = source_arm.data.bones[source_map[canonical]]
         target_bone = target_arm.data.bones[target_map[canonical]]
 
-        source_rest_local[canonical] = (
+        source_local = (
             source_bone.parent.matrix_local.inverted() @ source_bone.matrix_local
             if source_bone.parent
             else source_bone.matrix_local.copy()
         )
-        target_rest_local[canonical] = (
+        target_local = (
             target_bone.parent.matrix_local.inverted() @ target_bone.matrix_local
             if target_bone.parent
             else target_bone.matrix_local.copy()
         )
+
+        source_rest_local[canonical] = source_local
+        target_rest_local[canonical] = target_local
+
+        source_rest_rot = source_local.to_quaternion()
+        target_rest_rot = target_local.to_quaternion()
+
+        # C maps a vector expressed in SOURCE bone-local axes into the
+        # equivalent TARGET bone-local axes:
+        #
+        #   v_target = C * v_source
+        #   C = inverse(target_rest) * source_rest
+        #
+        # Animation rotations therefore need a basis-change conjugation:
+        #
+        #   A_target = C * A_source * inverse(C)
+        #
+        # before being applied on top of the target rest transform.
+        correction = (
+            target_rest_rot.inverted()
+            @ source_rest_rot
+        ).normalized()
+
+        correction_rotations[canonical] = correction
+
+        correction_report.append({
+            "bone": canonical,
+            "source_bone": source_map[canonical],
+            "target_bone": target_map[canonical],
+            "quaternion_wxyz": [
+                round(float(correction.w), 8),
+                round(float(correction.x), 8),
+                round(float(correction.y), 8),
+                round(float(correction.z), 8),
+            ],
+            "angle_degrees": round(
+                math.degrees(float(correction.angle)),
+                4,
+            ),
+        })
 
     for frame in range(int(frame_start), int(frame_end) + 1):
         scene.frame_set(frame)
@@ -271,28 +312,29 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
                 else source_pose.matrix.copy()
             )
 
-            # Animation delta in the SOURCE bone's own parent-local rest frame.
-            source_delta = (
-                source_rest_local[canonical].inverted()
-                @ source_pose_local
-            )
+            source_rest = source_rest_local[canonical]
+            target_rest = target_rest_local[canonical]
 
-            # Keep only rotation for normal joints so the target keeps its own
-            # proportions. Root/hips also receives scaled translation.
-            delta_rotation = source_delta.to_quaternion()
-            # Keep the prototype in place during body-retarget validation.
-            # The imported Surprise Uppercut FBX uses a very different unit
-            # scale, and its root translation was sending the target more than
-            # 100 world units away from the viewer. Root locomotion will be
-            # reintroduced only after the rotational retarget is visually sane.
-            delta_translation = Vector((0.0, 0.0, 0.0))
+            # Extract the animation rotation relative to the source rest pose.
+            source_delta_matrix = source_rest.inverted() @ source_pose_local
+            source_delta_rotation = source_delta_matrix.to_quaternion().normalized()
 
-            delta_matrix = delta_rotation.to_matrix().to_4x4()
-            delta_matrix.translation = delta_translation
+            # Convert the animation delta from source bone axes to target bone
+            # axes using the permanent per-bone correction quaternion.
+            correction = correction_rotations[canonical]
+            target_delta_rotation = (
+                correction
+                @ source_delta_rotation
+                @ correction.inverted()
+            ).normalized()
 
-            # Apply the source local animation delta to the TARGET's own rest
-            # transform, then rebuild the target pose down its hierarchy.
-            desired_local = target_rest_local[canonical] @ delta_matrix
+            # Root translation remains disabled during body validation because
+            # this FBX uses very different units and previously launched the
+            # prototype more than 100 world units away.
+            target_delta = target_delta_rotation.to_matrix().to_4x4()
+            target_delta.translation = Vector((0.0, 0.0, 0.0))
+
+            desired_local = target_rest @ target_delta
 
             if target_pose.parent:
                 desired_armature = target_pose.parent.matrix @ desired_local
@@ -310,6 +352,8 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
             )
 
             if canonical == "hips":
+                # Explicitly bake a fixed root location so any imported root
+                # translation channels cannot sneak back into the GLB.
                 target_pose.keyframe_insert(
                     data_path="location",
                     frame=frame,
@@ -367,9 +411,10 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
         "mapped_count": len(mapped),
         "translation_scale": round(float(translation_scale), 6),
         "action_name": action.name,
-        "rotation_method": "parent_local_rest_delta",
+        "rotation_method": "per-bone-rest-basis-conjugation",
         "root_translation_method": "locked-in-place-for-body-validation",
         "finger_transfer": "disabled-for-body-validation",
+        "corrections": correction_report,
         "sample_frames": sample_frames,
         "moving_bone_count": len(moving_bones),
         "moving_bones": moving_bones,
