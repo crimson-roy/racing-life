@@ -2,6 +2,7 @@ import { RaceScene3D as BaseRaceScene3D } from './RaceScene3DLegacy.js';
 import { RaceRuntime } from '../racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../racing/RaceSceneRuntimeBridge.js';
 import { getActiveMatchManager } from '../racing/MatchManager.js';
+import { applyRaceResult } from '../state/careerState.js';
 
 // P0 integration layer around the established Three.js race scene. The base
 // scene remains responsible for Barcelona placement, collision and chase
@@ -11,7 +12,9 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     super(options);
 
     this.matchManager = options.matchManager ?? getActiveMatchManager();
-    this.applyCareerResult = options.applyCareerResult ?? null;
+    // Keep reward/progression rules owned by careerState. Tests or future
+    // authoritative sessions can still inject a different sink explicitly.
+    this.applyCareerResult = options.applyCareerResult ?? applyRaceResult;
     this.onRaceCompletion = options.onRaceCompletion ?? null;
     this.raceSessionCompleted = false;
 
