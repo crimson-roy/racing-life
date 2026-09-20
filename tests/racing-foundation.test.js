@@ -105,7 +105,21 @@ test('RaceSession commits one completed 1v1 result into MatchManager only when f
   assert.equal(summary.results[0].trackId, 'barcelona');
   assert.equal(summary.results[0].source, 'p0-test');
   assert.deepEqual(summary.results[0].finishOrder, ['player']);
-  assert.deepEqual(createCareerRaceResult(controller), { finished: true, lapsCompleted: 1, totalLaps: 1 });
+
+  const career = createCareerRaceResult(controller, {
+    trackId: 'barcelona',
+    raceNumber: 1
+  });
+  assert.equal(career.finished, true);
+  assert.equal(career.lapsCompleted, 1);
+  assert.equal(career.totalLaps, 1);
+  assert.equal(career.trackId, 'barcelona');
+  assert.equal(career.raceNumber, 1);
+  assert.equal(career.winnerSide, 'A');
+  assert.equal(career.classificationPosition, 1);
+  assert.equal(career.finishPosition, 1);
+  assert.deepEqual(career.classification, ['player', 'opponent']);
+  assert.deepEqual(career.finishOrder, ['player']);
 });
 
 test('TrackSetupStore migrates the existing v2 grid without losing it', () => {
@@ -196,9 +210,26 @@ test('RaceSceneRuntimeBridge commits match and career completion exactly once', 
   const opponent = carAt(100, 100);
   bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false });
   player.position = point(0, 0);
-  const first = bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false });
-  const second = bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false });
+  const first = bridge.update({
+    playerCar: player,
+    opponentCar: opponent,
+    dt: 1 / 60,
+    driveOpponent: false,
+    details: { raceNumber: 1 }
+  });
+  const second = bridge.update({
+    playerCar: player,
+    opponentCar: opponent,
+    dt: 1 / 60,
+    driveOpponent: false,
+    details: { raceNumber: 1 }
+  });
   assert.equal(first.completion.winnerSide, 'A');
+  assert.equal(first.completion.raceNumber, 1);
+  assert.equal(first.completion.careerResult.trackId, 'barcelona');
+  assert.equal(first.completion.careerResult.raceNumber, 1);
+  assert.equal(first.completion.careerResult.classificationPosition, 1);
+  assert.deepEqual(first.completion.careerResult.classification, ['player', 'opponent']);
   assert.equal(second.completion, first.completion);
   assert.equal(match.getSummary().results.length, 1);
   assert.equal(careerResults.length, 1);
