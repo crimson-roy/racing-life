@@ -69,6 +69,9 @@ let model = null;
 let paused = false;
 let elapsed = 0;
 let clipDuration = 0;
+let clipName = '';
+let varyingTrackCount = 0;
+let totalTrackCount = 0;
 
 function normalizeAndGround(object) {
   object.updateMatrixWorld(true);
@@ -99,12 +102,18 @@ function updateStatus() {
   const time = action.time % clipDuration;
   status.textContent =
     'Playing · ' +
+    clipName +
+    ' · ' +
     time.toFixed(2) +
     ' / ' +
     clipDuration.toFixed(2) +
     ' s · ' +
     speed.value +
-    '×';
+    '× · tracks ' +
+    varyingTrackCount +
+    '/' +
+    totalTrackCount +
+    ' moving';
 }
 
 new GLTFLoader().load(
@@ -129,8 +138,56 @@ new GLTFLoader().load(
 
     mixer = new THREE.AnimationMixer(model);
 
-    const clip = gltf.animations[0];
+    const clip =
+      gltf.animations.find((candidate) =>
+        String(candidate.name || '').includes('RL_Retarget_Test')
+      ) ??
+      gltf.animations.find((candidate) =>
+        String(candidate.name || '').toLowerCase().includes('retarget')
+      ) ??
+      gltf.animations[0];
+
+    clipName = clip.name || 'unnamed clip';
     clipDuration = clip.duration;
+    totalTrackCount = clip.tracks.length;
+
+    varyingTrackCount = clip.tracks.filter((track) => {
+      const values = track.values;
+      const valueSize = track.getValueSize?.() || 1;
+
+      if (!values || values.length <= valueSize) {
+        return false;
+      }
+
+      for (let i = valueSize; i < values.length; i += 1) {
+        const baseIndex = i % valueSize;
+
+        if (Math.abs(values[i] - values[baseIndex]) > 1e-6) {
+          return true;
+        }
+      }
+
+      return false;
+    }).length;
+
+    console.log(
+      'Retarget test animations:',
+      gltf.animations.map((item) => ({
+        name: item.name,
+        duration: item.duration,
+        tracks: item.tracks.length
+      }))
+    );
+
+    console.log(
+      'Selected retarget clip:',
+      {
+        name: clipName,
+        duration: clipDuration,
+        totalTrackCount,
+        varyingTrackCount
+      }
+    );
 
     action = mixer.clipAction(clip);
     action.setLoop(THREE.LoopRepeat, Infinity);
@@ -139,10 +196,14 @@ new GLTFLoader().load(
 
     status.textContent =
       'Loaded · ' +
-      clip.name +
+      clipName +
       ' · ' +
       clip.duration.toFixed(2) +
-      ' s';
+      ' s · tracks ' +
+      varyingTrackCount +
+      '/' +
+      totalTrackCount +
+      ' moving';
   },
   undefined,
   (error) => {
