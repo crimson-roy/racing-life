@@ -139,3 +139,58 @@ The worker can now inspect, convert, scale-normalize, preview and batch-process 
 Those operations are deliberately separate because the inspected tester assets already contain both 33-bone and 65-bone Mixamo variants. Retargeting should use an explicit Racing Life target skeleton rather than assuming every Mixamo-looking file is identical.
 
 The next planned worker layer is target-rig validation and animation extraction/retargeting, followed by root-motion and loop cleanup.
+
+
+## Rig validation and animation extraction
+
+### validate-rig
+
+    RacingLife-Blender.bat validate-rig
+
+Checks the main humanoid skeleton in every FBX, including:
+
+- rig family clues
+- total bone count
+- root bones
+- Racing Life core-humanoid bone coverage
+- missing core bones
+- finger-bone detail
+- animation/action metadata
+- exact skeleton grouping
+
+This is structural validation only. It does not claim that every animation will retarget perfectly.
+
+### compare-skeletons
+
+    RacingLife-Blender.bat compare-skeletons
+
+Runs the rig validation above, then compares every successful skeleton pair. The report records:
+
+- exact bone-set matches
+- shared/union bone counts
+- full bone-set similarity
+- non-finger similarity
+- compatibility category
+- bones present in one rig but missing from the other
+
+The non-finger comparison is important for the currently inspected 33-bone and 65-bone Mixamo-style variants, because a reduced finger setup can still have a compatible core body skeleton.
+
+### extract-animation
+
+    RacingLife-Blender.bat extract-animation
+
+Extracts the primary armature and animation action from each FBX into a local animation-only GLB package under:
+
+    Blender\worker_output\extracted\
+
+The source FBX is not modified. The extracted package still contains the source skeleton because retargeting to a Racing Life target skeleton is intentionally a later step.
+
+Local rig reports:
+
+- Blender\worker_output\rig-report.json
+- Blender\worker_output\rig-report.md
+
+Published rig reports:
+
+- docs/blender/generated/rig-report.json
+- docs/blender/generated/rig-report.md
