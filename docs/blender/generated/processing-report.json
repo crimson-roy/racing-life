@@ -1,21 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T00:28:41.936346+00:00",
+  "generated_at_utc": "2026-09-20T00:31:21.955210+00:00",
   "blender_version": "5.2.0 LTS",
   "mode": "process",
   "target_height": 1.8,
   "summary": {
     "files": 9,
-    "ok": 0,
-    "errors": 9
+    "ok": 9,
+    "errors": 0
   },
   "assets": [
     {
       "source_file": "Gunplay.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Gunplay/Gunplay_normalized.glb"
+        "glb": "processed/Gunplay/Gunplay_normalized.glb",
+        "preview_start": "processed/Gunplay/Gunplay_preview_start.png",
+        "preview_mid": "processed/Gunplay/Gunplay_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -77,25 +79,16 @@
           0.895085
         ]
       },
-      "output_height": 1.8,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.8
     },
     {
       "source_file": "Rifle Run To Dying.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Rifle Run To Dying/Rifle Run To Dying_normalized.glb"
+        "glb": "processed/Rifle Run To Dying/Rifle Run To Dying_normalized.glb",
+        "preview_start": "processed/Rifle Run To Dying/Rifle Run To Dying_preview_start.png",
+        "preview_mid": "processed/Rifle Run To Dying/Rifle Run To Dying_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -157,25 +150,16 @@
           0.887884
         ]
       },
-      "output_height": 1.8,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.8
     },
     {
       "source_file": "Rockin' Shackle A.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Rockin' Shackle A/Rockin' Shackle A_normalized.glb"
+        "glb": "processed/Rockin' Shackle A/Rockin' Shackle A_normalized.glb",
+        "preview_start": "processed/Rockin' Shackle A/Rockin' Shackle A_preview_start.png",
+        "preview_mid": "processed/Rockin' Shackle A/Rockin' Shackle A_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -237,25 +221,16 @@
           0.885459
         ]
       },
-      "output_height": 1.8,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.8
     },
     {
       "source_file": "Rockin' Shackle B.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Rockin' Shackle B/Rockin' Shackle B_normalized.glb"
+        "glb": "processed/Rockin' Shackle B/Rockin' Shackle B_normalized.glb",
+        "preview_start": "processed/Rockin' Shackle B/Rockin' Shackle B_preview_start.png",
+        "preview_mid": "processed/Rockin' Shackle B/Rockin' Shackle B_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -317,25 +292,16 @@
           0.909883
         ]
       },
-      "output_height": 1.8,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.8
     },
     {
       "source_file": "Shooting Gun.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Shooting Gun/Shooting Gun_normalized.glb"
+        "glb": "processed/Shooting Gun/Shooting Gun_normalized.glb",
+        "preview_start": "processed/Shooting Gun/Shooting Gun_preview_start.png",
+        "preview_mid": "processed/Shooting Gun/Shooting Gun_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -397,25 +363,16 @@
           0.91097
         ]
       },
-      "output_height": 1.799999,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.799999
     },
     {
       "source_file": "Surprise Uppercut (1).fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Surprise Uppercut (1)/Surprise Uppercut (1)_normalized.glb"
+        "glb": "processed/Surprise Uppercut (1)/Surprise Uppercut (1)_normalized.glb",
+        "preview_start": "processed/Surprise Uppercut (1)/Surprise Uppercut (1)_preview_start.png",
+        "preview_mid": "processed/Surprise Uppercut (1)/Surprise Uppercut (1)_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -477,25 +434,16 @@
           0.885446
         ]
       },
-      "output_height": 1.800006,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.800006
     },
     {
       "source_file": "Surprise Uppercut (2).fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Surprise Uppercut (2)/Surprise Uppercut (2)_normalized.glb"
+        "glb": "processed/Surprise Uppercut (2)/Surprise Uppercut (2)_normalized.glb",
+        "preview_start": "processed/Surprise Uppercut (2)/Surprise Uppercut (2)_preview_start.png",
+        "preview_mid": "processed/Surprise Uppercut (2)/Surprise Uppercut (2)_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -557,25 +505,16 @@
           0.890228
         ]
       },
-      "output_height": 1.799999,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.799999
     },
     {
       "source_file": "Surprise Uppercut (3).fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Surprise Uppercut (3)/Surprise Uppercut (3)_normalized.glb"
+        "glb": "processed/Surprise Uppercut (3)/Surprise Uppercut (3)_normalized.glb",
+        "preview_start": "processed/Surprise Uppercut (3)/Surprise Uppercut (3)_preview_start.png",
+        "preview_mid": "processed/Surprise Uppercut (3)/Surprise Uppercut (3)_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -637,25 +576,16 @@
           0.890221
         ]
       },
-      "output_height": 1.799999,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.799999
     },
     {
       "source_file": "Surprise Uppercut.fbx",
       "mode": "process",
-      "status": "error",
+      "status": "ok",
       "outputs": {
-        "glb": "processed/Surprise Uppercut/Surprise Uppercut_normalized.glb"
+        "glb": "processed/Surprise Uppercut/Surprise Uppercut_normalized.glb",
+        "preview_start": "processed/Surprise Uppercut/Surprise Uppercut_preview_start.png",
+        "preview_mid": "processed/Surprise Uppercut/Surprise Uppercut_preview_mid.png"
       },
       "source_bounds": {
         "min": [
@@ -717,18 +647,7 @@
           0.885446
         ]
       },
-      "output_height": 1.800006,
-      "error": "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes",
-      "traceback_tail": [
-        "Traceback (most recent call last):",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
-        "    render_preview(start_path, meshes, start)",
-        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 273, in render_preview",
-        "    scene.world.color = (0.035, 0.035, 0.045)",
-        "    ^^^^^^^^^^^^^^^^^",
-        "AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes"
-      ]
+      "output_height": 1.800006
     }
   ]
 }
