@@ -70,17 +70,12 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     const opponentBefore = this.opponentCar.position.clone();
     const opponentYawBefore = this.opponentCar.rotation.y;
 
-    const { snapshot } = this.runtimeBridge.update({
-      playerCar: this.playerCar,
-      opponentCar: this.opponentCar,
-      dt,
-      driveOpponent: this.runtimeBridge.started,
-      details: {
-        raceNumber: this.session.raceNumber
-      }
-    });
-
+    // Drive the AI first, resolve the same scene collisions used by the player,
+    // and only then let RaceProgress inspect the accepted position. This keeps
+    // a rejected wall/sidewalk move from falsely ticking an AI checkpoint.
     if (this.runtimeBridge.started) {
+      this.raceRuntime.driveOpponent(this.opponentCar, dt);
+
       const grounded = this.snapCarToSurface(this.opponentCar);
       const swept = grounded
         ? this.getSweptVehicleCollision(this.opponentCar, opponentBefore)
@@ -98,6 +93,16 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
         this.opponentCar.speed = 0;
       }
     }
+
+    const { snapshot } = this.runtimeBridge.update({
+      playerCar: this.playerCar,
+      opponentCar: this.opponentCar,
+      dt,
+      driveOpponent: false,
+      details: {
+        raceNumber: this.session.raceNumber
+      }
+    });
 
     this.updateRaceHud(snapshot);
   }
