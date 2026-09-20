@@ -317,44 +317,103 @@ def canonical_pose_positions(armature, mapping, frame):
     return result
 
 
+def anatomical_coordinates(positions):
+    hips = Vector(positions.get("hips", [0.0, 0.0, 0.0]))
+    head = Vector(positions.get("head", [0.0, 0.0, 1.0]))
+    left_shoulder = Vector(positions.get("leftshoulder", [-1.0, 0.0, 0.0]))
+    right_shoulder = Vector(positions.get("rightshoulder", [1.0, 0.0, 0.0]))
+
+    up = head - hips
+    if up.length <= 1e-8:
+        up = Vector((0.0, 0.0, 1.0))
+    up.normalize()
+
+    right = right_shoulder - left_shoulder
+    right -= up * right.dot(up)
+    if right.length <= 1e-8:
+        right = Vector((1.0, 0.0, 0.0))
+    right.normalize()
+
+    forward = right.cross(up)
+    if forward.length <= 1e-8:
+        forward = Vector((0.0, 1.0, 0.0))
+    forward.normalize()
+
+    # Re-orthogonalize right so every rig is compared in its own
+    # anatomical frame instead of Blender/FBX world axes.
+    right = up.cross(forward)
+    right.normalize()
+
+    result = {}
+    for name, raw in positions.items():
+        relative = Vector(raw) - hips
+        result[name] = Vector((
+            relative.dot(right),
+            relative.dot(forward),
+            relative.dot(up),
+        ))
+    return result
+
+
 def normalized_pose_error(source_arm, target_arm, source_map, target_map, frame):
     source_positions = canonical_pose_positions(source_arm, source_map, frame)
     target_positions = canonical_pose_positions(target_arm, target_map, frame)
 
-    shared = sorted(set(source_positions) & set(target_positions))
+    source_coords = anatomical_coordinates(source_positions)
+    target_coords = anatomical_coordinates(target_positions)
+
+    shared = sorted(set(source_coords) & set(target_coords))
     source_height = skeleton_height_world(source_arm)
     target_height = skeleton_height_world(target_arm)
 
-    source_hips = Vector(source_positions.get("hips", [0.0, 0.0, 0.0]))
-    target_hips = Vector(target_positions.get("hips", [0.0, 0.0, 0.0]))
-
     bones = []
     distances = []
+    core_distances = []
+    hand_distances = []
+
     for canonical in shared:
-        source_relative = (
-            Vector(source_positions[canonical]) - source_hips
-        ) / max(source_height, 1e-8)
-        target_relative = (
-            Vector(target_positions[canonical]) - target_hips
-        ) / max(target_height, 1e-8)
+        source_relative = source_coords[canonical] / max(source_height, 1e-8)
+        target_relative = target_coords[canonical] / max(target_height, 1e-8)
 
         distance = float((source_relative - target_relative).length)
         distances.append(distance)
+
+        is_hand_detail = (
+            "hand" in canonical
+            and canonical not in {"lefthand", "righthand"}
+        )
+        if canonical in {
+            "hips", "spine", "spine1", "spine2", "neck", "head",
+            "leftshoulder", "leftarm", "leftforearm", "lefthand",
+            "rightshoulder", "rightarm", "rightforearm", "righthand",
+            "leftupleg", "leftleg", "leftfoot",
+            "rightupleg", "rightleg", "rightfoot",
+        }:
+            core_distances.append(distance)
+        elif is_hand_detail:
+            hand_distances.append(distance)
+
         bones.append({
             "bone": canonical,
-            "source_relative": [round(float(v), 5) for v in source_relative],
-            "target_relative": [round(float(v), 5) for v in target_relative],
+            "source_anatomical": [round(float(v), 5) for v in source_relative],
+            "target_anatomical": [round(float(v), 5) for v in target_relative],
             "normalized_position_error": round(distance, 5),
         })
+
+    def stats(values):
+        return {
+            "mean": round(sum(values) / len(values), 5) if values else None,
+            "max": round(max(values), 5) if values else None,
+            "count": len(values),
+        }
 
     return {
         "frame": int(frame),
         "shared_bones": len(shared),
-        "mean_normalized_position_error": round(
-            sum(distances) / len(distances),
-            5,
-        ) if distances else None,
-        "max_normalized_position_error": round(max(distances), 5) if distances else None,
+        "coordinate_space": "anatomical-facing-normalized",
+        "all_joints": stats(distances),
+        "core_body": stats(core_distances),
+        "finger_detail": stats(hand_distances),
         "bones": bones,
     }
 
@@ -577,10 +636,10 @@ def markdown(report):
 
     for snapshot in report.get("pose_diagnostics", {}).get("snapshots", []):
         lines.append(
-            "- Frame {}: mean normalized joint error {}, max {}".format(
+            "- Frame {}: core-body mean error {}, max {}".format(
                 snapshot.get("frame"),
-                snapshot.get("mean_normalized_position_error"),
-                snapshot.get("max_normalized_position_error"),
+                snapshot.get("core_body", {}).get("mean"),
+                snapshot.get("core_body", {}).get("max"),
             )
         )
 
@@ -742,6 +801,21 @@ def main():
         preview_end = out_dir / "preview_end.png"
 
         export_target_glb(glb_path, target_objects, target_arm)
+
+        runtime_dir = (
+            repo_root
+            / "public"
+            / "assets"
+            / "characters"
+            / "retarget-tests"
+        )
+        runtime_dir.mkdir(parents=True, exist_ok=True)
+        runtime_glb = runtime_dir / "surprise-uppercut-prototype.glb"
+        shutil.copy2(glb_path, runtime_glb)
+        report["runtime_test_asset"] = (
+            "/assets/characters/retarget-tests/"
+            "surprise-uppercut-prototype.glb"
+        )
 
         render_preview(preview_start, target_objects, frame_start)
         render_preview(preview_mid, target_objects, middle_frame)
