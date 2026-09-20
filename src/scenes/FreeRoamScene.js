@@ -705,7 +705,12 @@ this.subaruDriverDoorAnimating =
   // FreeRoamScene controls horizontal travel with the extracted
   // mocap pacing curve. Keep the animation's vertical Hips motion
   // so crouching / sitting still comes from the authored clip.
-  inPlace: true
+  inPlace: true,
+
+  // Entering Car.glb contains a baked Hips X/Z start offset.
+  // Zero only that horizontal offset so the visible body begins
+  // exactly where the FreeRoam driver-door anchor places it.
+  zeroHorizontalRoot: true
 };
 
 this.drivingEmote = {
