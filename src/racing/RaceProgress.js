@@ -167,6 +167,21 @@ export class RaceProgress {
     };
   }
 
+  getDistanceToNextCheckpointSq(state) {
+    if (
+      state.finished ||
+      !state.previousPosition ||
+      this.checkpoints.length === 0
+    ) {
+      return state.finished ? 0 : Number.POSITIVE_INFINITY;
+    }
+
+    const checkpoint = this.checkpoints[state.nextCheckpoint];
+    return checkpoint
+      ? distanceSqXZ(state.previousPosition, checkpoint)
+      : Number.POSITIVE_INFINITY;
+  }
+
   getLeaderBoard() {
     return [...this.racers.values()]
       .map((state) => ({
@@ -180,7 +195,18 @@ export class RaceProgress {
         if (a.finished && b.finished) {
           return a.finishPosition - b.finishPosition;
         }
-        return b.checkpointsPassed - a.checkpointsPassed;
+
+        // Ordered checkpoint count is authoritative. When two racers have
+        // passed the same number, rank the one closer to the same next target
+        // ahead so the live HUD/result classification is deterministic and
+        // useful instead of falling back to registration order.
+        const checkpointDelta = b.checkpointsPassed - a.checkpointsPassed;
+        if (checkpointDelta !== 0) return checkpointDelta;
+
+        return (
+          this.getDistanceToNextCheckpointSq(a) -
+          this.getDistanceToNextCheckpointSq(b)
+        );
       });
   }
 
