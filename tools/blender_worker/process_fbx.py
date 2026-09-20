@@ -227,7 +227,7 @@ def create_preview_camera(meshes):
     max_v = Vector(bounds["max"])
     center = (min_v + max_v) * 0.5
     size = max_v - min_v
-    radius = max(size.length() * 0.5, 0.5)
+    radius = max(size.length * 0.5, 0.5)
 
     camera_data = bpy.data.cameras.new("RLPreviewCamera")
     camera = bpy.data.objects.new("RLPreviewCamera", camera_data)
