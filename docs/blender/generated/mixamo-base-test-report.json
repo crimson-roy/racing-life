@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T08:54:47.249725+00:00",
+  "generated_at_utc": "2026-09-20T09:01:29.053140+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
-  "strategy": "reuse-prototype-skin-weights-on-canonical-mixamo-skeleton",
+  "strategy": "bake-prototype-bind-pose-to-mixamo-rest-and-reuse-skin-weights",
   "status": "ok",
   "alignment": {
     "source_height": 0.083266,
@@ -25,23 +25,25 @@
       {
         "mesh": "mesh",
         "vertices": 1226,
-        "status": "weight-groups-remapped",
-        "mapped_groups": 52,
-        "unmapped_groups": [
-          "pelvis.L",
-          "heel.02.L",
-          "pelvis.R",
-          "heel.02.R"
-        ],
-        "method": "reuse-prototype-skin-weights",
-        "vertex_groups": 56
+        "status": "rest-pose-baked-and-remapped",
+        "rest_pose_bake": {
+          "vertices": 1226,
+          "vertices_reposed": 1226,
+          "max_world_vertex_move": 0.306379,
+          "unmapped_weight_total": 0.0
+        },
+        "group_remap": {
+          "mapped_group_count": 52,
+          "removed_unmapped_groups": [],
+          "remaining_group_count": 52
+        },
+        "method": "prototype-weights-plus-rest-pose-geometry-transfer",
+        "vertex_groups": 52
       },
       {
         "mesh": "Icosphere",
         "vertices": 42,
         "status": "rigid-bone-parent",
-        "mapped_groups": 0,
-        "unmapped_groups": [],
         "method": "nearest-body-bone",
         "canonical_bone": "hips",
         "source_bone": "mixamorig:Hips",

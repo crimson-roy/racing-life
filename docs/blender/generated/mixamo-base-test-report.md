@@ -4,7 +4,7 @@
 - Blender: **5.2.0 LTS**
 - Source Mixamo asset: **Surprise Uppercut.fbx**
 - Prototype target: **male_base_mesh.glb**
-- Strategy: **reuse-prototype-skin-weights-on-canonical-mixamo-skeleton**
+- Strategy: **bake-prototype-bind-pose-to-mixamo-rest-and-reuse-skin-weights**
 
 ## Alignment
 
