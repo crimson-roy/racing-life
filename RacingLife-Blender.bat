@@ -19,6 +19,7 @@ rem   RacingLife-Blender.bat extract-animation
 rem   RacingLife-Blender.bat inspect-target
 rem   RacingLife-Blender.bat retarget-test
 rem   RacingLife-Blender.bat mixamo-base-test
+rem   RacingLife-Blender.bat inspect-mixamo-player
 rem
 rem Optional:
 rem   add a folder path to use it instead of Blender\worker_input
@@ -98,6 +99,11 @@ if /I "%~1"=="mixamo-base-test" (
     shift
     goto parse_args
 )
+if /I "%~1"=="inspect-mixamo-player" (
+    set "MODE=inspect-mixamo-player"
+    shift
+    goto parse_args
+)
 if /I "%~1"=="--local-only" (
     set "LOCAL_ONLY=1"
     shift
@@ -110,6 +116,41 @@ shift
 goto parse_args
 
 :args_done
+
+if /I "%MODE%"=="inspect-mixamo-player" (
+    set "FOUND_MIXAMO_PLAYER="
+
+    if exist "%REPO_ROOT%\Blender\inspect-target\MixamoPlayer.glb" (
+        set "FOUND_MIXAMO_PLAYER=%REPO_ROOT%\Blender\inspect-target\MixamoPlayer.glb"
+    )
+
+    if not defined FOUND_MIXAMO_PLAYER (
+        if exist "%REPO_ROOT%\Blender\worker_input\inspect-target\MixamoPlayer.glb" (
+            set "FOUND_MIXAMO_PLAYER=%REPO_ROOT%\Blender\worker_input\inspect-target\MixamoPlayer.glb"
+        )
+    )
+
+    if not defined FOUND_MIXAMO_PLAYER (
+        for /r "%REPO_ROOT%" %%F in (MixamoPlayer.glb) do (
+            if not defined FOUND_MIXAMO_PLAYER set "FOUND_MIXAMO_PLAYER=%%~fF"
+        )
+    )
+
+    if not defined FOUND_MIXAMO_PLAYER (
+        echo.
+        echo ============================================================
+        echo MIXAMOPLAYER.GLB NOT FOUND
+        echo ============================================================
+        echo Put MixamoPlayer.glb anywhere inside the Racing Life repo,
+        echo preferably:
+        echo   %REPO_ROOT%\Blender\inspect-target\MixamoPlayer.glb
+        echo.
+        pause
+        exit /b 10
+    )
+
+    set "TARGET_RIG=%FOUND_MIXAMO_PLAYER%"
+)
 
 if not exist "%INPUT_DIR%" mkdir "%INPUT_DIR%"
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
@@ -208,6 +249,9 @@ echo Output:
 echo   %OUTPUT_DIR%
 if /I "%MODE%"=="normalize" echo Target height: %TARGET_HEIGHT%m
 if /I "%MODE%"=="process" echo Target height: %TARGET_HEIGHT%m
+if /I "%MODE%"=="inspect-target" echo Target rig: %TARGET_RIG%
+if /I "%MODE%"=="inspect-mixamo-player" echo Target rig: %TARGET_RIG%
+if /I "%MODE%"=="mixamo-base-test" echo Target rig: %TARGET_RIG%
 echo ============================================================
 echo.
 
@@ -261,6 +305,14 @@ if /I "%MODE%"=="inspect" (
         pause
         exit /b 7
     )
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\target_rig.py" -- ^
+      --input "%INPUT_DIR%" ^
+      --target "%TARGET_RIG%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      %PUBLISH_ARG%
+) else if /I "%MODE%"=="inspect-mixamo-player" (
     "%BLENDER_EXE%" --background --factory-startup ^
       --python "%REPO_ROOT%\tools\blender_worker\target_rig.py" -- ^
       --input "%INPUT_DIR%" ^
@@ -359,6 +411,10 @@ if "%EXIT_CODE%"=="0" (
         echo   %OUTPUT_DIR%\extracted\
     ) else if /I "%MODE%"=="inspect-target" (
         echo Target rig reports:
+        echo   %OUTPUT_DIR%\target-rig-report.json
+        echo   %OUTPUT_DIR%\target-rig-report.md
+    ) else if /I "%MODE%"=="inspect-mixamo-player" (
+        echo MixamoPlayer target report:
         echo   %OUTPUT_DIR%\target-rig-report.json
         echo   %OUTPUT_DIR%\target-rig-report.md
     ) else if /I "%MODE%"=="retarget-test" (
