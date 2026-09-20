@@ -5,6 +5,141 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MixamoPlayer } from '../characters/MixamoPlayer.js';
 import { WesternBagger } from '../vehicles/WesternBagger.js';
 
+// ============================================================
+// ENTER-CAR ROOT PACING
+// ============================================================
+// Extracted from Entering Car.glb's Hips translation track.
+// This drives world-space player movement while the animation
+// itself keeps only its vertical Hips motion.
+const ENTER_CAR_PROGRESS_CURVE = [
+  { t: 0.0061, progress: 0.0000 },
+  { t: 0.0485, progress: 0.0298 },
+  { t: 0.0909, progress: 0.1166 },
+  { t: 0.1333, progress: 0.2402 },
+  { t: 0.1758, progress: 0.3060 },
+  { t: 0.2182, progress: 0.3400 },
+  { t: 0.2606, progress: 0.3618 },
+  { t: 0.3030, progress: 0.3874 },
+  { t: 0.3515, progress: 0.4304 },
+  { t: 0.3939, progress: 0.5325 },
+  { t: 0.4364, progress: 0.6355 },
+  { t: 0.4788, progress: 0.7362 },
+  { t: 0.5212, progress: 0.8469 },
+  { t: 0.5636, progress: 0.9576 },
+  { t: 0.6061, progress: 0.9851 },
+  { t: 0.6485, progress: 0.9607 },
+  { t: 0.6970, progress: 0.9545 },
+  { t: 0.7394, progress: 0.9801 },
+  { t: 0.7818, progress: 0.9994 },
+  { t: 0.8242, progress: 0.9846 },
+  { t: 0.8667, progress: 0.9842 },
+  { t: 0.9091, progress: 0.9811 },
+  { t: 0.9515, progress: 0.9885 },
+  { t: 1.0000, progress: 0.9877 }
+];
+
+const ENTER_CAR_PROGRESS_MONOTONIC = (() => {
+  let runningMax = 0;
+
+  return ENTER_CAR_PROGRESS_CURVE.map(
+    ({ t, progress }) => {
+      runningMax =
+        Math.max(
+          runningMax,
+          progress
+        );
+
+      return {
+        t,
+        progress:
+          runningMax
+      };
+    }
+  );
+})();
+
+function sampleProgressCurve(
+  table,
+  t
+) {
+  const clamped =
+    THREE.MathUtils.clamp(
+      t,
+      0,
+      1
+    );
+
+  if (
+    clamped <=
+    table[0].t
+  ) {
+    return table[0].progress;
+  }
+
+  const last =
+    table[
+      table.length -
+      1
+    ];
+
+  if (
+    clamped >=
+    last.t
+  ) {
+    return last.progress;
+  }
+
+  for (
+    let i = 0;
+    i <
+      table.length - 1;
+    i += 1
+  ) {
+    const a =
+      table[i];
+
+    const b =
+      table[i + 1];
+
+    if (
+      clamped >= a.t &&
+      clamped <= b.t
+    ) {
+      const span =
+        b.t - a.t;
+
+      const localT =
+        span > 0
+          ? (
+              clamped -
+              a.t
+            ) /
+            span
+          : 0;
+
+      return (
+        a.progress +
+        (
+          b.progress -
+          a.progress
+        ) *
+        localT
+      );
+    }
+  }
+
+  return last.progress;
+}
+
+function sampleEnterCarProgress(
+  t
+) {
+  return sampleProgressCurve(
+    ENTER_CAR_PROGRESS_MONOTONIC,
+    t
+  );
+}
+
 class OrientedBoxCollider {
   constructor(
     x,
@@ -572,9 +707,10 @@ this.subaruDriverDoorAnimating =
   label: 'Enter Car',
   file: 'Entering Car.glb',
 
-  // We control the character's movement ourselves.
-  // Do not let Mixamo root translation launch him.
-  lockRootPosition: true
+  // FreeRoamScene controls horizontal travel with the extracted
+  // mocap pacing curve. Keep the animation's vertical Hips motion
+  // so crouching / sitting still comes from the authored clip.
+  inPlace: true
 };
 
 this.drivingEmote = {
@@ -2996,7 +3132,7 @@ tweenPlayerToAnchor(
 // CONTROLLED ENTER-CAR MOVEMENT
 // ============================================================
 
-tweenPlayerIntoSubaru(
+tweenPlayerIntoSubaruDataDriven(
   durationSeconds
 ) {
   if (
@@ -3019,15 +3155,10 @@ tweenPlayerIntoSubaru(
       seat
     );
 
+  // Keep the world-space player root on the floor.
+  // Entering Car.glb keeps its own vertical Hips motion.
   seat.y =
     this.SUBARU_SPAWN.y;
-
-  // ----------------------------------------------------------
-  // DOOR THRESHOLD
-  //
-  // About halfway between the outside animation position
-  // and the actual driver's seat.
-  // ----------------------------------------------------------
 
   const doorway =
     start
@@ -3075,88 +3206,62 @@ tweenPlayerIntoSubaru(
               1
             );
 
-          // ==================================================
-          // PHASE 1 — HAND REACHES DOOR HANDLE
-          // 0% -> 35%
-          //
-          // DO NOT MOVE THE PLAYER ROOT.
-          // ==================================================
+          const progress =
+            sampleEnterCarProgress(
+              t
+            );
 
           if (
-            t <
-            0.35
+            progress <=
+              0.001
           ) {
             this.player.position.copy(
               start
             );
-          }
-
-          // ==================================================
-          // PHASE 2 — STEP TOWARD DOOR OPENING
-          // 35% -> 70%
-          // ==================================================
-
-          else if (
-            t <
-            0.70
+          } else if (
+            progress >=
+              0.999
           ) {
-            const localT =
-              (
-                t -
-                0.35
-              ) /
-              0.35;
+            this.player.position.copy(
+              seat
+            );
+          } else {
+            // Keep the proven start -> doorway -> seat path.
+            // Only the speed along it is driven by the mocap data.
+            const doorwayProgress =
+              0.60;
 
-            const smooth =
-              localT *
-              localT *
-              (
-                3 -
-                2 *
-                localT
-              );
-
-            this.player.position
-              .lerpVectors(
-                start,
-                doorway,
-                smooth
-              );
-          }
-
-          // ==================================================
-          // PHASE 3 — MOVE INTO DRIVER SEAT
-          // 70% -> 100%
-          // ==================================================
-
-          else {
-            const localT =
-              (
-                t -
-                0.70
-              ) /
-              0.30;
-
-            const smooth =
-              localT *
-              localT *
-              (
-                3 -
-                2 *
-                localT
-              );
-
-            this.player.position
-              .lerpVectors(
-                doorway,
-                seat,
-                smooth
-              );
+            if (
+              progress <
+                doorwayProgress
+            ) {
+              this.player.position
+                .lerpVectors(
+                  start,
+                  doorway,
+                  progress /
+                    doorwayProgress
+                );
+            } else {
+              this.player.position
+                .lerpVectors(
+                  doorway,
+                  seat,
+                  (
+                    progress -
+                    doorwayProgress
+                  ) /
+                    (
+                      1 -
+                      doorwayProgress
+                    )
+                );
+            }
           }
 
           if (
             t <
-            1
+              1
           ) {
             requestAnimationFrame(
               animate
@@ -3180,6 +3285,7 @@ tweenPlayerIntoSubaru(
     }
   );
 }
+
  // ============================================================
 // ENTER SUBARU
 // ============================================================
@@ -3337,10 +3443,9 @@ animationStart.addScaledVector(
       );
 
   const movementPromise =
-  this.tweenPlayerIntoSubaru(
-    enterDuration *
-      0.90
-  );
+    this.tweenPlayerIntoSubaruDataDriven(
+      enterDuration
+    );
 
   const [
     completed
