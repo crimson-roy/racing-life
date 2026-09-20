@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T01:19:21.926294+00:00",
+  "generated_at_utc": "2026-09-20T01:24:54.139651+00:00",
   "blender_version": "5.2.0 LTS",
   "target": {
     "file": "male_base_mesh.glb",
@@ -183,7 +183,569 @@
       "righthandthumb1",
       "righthandthumb2",
       "righthandthumb3"
-    ]
+    ],
+    "rest_pose": {
+      "hips": {
+        "source_bone": "spine",
+        "parent": null,
+        "length": 0.116053,
+        "direction": [
+          -0.0,
+          -0.121216,
+          0.992626
+        ]
+      },
+      "spine": {
+        "source_bone": "spine.001",
+        "parent": "hips",
+        "length": 0.225702,
+        "direction": [
+          -0.0,
+          -0.030128,
+          0.999546
+        ]
+      },
+      "spine1": {
+        "source_bone": "spine.002",
+        "parent": "spine",
+        "length": 0.172888,
+        "direction": [
+          0.0,
+          0.031812,
+          0.999494
+        ]
+      },
+      "spine2": {
+        "source_bone": "spine.003",
+        "parent": "spine1",
+        "length": 0.150717,
+        "direction": [
+          -0.0,
+          0.24191,
+          0.970299
+        ]
+      },
+      "neck": {
+        "source_bone": "spine.004",
+        "parent": "spine2",
+        "length": 0.057668,
+        "direction": [
+          -0.0,
+          -0.076299,
+          0.997085
+        ]
+      },
+      "head": {
+        "source_bone": "spine.005",
+        "parent": "neck",
+        "length": 0.057668,
+        "direction": [
+          -0.0,
+          -0.007036,
+          0.999975
+        ]
+      },
+      "leftshoulder": {
+        "source_bone": "shoulder.L",
+        "parent": "spine2",
+        "length": 0.212126,
+        "direction": [
+          0.836706,
+          0.547652,
+          -0.000554
+        ]
+      },
+      "leftarm": {
+        "source_bone": "upper_arm.L",
+        "parent": "leftshoulder",
+        "length": 0.328018,
+        "direction": [
+          0.53991,
+          -0.055484,
+          -0.839892
+        ]
+      },
+      "leftforearm": {
+        "source_bone": "forearm.L",
+        "parent": "leftarm",
+        "length": 0.239922,
+        "direction": [
+          0.57102,
+          -0.163803,
+          -0.804428
+        ]
+      },
+      "lefthand": {
+        "source_bone": "hand.L",
+        "parent": "leftforearm",
+        "length": 0.047443,
+        "direction": [
+          0.538727,
+          -0.120237,
+          -0.833857
+        ]
+      },
+      "lefthandindex1": {
+        "source_bone": "f_index.01.L",
+        "parent": "lefthand",
+        "length": 0.04504,
+        "direction": [
+          0.163927,
+          -0.084369,
+          -0.982858
+        ]
+      },
+      "lefthandindex2": {
+        "source_bone": "f_index.02.L",
+        "parent": "lefthandindex1",
+        "length": 0.028223,
+        "direction": [
+          0.011425,
+          -0.056691,
+          -0.998326
+        ]
+      },
+      "lefthandindex3": {
+        "source_bone": "f_index.03.L",
+        "parent": "lefthandindex2",
+        "length": 0.028223,
+        "direction": [
+          -0.204624,
+          0.039442,
+          -0.978046
+        ]
+      },
+      "lefthandthumb1": {
+        "source_bone": "thumb.01.L",
+        "parent": "lefthand",
+        "length": 0.041745,
+        "direction": [
+          -0.008136,
+          -0.476708,
+          -0.879024
+        ]
+      },
+      "lefthandthumb2": {
+        "source_bone": "thumb.02.L",
+        "parent": "lefthandthumb1",
+        "length": 0.033446,
+        "direction": [
+          0.211971,
+          -0.215269,
+          -0.953272
+        ]
+      },
+      "lefthandthumb3": {
+        "source_bone": "thumb.03.L",
+        "parent": "lefthandthumb2",
+        "length": 0.033447,
+        "direction": [
+          0.296666,
+          -0.197207,
+          -0.934397
+        ]
+      },
+      "lefthandmiddle1": {
+        "source_bone": "f_middle.01.L",
+        "parent": "lefthand",
+        "length": 0.04954,
+        "direction": [
+          0.08041,
+          -0.086797,
+          -0.992976
+        ]
+      },
+      "lefthandmiddle2": {
+        "source_bone": "f_middle.02.L",
+        "parent": "lefthandmiddle1",
+        "length": 0.032196,
+        "direction": [
+          -0.155073,
+          -0.049695,
+          -0.986652
+        ]
+      },
+      "lefthandmiddle3": {
+        "source_bone": "f_middle.03.L",
+        "parent": "lefthandmiddle2",
+        "length": 0.032196,
+        "direction": [
+          -0.269258,
+          -0.008809,
+          -0.963028
+        ]
+      },
+      "lefthandring1": {
+        "source_bone": "f_ring.01.L",
+        "parent": "lefthand",
+        "length": 0.044817,
+        "direction": [
+          -0.03462,
+          -0.049089,
+          -0.998194
+        ]
+      },
+      "lefthandring2": {
+        "source_bone": "f_ring.02.L",
+        "parent": "lefthandring1",
+        "length": 0.031801,
+        "direction": [
+          -0.184169,
+          -0.015723,
+          -0.982769
+        ]
+      },
+      "lefthandring3": {
+        "source_bone": "f_ring.03.L",
+        "parent": "lefthandring2",
+        "length": 0.031801,
+        "direction": [
+          -0.484994,
+          0.021563,
+          -0.874252
+        ]
+      },
+      "lefthandpinky1": {
+        "source_bone": "f_pinky.01.L",
+        "parent": "lefthand",
+        "length": 0.027876,
+        "direction": [
+          -0.214044,
+          0.007175,
+          -0.976798
+        ]
+      },
+      "lefthandpinky2": {
+        "source_bone": "f_pinky.02.L",
+        "parent": "lefthandpinky1",
+        "length": 0.022592,
+        "direction": [
+          -0.302683,
+          0.022132,
+          -0.952834
+        ]
+      },
+      "lefthandpinky3": {
+        "source_bone": "f_pinky.03.L",
+        "parent": "lefthandpinky2",
+        "length": 0.022592,
+        "direction": [
+          -0.464364,
+          0.013318,
+          -0.885544
+        ]
+      },
+      "rightshoulder": {
+        "source_bone": "shoulder.R",
+        "parent": "spine2",
+        "length": 0.212126,
+        "direction": [
+          -0.836706,
+          0.547652,
+          -0.000554
+        ]
+      },
+      "rightarm": {
+        "source_bone": "upper_arm.R",
+        "parent": "rightshoulder",
+        "length": 0.328018,
+        "direction": [
+          -0.539909,
+          -0.055485,
+          -0.839893
+        ]
+      },
+      "rightforearm": {
+        "source_bone": "forearm.R",
+        "parent": "rightarm",
+        "length": 0.239922,
+        "direction": [
+          -0.571019,
+          -0.163803,
+          -0.804429
+        ]
+      },
+      "righthand": {
+        "source_bone": "hand.R",
+        "parent": "rightforearm",
+        "length": 0.047443,
+        "direction": [
+          -0.538727,
+          -0.120237,
+          -0.833857
+        ]
+      },
+      "righthandindex1": {
+        "source_bone": "f_index.01.R",
+        "parent": "righthand",
+        "length": 0.04504,
+        "direction": [
+          -0.163927,
+          -0.084369,
+          -0.982858
+        ]
+      },
+      "righthandindex2": {
+        "source_bone": "f_index.02.R",
+        "parent": "righthandindex1",
+        "length": 0.028223,
+        "direction": [
+          -0.011425,
+          -0.056691,
+          -0.998326
+        ]
+      },
+      "righthandindex3": {
+        "source_bone": "f_index.03.R",
+        "parent": "righthandindex2",
+        "length": 0.028223,
+        "direction": [
+          0.204623,
+          0.039441,
+          -0.978046
+        ]
+      },
+      "righthandthumb1": {
+        "source_bone": "thumb.01.R",
+        "parent": "righthand",
+        "length": 0.041745,
+        "direction": [
+          0.008136,
+          -0.476708,
+          -0.879024
+        ]
+      },
+      "righthandthumb2": {
+        "source_bone": "thumb.02.R",
+        "parent": "righthandthumb1",
+        "length": 0.033446,
+        "direction": [
+          -0.211971,
+          -0.21527,
+          -0.953272
+        ]
+      },
+      "righthandthumb3": {
+        "source_bone": "thumb.03.R",
+        "parent": "righthandthumb2",
+        "length": 0.033447,
+        "direction": [
+          -0.296666,
+          -0.197207,
+          -0.934397
+        ]
+      },
+      "righthandmiddle1": {
+        "source_bone": "f_middle.01.R",
+        "parent": "righthand",
+        "length": 0.04954,
+        "direction": [
+          -0.08041,
+          -0.086798,
+          -0.992975
+        ]
+      },
+      "righthandmiddle2": {
+        "source_bone": "f_middle.02.R",
+        "parent": "righthandmiddle1",
+        "length": 0.032196,
+        "direction": [
+          0.155073,
+          -0.049696,
+          -0.986652
+        ]
+      },
+      "righthandmiddle3": {
+        "source_bone": "f_middle.03.R",
+        "parent": "righthandmiddle2",
+        "length": 0.032196,
+        "direction": [
+          0.269258,
+          -0.008809,
+          -0.963028
+        ]
+      },
+      "righthandring1": {
+        "source_bone": "f_ring.01.R",
+        "parent": "righthand",
+        "length": 0.044817,
+        "direction": [
+          0.03462,
+          -0.049089,
+          -0.998194
+        ]
+      },
+      "righthandring2": {
+        "source_bone": "f_ring.02.R",
+        "parent": "righthandring1",
+        "length": 0.031801,
+        "direction": [
+          0.184169,
+          -0.015723,
+          -0.982769
+        ]
+      },
+      "righthandring3": {
+        "source_bone": "f_ring.03.R",
+        "parent": "righthandring2",
+        "length": 0.031801,
+        "direction": [
+          0.484994,
+          0.021563,
+          -0.874252
+        ]
+      },
+      "righthandpinky1": {
+        "source_bone": "f_pinky.01.R",
+        "parent": "righthand",
+        "length": 0.027876,
+        "direction": [
+          0.214044,
+          0.007174,
+          -0.976798
+        ]
+      },
+      "righthandpinky2": {
+        "source_bone": "f_pinky.02.R",
+        "parent": "righthandpinky1",
+        "length": 0.022592,
+        "direction": [
+          0.302682,
+          0.022131,
+          -0.952834
+        ]
+      },
+      "righthandpinky3": {
+        "source_bone": "f_pinky.03.R",
+        "parent": "righthandpinky2",
+        "length": 0.022592,
+        "direction": [
+          0.464366,
+          0.013318,
+          -0.885543
+        ]
+      },
+      "pelvisl": {
+        "source_bone": "pelvis.L",
+        "parent": "hips",
+        "length": 0.116053,
+        "direction": [
+          0.548622,
+          -0.445509,
+          0.707486
+        ]
+      },
+      "leftupleg": {
+        "source_bone": "thigh.L",
+        "parent": "hips",
+        "length": 0.395384,
+        "direction": [
+          -0.025292,
+          0.048054,
+          -0.998524
+        ]
+      },
+      "leftleg": {
+        "source_bone": "shin.L",
+        "parent": "leftupleg",
+        "length": 0.502616,
+        "direction": [
+          -0.039792,
+          0.029446,
+          -0.998774
+        ]
+      },
+      "leftfoot": {
+        "source_bone": "foot.L",
+        "parent": "leftleg",
+        "length": 0.097904,
+        "direction": [
+          1e-06,
+          -0.847999,
+          -0.529998
+        ]
+      },
+      "lefttoebase": {
+        "source_bone": "toe.L",
+        "parent": "leftfoot",
+        "length": 0.097904,
+        "direction": [
+          1e-06,
+          -1.0,
+          0.0
+        ]
+      },
+      "heel02l": {
+        "source_bone": "heel.02.L",
+        "parent": "leftfoot",
+        "length": 0.097904,
+        "direction": [
+          1.0,
+          -1e-06,
+          -0.0
+        ]
+      },
+      "pelvisr": {
+        "source_bone": "pelvis.R",
+        "parent": "hips",
+        "length": 0.116053,
+        "direction": [
+          -0.548622,
+          -0.445509,
+          0.707486
+        ]
+      },
+      "rightupleg": {
+        "source_bone": "thigh.R",
+        "parent": "hips",
+        "length": 0.395383,
+        "direction": [
+          0.025292,
+          0.048054,
+          -0.998524
+        ]
+      },
+      "rightleg": {
+        "source_bone": "shin.R",
+        "parent": "rightupleg",
+        "length": 0.502616,
+        "direction": [
+          0.039792,
+          0.029446,
+          -0.998774
+        ]
+      },
+      "rightfoot": {
+        "source_bone": "foot.R",
+        "parent": "rightleg",
+        "length": 0.097904,
+        "direction": [
+          -1e-06,
+          -0.847999,
+          -0.529997
+        ]
+      },
+      "righttoebase": {
+        "source_bone": "toe.R",
+        "parent": "rightfoot",
+        "length": 0.097904,
+        "direction": [
+          -1e-06,
+          -1.0,
+          -0.0
+        ]
+      },
+      "heel02r": {
+        "source_bone": "heel.02.R",
+        "parent": "rightfoot",
+        "length": 0.097904,
+        "direction": [
+          -1.0,
+          -1e-06,
+          -0.0
+        ]
+      }
+    }
   },
   "sources": [
     {
@@ -395,7 +957,659 @@
         "righthandthumb2",
         "righthandthumb3",
         "righthandthumb4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 12.102837,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 13.025361,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 14.886133,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 15.68379,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 10.627258,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 26.742645,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 26.742645,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 13.138122,
+          "direction": [
+            0.902631,
+            -0.430214,
+            -0.013166
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 26.872682,
+          "direction": [
+            0.703827,
+            -0.709901,
+            0.025853
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 31.47657,
+          "direction": [
+            0.643902,
+            -0.761287,
+            0.076376
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 8.227214,
+          "direction": [
+            0.608064,
+            -0.786353,
+            -0.109122
+          ]
+        },
+        "lefthandthumb1": {
+          "source_bone": "mixamorig:LeftHandThumb1",
+          "parent": "lefthand",
+          "length": 3.238007,
+          "direction": [
+            0.174498,
+            -0.922926,
+            0.343158
+          ]
+        },
+        "lefthandthumb2": {
+          "source_bone": "mixamorig:LeftHandThumb2",
+          "parent": "lefthandthumb1",
+          "length": 3.04442,
+          "direction": [
+            0.146406,
+            -0.930134,
+            0.336773
+          ]
+        },
+        "lefthandthumb3": {
+          "source_bone": "mixamorig:LeftHandThumb3",
+          "parent": "lefthandthumb2",
+          "length": 2.551741,
+          "direction": [
+            0.328441,
+            -0.867665,
+            0.373207
+          ]
+        },
+        "lefthandthumb4": {
+          "source_bone": "mixamorig:LeftHandThumb4",
+          "parent": "lefthandthumb3",
+          "length": 2.551741,
+          "direction": [
+            0.328441,
+            -0.867665,
+            0.373207
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 2.990937,
+          "direction": [
+            0.532195,
+            -0.846498,
+            -0.01446
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 2.880778,
+          "direction": [
+            0.376863,
+            -0.925972,
+            -0.02347
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 2.468024,
+          "direction": [
+            0.449425,
+            -0.893107,
+            -0.019434
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 2.468024,
+          "direction": [
+            0.449425,
+            -0.893107,
+            -0.019434
+          ]
+        },
+        "lefthandmiddle1": {
+          "source_bone": "mixamorig:LeftHandMiddle1",
+          "parent": "lefthand",
+          "length": 3.01178,
+          "direction": [
+            0.466685,
+            -0.881161,
+            -0.075901
+          ]
+        },
+        "lefthandmiddle2": {
+          "source_bone": "mixamorig:LeftHandMiddle2",
+          "parent": "lefthandmiddle1",
+          "length": 3.04726,
+          "direction": [
+            0.377073,
+            -0.92275,
+            -0.079676
+          ]
+        },
+        "lefthandmiddle3": {
+          "source_bone": "mixamorig:LeftHandMiddle3",
+          "parent": "lefthandmiddle2",
+          "length": 2.752937,
+          "direction": [
+            0.44119,
+            -0.894098,
+            -0.077071
+          ]
+        },
+        "lefthandmiddle4": {
+          "source_bone": "mixamorig:LeftHandMiddle4",
+          "parent": "lefthandmiddle3",
+          "length": 2.752937,
+          "direction": [
+            0.44119,
+            -0.894098,
+            -0.077071
+          ]
+        },
+        "lefthandring1": {
+          "source_bone": "mixamorig:LeftHandRing1",
+          "parent": "lefthand",
+          "length": 2.613315,
+          "direction": [
+            0.407604,
+            -0.911449,
+            -0.05585
+          ]
+        },
+        "lefthandring2": {
+          "source_bone": "mixamorig:LeftHandRing2",
+          "parent": "lefthandring1",
+          "length": 2.402486,
+          "direction": [
+            0.18592,
+            -0.980471,
+            -0.064112
+          ]
+        },
+        "lefthandring3": {
+          "source_bone": "mixamorig:LeftHandRing3",
+          "parent": "lefthandring2",
+          "length": 1.920311,
+          "direction": [
+            0.212822,
+            -0.975038,
+            -0.063311
+          ]
+        },
+        "lefthandring4": {
+          "source_bone": "mixamorig:LeftHandRing4",
+          "parent": "lefthandring3",
+          "length": 1.920311,
+          "direction": [
+            0.212822,
+            -0.975038,
+            -0.063311
+          ]
+        },
+        "lefthandpinky1": {
+          "source_bone": "mixamorig:LeftHandPinky1",
+          "parent": "lefthand",
+          "length": 2.754157,
+          "direction": [
+            0.413885,
+            -0.898671,
+            -0.14522
+          ]
+        },
+        "lefthandpinky2": {
+          "source_bone": "mixamorig:LeftHandPinky2",
+          "parent": "lefthandpinky1",
+          "length": 2.270137,
+          "direction": [
+            0.230091,
+            -0.962039,
+            -0.146762
+          ]
+        },
+        "lefthandpinky3": {
+          "source_bone": "mixamorig:LeftHandPinky3",
+          "parent": "lefthandpinky2",
+          "length": 2.083755,
+          "direction": [
+            0.341944,
+            -0.92823,
+            -0.146503
+          ]
+        },
+        "lefthandpinky4": {
+          "source_bone": "mixamorig:LeftHandPinky4",
+          "parent": "lefthandpinky3",
+          "length": 2.083754,
+          "direction": [
+            0.341943,
+            -0.92823,
+            -0.146503
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 13.138135,
+          "direction": [
+            -0.902631,
+            -0.430214,
+            0.013166
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 26.864267,
+          "direction": [
+            -0.704047,
+            -0.710124,
+            0.006467
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 31.471507,
+          "direction": [
+            -0.644005,
+            -0.761409,
+            0.074252
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 8.26735,
+          "direction": [
+            -0.638731,
+            -0.762554,
+            -0.10264
+          ]
+        },
+        "righthandthumb1": {
+          "source_bone": "mixamorig:RightHandThumb1",
+          "parent": "righthand",
+          "length": 3.17194,
+          "direction": [
+            -0.213433,
+            -0.907561,
+            0.361633
+          ]
+        },
+        "righthandthumb2": {
+          "source_bone": "mixamorig:RightHandThumb2",
+          "parent": "righthandthumb1",
+          "length": 3.171068,
+          "direction": [
+            -0.178531,
+            -0.918739,
+            0.3522
+          ]
+        },
+        "righthandthumb3": {
+          "source_bone": "mixamorig:RightHandThumb3",
+          "parent": "righthandthumb2",
+          "length": 2.787677,
+          "direction": [
+            -0.316507,
+            -0.866119,
+            0.386861
+          ]
+        },
+        "righthandthumb4": {
+          "source_bone": "mixamorig:RightHandThumb4",
+          "parent": "righthandthumb3",
+          "length": 2.787676,
+          "direction": [
+            -0.316507,
+            -0.866119,
+            0.38686
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 3.192523,
+          "direction": [
+            -0.493496,
+            -0.869699,
+            -0.009207
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 2.678005,
+          "direction": [
+            -0.402632,
+            -0.915184,
+            -0.018056
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 2.390336,
+          "direction": [
+            -0.421412,
+            -0.906723,
+            -0.016275
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 2.390336,
+          "direction": [
+            -0.421412,
+            -0.906723,
+            -0.016275
+          ]
+        },
+        "righthandmiddle1": {
+          "source_bone": "mixamorig:RightHandMiddle1",
+          "parent": "righthand",
+          "length": 3.295641,
+          "direction": [
+            -0.360353,
+            -0.929177,
+            -0.082318
+          ]
+        },
+        "righthandmiddle2": {
+          "source_bone": "mixamorig:RightHandMiddle2",
+          "parent": "righthandmiddle1",
+          "length": 2.919571,
+          "direction": [
+            -0.411199,
+            -0.908149,
+            -0.07862
+          ]
+        },
+        "righthandmiddle3": {
+          "source_bone": "mixamorig:RightHandMiddle3",
+          "parent": "righthandmiddle2",
+          "length": 2.575805,
+          "direction": [
+            -0.460245,
+            -0.884641,
+            -0.074728
+          ]
+        },
+        "righthandmiddle4": {
+          "source_bone": "mixamorig:RightHandMiddle4",
+          "parent": "righthandmiddle3",
+          "length": 2.575805,
+          "direction": [
+            -0.460245,
+            -0.884641,
+            -0.074728
+          ]
+        },
+        "righthandring1": {
+          "source_bone": "mixamorig:RightHandRing1",
+          "parent": "righthand",
+          "length": 2.799704,
+          "direction": [
+            -0.412916,
+            -0.909604,
+            -0.046042
+          ]
+        },
+        "righthandring2": {
+          "source_bone": "mixamorig:RightHandRing2",
+          "parent": "righthandring1",
+          "length": 2.521307,
+          "direction": [
+            -0.230594,
+            -0.971185,
+            -0.060223
+          ]
+        },
+        "righthandring3": {
+          "source_bone": "mixamorig:RightHandRing3",
+          "parent": "righthandring2",
+          "length": 2.077,
+          "direction": [
+            -0.315678,
+            -0.94733,
+            -0.053969
+          ]
+        },
+        "righthandring4": {
+          "source_bone": "mixamorig:RightHandRing4",
+          "parent": "righthandring3",
+          "length": 2.077003,
+          "direction": [
+            -0.315681,
+            -0.947329,
+            -0.053969
+          ]
+        },
+        "righthandpinky1": {
+          "source_bone": "mixamorig:RightHandPinky1",
+          "parent": "righthand",
+          "length": 2.926063,
+          "direction": [
+            -0.393616,
+            -0.912428,
+            -0.111988
+          ]
+        },
+        "righthandpinky2": {
+          "source_bone": "mixamorig:RightHandPinky2",
+          "parent": "righthandpinky1",
+          "length": 2.465532,
+          "direction": [
+            -0.264466,
+            -0.95704,
+            -0.118882
+          ]
+        },
+        "righthandpinky3": {
+          "source_bone": "mixamorig:RightHandPinky3",
+          "parent": "righthandpinky2",
+          "length": 2.057418,
+          "direction": [
+            -0.329699,
+            -0.936968,
+            -0.115712
+          ]
+        },
+        "righthandpinky4": {
+          "source_bone": "mixamorig:RightHandPinky4",
+          "parent": "righthandpinky3",
+          "length": 2.057416,
+          "direction": [
+            -0.329698,
+            -0.936969,
+            -0.115712
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 43.317848,
+          "direction": [
+            0.1052,
+            -0.992907,
+            -0.05539
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 47.460641,
+          "direction": [
+            0.100854,
+            -0.993812,
+            -0.046534
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 18.93757,
+          "direction": [
+            0.142547,
+            -0.593155,
+            0.792368
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 7.85293,
+          "direction": [
+            0.207496,
+            0.042703,
+            0.977304
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 7.852932,
+          "direction": [
+            0.207495,
+            0.042703,
+            0.977304
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 43.290845,
+          "direction": [
+            -0.105266,
+            -0.993527,
+            -0.042704
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 47.46288,
+          "direction": [
+            -0.100849,
+            -0.993762,
+            -0.04761
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 19.120492,
+          "direction": [
+            -0.14119,
+            -0.58754,
+            0.796782
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 7.793,
+          "direction": [
+            -0.209099,
+            0.042957,
+            0.97695
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 7.792999,
+          "direction": [
+            -0.2091,
+            0.042957,
+            0.97695
+          ]
+        }
+      }
     },
     {
       "file": "Rifle Run To Dying.fbx",
@@ -606,7 +1820,659 @@
         "righthandthumb2",
         "righthandthumb3",
         "righthandthumb4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 12.102837,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 13.025361,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 14.886133,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 15.68379,
+          "direction": [
+            0.0,
+            0.996092,
+            -0.088322
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 10.627258,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 26.742645,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 26.742645,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 13.138122,
+          "direction": [
+            0.902631,
+            -0.430214,
+            -0.013166
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 26.872682,
+          "direction": [
+            0.703827,
+            -0.709901,
+            0.025853
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 31.47657,
+          "direction": [
+            0.643902,
+            -0.761287,
+            0.076376
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 8.227214,
+          "direction": [
+            0.608064,
+            -0.786353,
+            -0.109122
+          ]
+        },
+        "lefthandthumb1": {
+          "source_bone": "mixamorig:LeftHandThumb1",
+          "parent": "lefthand",
+          "length": 3.238007,
+          "direction": [
+            0.174498,
+            -0.922926,
+            0.343158
+          ]
+        },
+        "lefthandthumb2": {
+          "source_bone": "mixamorig:LeftHandThumb2",
+          "parent": "lefthandthumb1",
+          "length": 3.04442,
+          "direction": [
+            0.146406,
+            -0.930134,
+            0.336773
+          ]
+        },
+        "lefthandthumb3": {
+          "source_bone": "mixamorig:LeftHandThumb3",
+          "parent": "lefthandthumb2",
+          "length": 2.551741,
+          "direction": [
+            0.328441,
+            -0.867665,
+            0.373207
+          ]
+        },
+        "lefthandthumb4": {
+          "source_bone": "mixamorig:LeftHandThumb4",
+          "parent": "lefthandthumb3",
+          "length": 2.551741,
+          "direction": [
+            0.328441,
+            -0.867665,
+            0.373207
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 2.990937,
+          "direction": [
+            0.532195,
+            -0.846498,
+            -0.01446
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 2.880778,
+          "direction": [
+            0.376863,
+            -0.925972,
+            -0.02347
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 2.468024,
+          "direction": [
+            0.449425,
+            -0.893107,
+            -0.019434
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 2.468024,
+          "direction": [
+            0.449425,
+            -0.893107,
+            -0.019434
+          ]
+        },
+        "lefthandmiddle1": {
+          "source_bone": "mixamorig:LeftHandMiddle1",
+          "parent": "lefthand",
+          "length": 3.01178,
+          "direction": [
+            0.466685,
+            -0.881161,
+            -0.075901
+          ]
+        },
+        "lefthandmiddle2": {
+          "source_bone": "mixamorig:LeftHandMiddle2",
+          "parent": "lefthandmiddle1",
+          "length": 3.04726,
+          "direction": [
+            0.377073,
+            -0.92275,
+            -0.079676
+          ]
+        },
+        "lefthandmiddle3": {
+          "source_bone": "mixamorig:LeftHandMiddle3",
+          "parent": "lefthandmiddle2",
+          "length": 2.752937,
+          "direction": [
+            0.44119,
+            -0.894098,
+            -0.077071
+          ]
+        },
+        "lefthandmiddle4": {
+          "source_bone": "mixamorig:LeftHandMiddle4",
+          "parent": "lefthandmiddle3",
+          "length": 2.752937,
+          "direction": [
+            0.44119,
+            -0.894098,
+            -0.077071
+          ]
+        },
+        "lefthandring1": {
+          "source_bone": "mixamorig:LeftHandRing1",
+          "parent": "lefthand",
+          "length": 2.613315,
+          "direction": [
+            0.407604,
+            -0.911449,
+            -0.05585
+          ]
+        },
+        "lefthandring2": {
+          "source_bone": "mixamorig:LeftHandRing2",
+          "parent": "lefthandring1",
+          "length": 2.402486,
+          "direction": [
+            0.18592,
+            -0.980471,
+            -0.064112
+          ]
+        },
+        "lefthandring3": {
+          "source_bone": "mixamorig:LeftHandRing3",
+          "parent": "lefthandring2",
+          "length": 1.920311,
+          "direction": [
+            0.212822,
+            -0.975038,
+            -0.063311
+          ]
+        },
+        "lefthandring4": {
+          "source_bone": "mixamorig:LeftHandRing4",
+          "parent": "lefthandring3",
+          "length": 1.920311,
+          "direction": [
+            0.212822,
+            -0.975038,
+            -0.063311
+          ]
+        },
+        "lefthandpinky1": {
+          "source_bone": "mixamorig:LeftHandPinky1",
+          "parent": "lefthand",
+          "length": 2.754157,
+          "direction": [
+            0.413885,
+            -0.898671,
+            -0.14522
+          ]
+        },
+        "lefthandpinky2": {
+          "source_bone": "mixamorig:LeftHandPinky2",
+          "parent": "lefthandpinky1",
+          "length": 2.270137,
+          "direction": [
+            0.230091,
+            -0.962039,
+            -0.146762
+          ]
+        },
+        "lefthandpinky3": {
+          "source_bone": "mixamorig:LeftHandPinky3",
+          "parent": "lefthandpinky2",
+          "length": 2.083755,
+          "direction": [
+            0.341944,
+            -0.92823,
+            -0.146503
+          ]
+        },
+        "lefthandpinky4": {
+          "source_bone": "mixamorig:LeftHandPinky4",
+          "parent": "lefthandpinky3",
+          "length": 2.083754,
+          "direction": [
+            0.341943,
+            -0.92823,
+            -0.146503
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 13.138135,
+          "direction": [
+            -0.902631,
+            -0.430214,
+            0.013166
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 26.864267,
+          "direction": [
+            -0.704047,
+            -0.710124,
+            0.006467
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 31.471507,
+          "direction": [
+            -0.644005,
+            -0.761409,
+            0.074252
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 8.26735,
+          "direction": [
+            -0.638731,
+            -0.762554,
+            -0.10264
+          ]
+        },
+        "righthandthumb1": {
+          "source_bone": "mixamorig:RightHandThumb1",
+          "parent": "righthand",
+          "length": 3.17194,
+          "direction": [
+            -0.213433,
+            -0.907561,
+            0.361633
+          ]
+        },
+        "righthandthumb2": {
+          "source_bone": "mixamorig:RightHandThumb2",
+          "parent": "righthandthumb1",
+          "length": 3.171068,
+          "direction": [
+            -0.178531,
+            -0.918739,
+            0.3522
+          ]
+        },
+        "righthandthumb3": {
+          "source_bone": "mixamorig:RightHandThumb3",
+          "parent": "righthandthumb2",
+          "length": 2.787677,
+          "direction": [
+            -0.316507,
+            -0.866119,
+            0.386861
+          ]
+        },
+        "righthandthumb4": {
+          "source_bone": "mixamorig:RightHandThumb4",
+          "parent": "righthandthumb3",
+          "length": 2.787676,
+          "direction": [
+            -0.316507,
+            -0.866119,
+            0.38686
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 3.192523,
+          "direction": [
+            -0.493496,
+            -0.869699,
+            -0.009207
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 2.678005,
+          "direction": [
+            -0.402632,
+            -0.915184,
+            -0.018056
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 2.390336,
+          "direction": [
+            -0.421412,
+            -0.906723,
+            -0.016275
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 2.390336,
+          "direction": [
+            -0.421412,
+            -0.906723,
+            -0.016275
+          ]
+        },
+        "righthandmiddle1": {
+          "source_bone": "mixamorig:RightHandMiddle1",
+          "parent": "righthand",
+          "length": 3.295641,
+          "direction": [
+            -0.360353,
+            -0.929177,
+            -0.082318
+          ]
+        },
+        "righthandmiddle2": {
+          "source_bone": "mixamorig:RightHandMiddle2",
+          "parent": "righthandmiddle1",
+          "length": 2.919571,
+          "direction": [
+            -0.411199,
+            -0.908149,
+            -0.07862
+          ]
+        },
+        "righthandmiddle3": {
+          "source_bone": "mixamorig:RightHandMiddle3",
+          "parent": "righthandmiddle2",
+          "length": 2.575805,
+          "direction": [
+            -0.460245,
+            -0.884641,
+            -0.074728
+          ]
+        },
+        "righthandmiddle4": {
+          "source_bone": "mixamorig:RightHandMiddle4",
+          "parent": "righthandmiddle3",
+          "length": 2.575805,
+          "direction": [
+            -0.460245,
+            -0.884641,
+            -0.074728
+          ]
+        },
+        "righthandring1": {
+          "source_bone": "mixamorig:RightHandRing1",
+          "parent": "righthand",
+          "length": 2.799704,
+          "direction": [
+            -0.412916,
+            -0.909604,
+            -0.046042
+          ]
+        },
+        "righthandring2": {
+          "source_bone": "mixamorig:RightHandRing2",
+          "parent": "righthandring1",
+          "length": 2.521307,
+          "direction": [
+            -0.230594,
+            -0.971185,
+            -0.060223
+          ]
+        },
+        "righthandring3": {
+          "source_bone": "mixamorig:RightHandRing3",
+          "parent": "righthandring2",
+          "length": 2.077,
+          "direction": [
+            -0.315678,
+            -0.94733,
+            -0.053969
+          ]
+        },
+        "righthandring4": {
+          "source_bone": "mixamorig:RightHandRing4",
+          "parent": "righthandring3",
+          "length": 2.077003,
+          "direction": [
+            -0.315681,
+            -0.947329,
+            -0.053969
+          ]
+        },
+        "righthandpinky1": {
+          "source_bone": "mixamorig:RightHandPinky1",
+          "parent": "righthand",
+          "length": 2.926063,
+          "direction": [
+            -0.393616,
+            -0.912428,
+            -0.111988
+          ]
+        },
+        "righthandpinky2": {
+          "source_bone": "mixamorig:RightHandPinky2",
+          "parent": "righthandpinky1",
+          "length": 2.465532,
+          "direction": [
+            -0.264466,
+            -0.95704,
+            -0.118882
+          ]
+        },
+        "righthandpinky3": {
+          "source_bone": "mixamorig:RightHandPinky3",
+          "parent": "righthandpinky2",
+          "length": 2.057418,
+          "direction": [
+            -0.329699,
+            -0.936968,
+            -0.115712
+          ]
+        },
+        "righthandpinky4": {
+          "source_bone": "mixamorig:RightHandPinky4",
+          "parent": "righthandpinky3",
+          "length": 2.057416,
+          "direction": [
+            -0.329698,
+            -0.936969,
+            -0.115712
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 43.317848,
+          "direction": [
+            0.1052,
+            -0.992907,
+            -0.05539
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 47.460641,
+          "direction": [
+            0.100854,
+            -0.993812,
+            -0.046534
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 18.93757,
+          "direction": [
+            0.142547,
+            -0.593155,
+            0.792368
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 7.85293,
+          "direction": [
+            0.207496,
+            0.042703,
+            0.977304
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 7.852932,
+          "direction": [
+            0.207495,
+            0.042703,
+            0.977304
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 43.290845,
+          "direction": [
+            -0.105266,
+            -0.993527,
+            -0.042704
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 47.46288,
+          "direction": [
+            -0.100849,
+            -0.993762,
+            -0.04761
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 19.120492,
+          "direction": [
+            -0.14119,
+            -0.58754,
+            0.796782
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 7.793,
+          "direction": [
+            -0.209099,
+            0.042957,
+            0.97695
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 7.792999,
+          "direction": [
+            -0.2091,
+            0.042957,
+            0.97695
+          ]
+        }
+      }
     },
     {
       "file": "Rockin' Shackle A.fbx",
@@ -817,7 +2683,659 @@
         "righthandthumb2",
         "righthandthumb3",
         "righthandthumb4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 1506.701198,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 1557.167911,
+          "direction": [
+            0.0,
+            0.991093,
+            -0.133169
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 1779.618,
+          "direction": [
+            0.0,
+            0.991093,
+            -0.133169
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 1932.92101,
+          "direction": [
+            -0.0,
+            0.991093,
+            -0.133169
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 1007.681652,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 4091.11134,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 4091.11134,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 2011.663895,
+          "direction": [
+            0.935468,
+            -0.353386,
+            0.004117
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 3220.64201,
+          "direction": [
+            0.623124,
+            -0.782068,
+            0.009312
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 5398.080536,
+          "direction": [
+            0.646752,
+            -0.758176,
+            0.082952
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 1187.800037,
+          "direction": [
+            0.622766,
+            -0.778214,
+            -0.080905
+          ]
+        },
+        "lefthandthumb1": {
+          "source_bone": "mixamorig:LeftHandThumb1",
+          "parent": "lefthand",
+          "length": 435.728438,
+          "direction": [
+            0.192021,
+            -0.918832,
+            0.344783
+          ]
+        },
+        "lefthandthumb2": {
+          "source_bone": "mixamorig:LeftHandThumb2",
+          "parent": "lefthandthumb1",
+          "length": 459.743184,
+          "direction": [
+            0.188596,
+            -0.91992,
+            0.343773
+          ]
+        },
+        "lefthandthumb3": {
+          "source_bone": "mixamorig:LeftHandThumb3",
+          "parent": "lefthandthumb2",
+          "length": 379.42684,
+          "direction": [
+            0.198176,
+            -0.916843,
+            0.34659
+          ]
+        },
+        "lefthandthumb4": {
+          "source_bone": "mixamorig:LeftHandThumb4",
+          "parent": "lefthandthumb3",
+          "length": 379.42685,
+          "direction": [
+            0.198176,
+            -0.916843,
+            0.34659
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 367.515343,
+          "direction": [
+            0.568569,
+            -0.822396,
+            -0.019837
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 343.592549,
+          "direction": [
+            0.317853,
+            -0.946647,
+            -0.053194
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 265.943902,
+          "direction": [
+            0.425118,
+            -0.90426,
+            -0.039854
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 265.943902,
+          "direction": [
+            0.425118,
+            -0.90426,
+            -0.039854
+          ]
+        },
+        "lefthandmiddle1": {
+          "source_bone": "mixamorig:LeftHandMiddle1",
+          "parent": "lefthand",
+          "length": 424.5033,
+          "direction": [
+            0.573227,
+            -0.817812,
+            -0.050924
+          ]
+        },
+        "lefthandmiddle2": {
+          "source_bone": "mixamorig:LeftHandMiddle2",
+          "parent": "lefthandmiddle1",
+          "length": 396.925372,
+          "direction": [
+            0.325468,
+            -0.94197,
+            -0.082243
+          ]
+        },
+        "lefthandmiddle3": {
+          "source_bone": "mixamorig:LeftHandMiddle3",
+          "parent": "lefthandmiddle2",
+          "length": 341.739178,
+          "direction": [
+            0.389383,
+            -0.918012,
+            -0.075065
+          ]
+        },
+        "lefthandmiddle4": {
+          "source_bone": "mixamorig:LeftHandMiddle4",
+          "parent": "lefthandmiddle3",
+          "length": 341.739178,
+          "direction": [
+            0.389383,
+            -0.918012,
+            -0.075065
+          ]
+        },
+        "lefthandring1": {
+          "source_bone": "mixamorig:LeftHandRing1",
+          "parent": "lefthand",
+          "length": 396.017428,
+          "direction": [
+            0.465506,
+            -0.884601,
+            -0.028019
+          ]
+        },
+        "lefthandring2": {
+          "source_bone": "mixamorig:LeftHandRing2",
+          "parent": "lefthandring1",
+          "length": 380.855506,
+          "direction": [
+            0.243951,
+            -0.968187,
+            -0.055698
+          ]
+        },
+        "lefthandring3": {
+          "source_bone": "mixamorig:LeftHandRing3",
+          "parent": "lefthandring2",
+          "length": 297.480779,
+          "direction": [
+            0.278179,
+            -0.959135,
+            -0.051735
+          ]
+        },
+        "lefthandring4": {
+          "source_bone": "mixamorig:LeftHandRing4",
+          "parent": "lefthandring3",
+          "length": 297.480779,
+          "direction": [
+            0.278179,
+            -0.959135,
+            -0.051735
+          ]
+        },
+        "lefthandpinky1": {
+          "source_bone": "mixamorig:LeftHandPinky1",
+          "parent": "lefthand",
+          "length": 417.67898,
+          "direction": [
+            0.380292,
+            -0.921915,
+            -0.073832
+          ]
+        },
+        "lefthandpinky2": {
+          "source_bone": "mixamorig:LeftHandPinky2",
+          "parent": "lefthandpinky1",
+          "length": 339.63086,
+          "direction": [
+            0.260045,
+            -0.961683,
+            -0.086848
+          ]
+        },
+        "lefthandpinky3": {
+          "source_bone": "mixamorig:LeftHandPinky3",
+          "parent": "lefthandpinky2",
+          "length": 288.693928,
+          "direction": [
+            0.243814,
+            -0.965779,
+            -0.088465
+          ]
+        },
+        "lefthandpinky4": {
+          "source_bone": "mixamorig:LeftHandPinky4",
+          "parent": "lefthandpinky3",
+          "length": 288.693928,
+          "direction": [
+            0.243814,
+            -0.965779,
+            -0.088465
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 2011.664143,
+          "direction": [
+            -0.935468,
+            -0.353386,
+            -0.004117
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 3220.903948,
+          "direction": [
+            -0.623075,
+            -0.782004,
+            0.015727
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 5396.929781,
+          "direction": [
+            -0.646889,
+            -0.758338,
+            0.080359
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 1235.02142,
+          "direction": [
+            -0.649113,
+            -0.757935,
+            -0.064707
+          ]
+        },
+        "righthandthumb1": {
+          "source_bone": "mixamorig:RightHandThumb1",
+          "parent": "righthand",
+          "length": 431.551109,
+          "direction": [
+            -0.248776,
+            -0.885828,
+            0.391687
+          ]
+        },
+        "righthandthumb2": {
+          "source_bone": "mixamorig:RightHandThumb2",
+          "parent": "righthandthumb1",
+          "length": 465.278108,
+          "direction": [
+            -0.159267,
+            -0.917733,
+            0.363869
+          ]
+        },
+        "righthandthumb3": {
+          "source_bone": "mixamorig:RightHandThumb3",
+          "parent": "righthandthumb2",
+          "length": 415.479143,
+          "direction": [
+            -0.191063,
+            -0.907492,
+            0.374103
+          ]
+        },
+        "righthandthumb4": {
+          "source_bone": "mixamorig:RightHandThumb4",
+          "parent": "righthandthumb3",
+          "length": 415.479131,
+          "direction": [
+            -0.191063,
+            -0.907492,
+            0.374103
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 388.093347,
+          "direction": [
+            -0.527418,
+            -0.849443,
+            -0.016644
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 349.004829,
+          "direction": [
+            -0.364351,
+            -0.930509,
+            -0.037451
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 287.884896,
+          "direction": [
+            -0.220093,
+            -0.973998,
+            -0.053726
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 287.884896,
+          "direction": [
+            -0.220093,
+            -0.973998,
+            -0.053726
+          ]
+        },
+        "righthandmiddle1": {
+          "source_bone": "mixamorig:RightHandMiddle1",
+          "parent": "righthand",
+          "length": 422.758627,
+          "direction": [
+            -0.384683,
+            -0.919068,
+            -0.085634
+          ]
+        },
+        "righthandmiddle2": {
+          "source_bone": "mixamorig:RightHandMiddle2",
+          "parent": "righthandmiddle1",
+          "length": 409.222046,
+          "direction": [
+            -0.409554,
+            -0.9085,
+            -0.083022
+          ]
+        },
+        "righthandmiddle3": {
+          "source_bone": "mixamorig:RightHandMiddle3",
+          "parent": "righthandmiddle2",
+          "length": 342.832359,
+          "direction": [
+            -0.341104,
+            -0.935708,
+            -0.089992
+          ]
+        },
+        "righthandmiddle4": {
+          "source_bone": "mixamorig:RightHandMiddle4",
+          "parent": "righthandmiddle3",
+          "length": 342.832362,
+          "direction": [
+            -0.341104,
+            -0.935708,
+            -0.089992
+          ]
+        },
+        "righthandring1": {
+          "source_bone": "mixamorig:RightHandRing1",
+          "parent": "righthand",
+          "length": 375.299809,
+          "direction": [
+            -0.411785,
+            -0.908906,
+            -0.065745
+          ]
+        },
+        "righthandring2": {
+          "source_bone": "mixamorig:RightHandRing2",
+          "parent": "righthandring1",
+          "length": 359.051915,
+          "direction": [
+            -0.23161,
+            -0.969173,
+            -0.084026
+          ]
+        },
+        "righthandring3": {
+          "source_bone": "mixamorig:RightHandRing3",
+          "parent": "righthandring2",
+          "length": 294.31767,
+          "direction": [
+            -0.392198,
+            -0.917369,
+            -0.067929
+          ]
+        },
+        "righthandring4": {
+          "source_bone": "mixamorig:RightHandRing4",
+          "parent": "righthandring3",
+          "length": 294.31767,
+          "direction": [
+            -0.392198,
+            -0.917369,
+            -0.067929
+          ]
+        },
+        "righthandpinky1": {
+          "source_bone": "mixamorig:RightHandPinky1",
+          "parent": "righthand",
+          "length": 381.761744,
+          "direction": [
+            -0.344586,
+            -0.934719,
+            -0.086956
+          ]
+        },
+        "righthandpinky2": {
+          "source_bone": "mixamorig:RightHandPinky2",
+          "parent": "righthandpinky1",
+          "length": 320.400157,
+          "direction": [
+            -0.268768,
+            -0.958603,
+            -0.094038
+          ]
+        },
+        "righthandpinky3": {
+          "source_bone": "mixamorig:RightHandPinky3",
+          "parent": "righthandpinky2",
+          "length": 273.089766,
+          "direction": [
+            -0.263009,
+            -0.96015,
+            -0.094545
+          ]
+        },
+        "righthandpinky4": {
+          "source_bone": "mixamorig:RightHandPinky4",
+          "parent": "righthandpinky3",
+          "length": 273.089766,
+          "direction": [
+            -0.263009,
+            -0.96015,
+            -0.094545
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 7807.116792,
+          "direction": [
+            0.087858,
+            -0.995974,
+            -0.017827
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 7491.559036,
+          "direction": [
+            0.121146,
+            -0.990625,
+            -0.063131
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 2722.479018,
+          "direction": [
+            0.042624,
+            -0.517914,
+            0.85437
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 1177.382289,
+          "direction": [
+            0.051011,
+            0.018991,
+            0.998518
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 1177.382395,
+          "direction": [
+            0.051011,
+            0.018991,
+            0.998517
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 7807.732596,
+          "direction": [
+            -0.087851,
+            -0.995895,
+            -0.021823
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 7493.197235,
+          "direction": [
+            -0.12112,
+            -0.990408,
+            -0.066491
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 2669.518088,
+          "direction": [
+            -0.04347,
+            -0.528184,
+            0.848017
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 1180.713684,
+          "direction": [
+            -0.050867,
+            0.018939,
+            0.998526
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 1180.713685,
+          "direction": [
+            -0.050867,
+            0.018939,
+            0.998526
+          ]
+        }
+      }
     },
     {
       "file": "Rockin' Shackle B.fbx",
@@ -932,7 +3450,339 @@
         "righthandindex2",
         "righthandindex3",
         "righthandindex4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 7.219536,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 7.744756,
+          "direction": [
+            0.169987,
+            0.985446,
+            0.0
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 8.851176,
+          "direction": [
+            0.169987,
+            0.985446,
+            0.0
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 9.305426,
+          "direction": [
+            0.169987,
+            0.985446,
+            0.0
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 3.743385,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 17.046814,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 17.046814,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 7.322655,
+          "direction": [
+            0.175496,
+            -0.465114,
+            0.867681
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 14.719135,
+          "direction": [
+            0.161981,
+            -0.878065,
+            0.450294
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 16.834447,
+          "direction": [
+            -0.159121,
+            -0.941738,
+            0.296328
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 7.311232,
+          "direction": [
+            -0.279012,
+            -0.96028,
+            -0.003697
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 1.054217,
+          "direction": [
+            -0.162857,
+            -0.986583,
+            -0.011431
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 1.539558,
+          "direction": [
+            -0.162859,
+            -0.986583,
+            -0.01143
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 1.378229,
+          "direction": [
+            -0.162859,
+            -0.986583,
+            -0.01143
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 1.378229,
+          "direction": [
+            -0.162859,
+            -0.986583,
+            -0.01143
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 7.322656,
+          "direction": [
+            -0.175496,
+            -0.465114,
+            -0.867681
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 14.546565,
+          "direction": [
+            0.054723,
+            -0.888483,
+            -0.455636
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 16.971346,
+          "direction": [
+            -0.202441,
+            -0.934141,
+            -0.293937
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 7.956414,
+          "direction": [
+            -0.127703,
+            -0.991791,
+            0.006564
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.976411,
+          "direction": [
+            -0.222269,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 1.810884,
+          "direction": [
+            -0.222269,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.884556,
+          "direction": [
+            -0.22227,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.884556,
+          "direction": [
+            -0.22227,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 25.464133,
+          "direction": [
+            0.078934,
+            -0.979759,
+            0.183961
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 27.528565,
+          "direction": [
+            0.147977,
+            -0.980979,
+            0.125627
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 10.25262,
+          "direction": [
+            -0.477205,
+            -0.695003,
+            0.537817
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 3.800007,
+          "direction": [
+            -0.703125,
+            0.02067,
+            0.710766
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 3.800007,
+          "direction": [
+            -0.703125,
+            0.02067,
+            0.710766
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 25.391459,
+          "direction": [
+            0.023104,
+            -0.982563,
+            -0.184487
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 27.254692,
+          "direction": [
+            0.042765,
+            -0.990995,
+            -0.126889
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 12.895284,
+          "direction": [
+            -0.715576,
+            -0.552379,
+            -0.427584
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 5.10981,
+          "direction": [
+            -0.848753,
+            0.015686,
+            -0.528558
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 5.109807,
+          "direction": [
+            -0.848753,
+            0.015686,
+            -0.528557
+          ]
+        }
+      }
     },
     {
       "file": "Shooting Gun.fbx",
@@ -1047,7 +3897,339 @@
         "righthandindex2",
         "righthandindex3",
         "righthandindex4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 6.959694,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 7.616061,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 8.704095,
+          "direction": [
+            0.176418,
+            0.984315,
+            -0.0
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 9.161502,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 3.427689,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 17.592727,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 17.59272,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 7.10399,
+          "direction": [
+            0.165373,
+            -0.472538,
+            0.865656
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 15.091571,
+          "direction": [
+            0.154464,
+            -0.866309,
+            0.475026
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 15.184065,
+          "direction": [
+            -0.150549,
+            -0.948206,
+            0.279717
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 9.582889,
+          "direction": [
+            -0.109227,
+            -0.992498,
+            -0.054924
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 0.855328,
+          "direction": [
+            -0.147396,
+            -0.958375,
+            -0.244522
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 1.276434,
+          "direction": [
+            -0.147392,
+            -0.958377,
+            -0.244518
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 7.103996,
+          "direction": [
+            -0.165373,
+            -0.472537,
+            -0.865656
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 14.9195,
+          "direction": [
+            0.03485,
+            -0.8763,
+            -0.480503
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 15.320391,
+          "direction": [
+            -0.199948,
+            -0.939769,
+            -0.277228
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 9.187627,
+          "direction": [
+            -0.154715,
+            -0.985788,
+            -0.065462
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.976411,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.678609
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 1.810884,
+          "direction": [
+            -0.22227,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 25.049192,
+          "direction": [
+            0.129744,
+            -0.983587,
+            0.125393
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 28.414003,
+          "direction": [
+            0.103599,
+            -0.977312,
+            0.184737
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 10.32785,
+          "direction": [
+            -0.485884,
+            -0.690689,
+            0.535599
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 3.752373,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 3.752372,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 24.839178,
+          "direction": [
+            0.011777,
+            -0.991903,
+            -0.126453
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 28.295648,
+          "direction": [
+            0.050076,
+            -0.981367,
+            -0.185504
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 12.90316,
+          "direction": [
+            -0.71431,
+            -0.553128,
+            -0.428731
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 5.120476,
+          "direction": [
+            -0.84696,
+            0.015679,
+            -0.531425
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 5.120474,
+          "direction": [
+            -0.846961,
+            0.015679,
+            -0.531425
+          ]
+        }
+      }
     },
     {
       "file": "Surprise Uppercut (1).fbx",
@@ -1258,7 +4440,659 @@
         "righthandthumb2",
         "righthandthumb3",
         "righthandthumb4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 0.478861,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 0.531427,
+          "direction": [
+            0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 0.607344,
+          "direction": [
+            -0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 0.647058,
+          "direction": [
+            0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 0.326844,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 0.895875,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 0.895875,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 0.48694,
+          "direction": [
+            0.912188,
+            -0.395522,
+            0.107121
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 1.160697,
+          "direction": [
+            0.675691,
+            -0.735899,
+            0.043518
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 1.096731,
+          "direction": [
+            0.639927,
+            -0.754783,
+            0.14421
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 0.295699,
+          "direction": [
+            0.626783,
+            -0.775886,
+            -0.071721
+          ]
+        },
+        "lefthandthumb1": {
+          "source_bone": "mixamorig:LeftHandThumb1",
+          "parent": "lefthand",
+          "length": 0.110467,
+          "direction": [
+            0.127187,
+            -0.928567,
+            0.348693
+          ]
+        },
+        "lefthandthumb2": {
+          "source_bone": "mixamorig:LeftHandThumb2",
+          "parent": "lefthandthumb1",
+          "length": 0.12621,
+          "direction": [
+            0.120955,
+            -0.930242,
+            0.346438
+          ]
+        },
+        "lefthandthumb3": {
+          "source_bone": "mixamorig:LeftHandThumb3",
+          "parent": "lefthandthumb2",
+          "length": 0.107325,
+          "direction": [
+            0.274054,
+            -0.875678,
+            0.397597
+          ]
+        },
+        "lefthandthumb4": {
+          "source_bone": "mixamorig:LeftHandThumb4",
+          "parent": "lefthandthumb3",
+          "length": 0.107325,
+          "direction": [
+            0.274054,
+            -0.875678,
+            0.397597
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 0.118059,
+          "direction": [
+            0.545589,
+            -0.834916,
+            0.072442
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 0.112015,
+          "direction": [
+            0.391844,
+            -0.919024,
+            0.043053
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 0.09798,
+          "direction": [
+            0.405686,
+            -0.912871,
+            0.045659
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 0.09798,
+          "direction": [
+            0.405686,
+            -0.912871,
+            0.045659
+          ]
+        },
+        "lefthandmiddle1": {
+          "source_bone": "mixamorig:LeftHandMiddle1",
+          "parent": "lefthand",
+          "length": 0.121658,
+          "direction": [
+            0.398268,
+            -0.914636,
+            -0.069451
+          ]
+        },
+        "lefthandmiddle2": {
+          "source_bone": "mixamorig:LeftHandMiddle2",
+          "parent": "lefthandmiddle1",
+          "length": 0.110832,
+          "direction": [
+            0.362856,
+            -0.928838,
+            -0.074801
+          ]
+        },
+        "lefthandmiddle3": {
+          "source_bone": "mixamorig:LeftHandMiddle3",
+          "parent": "lefthandmiddle2",
+          "length": 0.09329,
+          "direction": [
+            0.359064,
+            -0.930265,
+            -0.075363
+          ]
+        },
+        "lefthandmiddle4": {
+          "source_bone": "mixamorig:LeftHandMiddle4",
+          "parent": "lefthandmiddle3",
+          "length": 0.09329,
+          "direction": [
+            0.359064,
+            -0.930265,
+            -0.075363
+          ]
+        },
+        "lefthandring1": {
+          "source_bone": "mixamorig:LeftHandRing1",
+          "parent": "lefthand",
+          "length": 0.098661,
+          "direction": [
+            0.384812,
+            -0.920161,
+            -0.072268
+          ]
+        },
+        "lefthandring2": {
+          "source_bone": "mixamorig:LeftHandRing2",
+          "parent": "lefthandring1",
+          "length": 0.093107,
+          "direction": [
+            0.21883,
+            -0.971087,
+            -0.095411
+          ]
+        },
+        "lefthandring3": {
+          "source_bone": "mixamorig:LeftHandRing3",
+          "parent": "lefthandring2",
+          "length": 0.075708,
+          "direction": [
+            0.266267,
+            -0.959764,
+            -0.089188
+          ]
+        },
+        "lefthandring4": {
+          "source_bone": "mixamorig:LeftHandRing4",
+          "parent": "lefthandring3",
+          "length": 0.075708,
+          "direction": [
+            0.266267,
+            -0.959764,
+            -0.089188
+          ]
+        },
+        "lefthandpinky1": {
+          "source_bone": "mixamorig:LeftHandPinky1",
+          "parent": "lefthand",
+          "length": 0.113865,
+          "direction": [
+            0.45805,
+            -0.886779,
+            -0.061746
+          ]
+        },
+        "lefthandpinky2": {
+          "source_bone": "mixamorig:LeftHandPinky2",
+          "parent": "lefthandpinky1",
+          "length": 0.101293,
+          "direction": [
+            0.247158,
+            -0.964535,
+            -0.092661
+          ]
+        },
+        "lefthandpinky3": {
+          "source_bone": "mixamorig:LeftHandPinky3",
+          "parent": "lefthandpinky2",
+          "length": 0.082801,
+          "direction": [
+            0.397742,
+            -0.914724,
+            -0.071284
+          ]
+        },
+        "lefthandpinky4": {
+          "source_bone": "mixamorig:LeftHandPinky4",
+          "parent": "lefthandpinky3",
+          "length": 0.082801,
+          "direction": [
+            0.397742,
+            -0.914724,
+            -0.071284
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 0.48694,
+          "direction": [
+            -0.912188,
+            -0.395522,
+            -0.107121
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 1.160311,
+          "direction": [
+            -0.675916,
+            -0.736144,
+            -0.035061
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 1.085953,
+          "direction": [
+            -0.646278,
+            -0.762275,
+            0.035535
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 0.333199,
+          "direction": [
+            -0.583331,
+            -0.794454,
+            -0.16902
+          ]
+        },
+        "righthandthumb1": {
+          "source_bone": "mixamorig:RightHandThumb1",
+          "parent": "righthand",
+          "length": 0.111698,
+          "direction": [
+            -0.179492,
+            -0.923266,
+            0.339651
+          ]
+        },
+        "righthandthumb2": {
+          "source_bone": "mixamorig:RightHandThumb2",
+          "parent": "righthandthumb1",
+          "length": 0.125437,
+          "direction": [
+            -0.199174,
+            -0.917882,
+            0.343251
+          ]
+        },
+        "righthandthumb3": {
+          "source_bone": "mixamorig:RightHandThumb3",
+          "parent": "righthandthumb2",
+          "length": 0.112453,
+          "direction": [
+            -0.321593,
+            -0.874705,
+            0.362587
+          ]
+        },
+        "righthandthumb4": {
+          "source_bone": "mixamorig:RightHandThumb4",
+          "parent": "righthandthumb3",
+          "length": 0.112453,
+          "direction": [
+            -0.321593,
+            -0.874705,
+            0.362587
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.101773,
+          "direction": [
+            -0.570589,
+            -0.818019,
+            -0.072616
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 0.089061,
+          "direction": [
+            -0.32555,
+            -0.942275,
+            -0.078324
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.072457,
+          "direction": [
+            -0.516656,
+            -0.852949,
+            -0.074461
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.072457,
+          "direction": [
+            -0.516656,
+            -0.852949,
+            -0.074461
+          ]
+        },
+        "righthandmiddle1": {
+          "source_bone": "mixamorig:RightHandMiddle1",
+          "parent": "righthand",
+          "length": 0.099732,
+          "direction": [
+            -0.541916,
+            -0.839949,
+            -0.028488
+          ]
+        },
+        "righthandmiddle2": {
+          "source_bone": "mixamorig:RightHandMiddle2",
+          "parent": "righthandmiddle1",
+          "length": 0.099563,
+          "direction": [
+            -0.31054,
+            -0.9499,
+            -0.035438
+          ]
+        },
+        "righthandmiddle3": {
+          "source_bone": "mixamorig:RightHandMiddle3",
+          "parent": "righthandmiddle2",
+          "length": 0.074889,
+          "direction": [
+            -0.469212,
+            -0.882541,
+            -0.031001
+          ]
+        },
+        "righthandmiddle4": {
+          "source_bone": "mixamorig:RightHandMiddle4",
+          "parent": "righthandmiddle3",
+          "length": 0.074889,
+          "direction": [
+            -0.469212,
+            -0.882541,
+            -0.031001
+          ]
+        },
+        "righthandring1": {
+          "source_bone": "mixamorig:RightHandRing1",
+          "parent": "righthand",
+          "length": 0.080242,
+          "direction": [
+            -0.393115,
+            -0.916136,
+            -0.078459
+          ]
+        },
+        "righthandring2": {
+          "source_bone": "mixamorig:RightHandRing2",
+          "parent": "righthandring1",
+          "length": 0.074134,
+          "direction": [
+            -0.165166,
+            -0.983024,
+            -0.079902
+          ]
+        },
+        "righthandring3": {
+          "source_bone": "mixamorig:RightHandRing3",
+          "parent": "righthandring2",
+          "length": 0.05891,
+          "direction": [
+            -0.263983,
+            -0.961217,
+            -0.079841
+          ]
+        },
+        "righthandring4": {
+          "source_bone": "mixamorig:RightHandRing4",
+          "parent": "righthandring3",
+          "length": 0.05891,
+          "direction": [
+            -0.263983,
+            -0.961217,
+            -0.079841
+          ]
+        },
+        "righthandpinky1": {
+          "source_bone": "mixamorig:RightHandPinky1",
+          "parent": "righthand",
+          "length": 0.1075,
+          "direction": [
+            -0.380039,
+            -0.916175,
+            -0.127257
+          ]
+        },
+        "righthandpinky2": {
+          "source_bone": "mixamorig:RightHandPinky2",
+          "parent": "righthandpinky1",
+          "length": 0.09045,
+          "direction": [
+            -0.200203,
+            -0.97168,
+            -0.125526
+          ]
+        },
+        "righthandpinky3": {
+          "source_bone": "mixamorig:RightHandPinky3",
+          "parent": "righthandpinky2",
+          "length": 0.074262,
+          "direction": [
+            -0.376798,
+            -0.917511,
+            -0.127266
+          ]
+        },
+        "righthandpinky4": {
+          "source_bone": "mixamorig:RightHandPinky4",
+          "parent": "righthandpinky3",
+          "length": 0.074262,
+          "direction": [
+            -0.376798,
+            -0.917511,
+            -0.127266
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 1.674941,
+          "direction": [
+            0.116668,
+            -0.991532,
+            -0.057041
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 1.494808,
+          "direction": [
+            0.089007,
+            -0.994494,
+            -0.055316
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 0.834636,
+          "direction": [
+            0.063893,
+            -0.650636,
+            0.756697
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 0.302676,
+          "direction": [
+            0.082911,
+            0.035304,
+            0.995931
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 0.302676,
+          "direction": [
+            0.082911,
+            0.035305,
+            0.995931
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 1.677086,
+          "direction": [
+            -0.116519,
+            -0.990263,
+            -0.076172
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 1.495267,
+          "direction": [
+            -0.088978,
+            -0.994194,
+            -0.060502
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 0.815016,
+          "direction": [
+            -0.065421,
+            -0.666229,
+            0.742872
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 0.30095,
+          "direction": [
+            -0.083374,
+            0.035601,
+            0.995882
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 0.30095,
+          "direction": [
+            -0.083374,
+            0.035601,
+            0.995882
+          ]
+        }
+      }
     },
     {
       "file": "Surprise Uppercut (2).fbx",
@@ -1373,7 +5207,339 @@
         "righthandindex2",
         "righthandindex3",
         "righthandindex4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 6.959694,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 7.616061,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 8.704095,
+          "direction": [
+            0.176418,
+            0.984315,
+            -0.0
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 9.161502,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 3.427689,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 17.592727,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 17.59272,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 7.10399,
+          "direction": [
+            0.165373,
+            -0.472538,
+            0.865656
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 15.091571,
+          "direction": [
+            0.154464,
+            -0.866309,
+            0.475026
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 15.184065,
+          "direction": [
+            -0.150549,
+            -0.948206,
+            0.279717
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 9.582889,
+          "direction": [
+            -0.109227,
+            -0.992498,
+            -0.054924
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 0.855328,
+          "direction": [
+            -0.147396,
+            -0.958375,
+            -0.244522
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 1.276434,
+          "direction": [
+            -0.147392,
+            -0.958377,
+            -0.244518
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 7.103996,
+          "direction": [
+            -0.165373,
+            -0.472537,
+            -0.865656
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 14.9195,
+          "direction": [
+            0.03485,
+            -0.8763,
+            -0.480503
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 15.320391,
+          "direction": [
+            -0.199948,
+            -0.939769,
+            -0.277228
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 9.187627,
+          "direction": [
+            -0.154715,
+            -0.985788,
+            -0.065462
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.976411,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.678609
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 1.810884,
+          "direction": [
+            -0.22227,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 25.049192,
+          "direction": [
+            0.129744,
+            -0.983587,
+            0.125393
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 28.414003,
+          "direction": [
+            0.103599,
+            -0.977312,
+            0.184737
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 10.32785,
+          "direction": [
+            -0.485884,
+            -0.690689,
+            0.535599
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 3.752373,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 3.752372,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 24.839178,
+          "direction": [
+            0.011777,
+            -0.991903,
+            -0.126453
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 28.295648,
+          "direction": [
+            0.050076,
+            -0.981367,
+            -0.185504
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 12.90316,
+          "direction": [
+            -0.71431,
+            -0.553128,
+            -0.428731
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 5.120476,
+          "direction": [
+            -0.84696,
+            0.015679,
+            -0.531425
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 5.120474,
+          "direction": [
+            -0.846961,
+            0.015679,
+            -0.531425
+          ]
+        }
+      }
     },
     {
       "file": "Surprise Uppercut (3).fbx",
@@ -1488,7 +5654,339 @@
         "righthandindex2",
         "righthandindex3",
         "righthandindex4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 6.959694,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 7.616061,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 8.704095,
+          "direction": [
+            0.176418,
+            0.984315,
+            -0.0
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 9.161502,
+          "direction": [
+            0.176418,
+            0.984315,
+            0.0
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 3.427689,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 17.592727,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 17.59272,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 7.10399,
+          "direction": [
+            0.165373,
+            -0.472538,
+            0.865656
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 15.091571,
+          "direction": [
+            0.154464,
+            -0.866309,
+            0.475026
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 15.184065,
+          "direction": [
+            -0.150549,
+            -0.948206,
+            0.279717
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 9.582889,
+          "direction": [
+            -0.109227,
+            -0.992498,
+            -0.054924
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 0.855328,
+          "direction": [
+            -0.147396,
+            -0.958375,
+            -0.244522
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 1.276434,
+          "direction": [
+            -0.147392,
+            -0.958377,
+            -0.244518
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 1.056877,
+          "direction": [
+            -0.147393,
+            -0.958376,
+            -0.244521
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 7.103996,
+          "direction": [
+            -0.165373,
+            -0.472537,
+            -0.865656
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 14.9195,
+          "direction": [
+            0.03485,
+            -0.8763,
+            -0.480503
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 15.320391,
+          "direction": [
+            -0.199948,
+            -0.939769,
+            -0.277228
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 9.187627,
+          "direction": [
+            -0.154715,
+            -0.985788,
+            -0.065462
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.976411,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.678609
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 1.810884,
+          "direction": [
+            -0.22227,
+            -0.700062,
+            0.678609
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.884552,
+          "direction": [
+            -0.22227,
+            -0.700061,
+            0.67861
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 25.049192,
+          "direction": [
+            0.129744,
+            -0.983587,
+            0.125393
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 28.414003,
+          "direction": [
+            0.103599,
+            -0.977312,
+            0.184737
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 10.32785,
+          "direction": [
+            -0.485884,
+            -0.690689,
+            0.535599
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 3.752373,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 3.752372,
+          "direction": [
+            -0.688268,
+            0.021881,
+            0.725126
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 24.839178,
+          "direction": [
+            0.011777,
+            -0.991903,
+            -0.126453
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 28.295648,
+          "direction": [
+            0.050076,
+            -0.981367,
+            -0.185504
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 12.90316,
+          "direction": [
+            -0.71431,
+            -0.553128,
+            -0.428731
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 5.120476,
+          "direction": [
+            -0.84696,
+            0.015679,
+            -0.531425
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 5.120474,
+          "direction": [
+            -0.846961,
+            0.015679,
+            -0.531425
+          ]
+        }
+      }
     },
     {
       "file": "Surprise Uppercut.fbx",
@@ -1699,18 +6197,819 @@
         "righthandthumb2",
         "righthandthumb3",
         "righthandthumb4"
-      ]
+      ],
+      "rest_pose": {
+        "hips": {
+          "source_bone": "mixamorig:Hips",
+          "parent": null,
+          "length": 0.478861,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "spine": {
+          "source_bone": "mixamorig:Spine",
+          "parent": "hips",
+          "length": 0.531427,
+          "direction": [
+            0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "spine1": {
+          "source_bone": "mixamorig:Spine1",
+          "parent": "spine",
+          "length": 0.607344,
+          "direction": [
+            -0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "spine2": {
+          "source_bone": "mixamorig:Spine2",
+          "parent": "spine1",
+          "length": 0.647058,
+          "direction": [
+            0.0,
+            0.995269,
+            -0.097155
+          ]
+        },
+        "neck": {
+          "source_bone": "mixamorig:Neck",
+          "parent": "spine2",
+          "length": 0.326844,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "head": {
+          "source_bone": "mixamorig:Head",
+          "parent": "neck",
+          "length": 0.895875,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "headtopend": {
+          "source_bone": "mixamorig:HeadTop_End",
+          "parent": "head",
+          "length": 0.895875,
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "leftshoulder": {
+          "source_bone": "mixamorig:LeftShoulder",
+          "parent": "spine2",
+          "length": 0.48694,
+          "direction": [
+            0.912188,
+            -0.395522,
+            0.107121
+          ]
+        },
+        "leftarm": {
+          "source_bone": "mixamorig:LeftArm",
+          "parent": "leftshoulder",
+          "length": 1.160697,
+          "direction": [
+            0.675691,
+            -0.735899,
+            0.043518
+          ]
+        },
+        "leftforearm": {
+          "source_bone": "mixamorig:LeftForeArm",
+          "parent": "leftarm",
+          "length": 1.096731,
+          "direction": [
+            0.639927,
+            -0.754783,
+            0.14421
+          ]
+        },
+        "lefthand": {
+          "source_bone": "mixamorig:LeftHand",
+          "parent": "leftforearm",
+          "length": 0.295699,
+          "direction": [
+            0.626783,
+            -0.775886,
+            -0.071721
+          ]
+        },
+        "lefthandthumb1": {
+          "source_bone": "mixamorig:LeftHandThumb1",
+          "parent": "lefthand",
+          "length": 0.110467,
+          "direction": [
+            0.127187,
+            -0.928567,
+            0.348693
+          ]
+        },
+        "lefthandthumb2": {
+          "source_bone": "mixamorig:LeftHandThumb2",
+          "parent": "lefthandthumb1",
+          "length": 0.12621,
+          "direction": [
+            0.120955,
+            -0.930242,
+            0.346438
+          ]
+        },
+        "lefthandthumb3": {
+          "source_bone": "mixamorig:LeftHandThumb3",
+          "parent": "lefthandthumb2",
+          "length": 0.107325,
+          "direction": [
+            0.274054,
+            -0.875678,
+            0.397597
+          ]
+        },
+        "lefthandthumb4": {
+          "source_bone": "mixamorig:LeftHandThumb4",
+          "parent": "lefthandthumb3",
+          "length": 0.107325,
+          "direction": [
+            0.274054,
+            -0.875678,
+            0.397597
+          ]
+        },
+        "lefthandindex1": {
+          "source_bone": "mixamorig:LeftHandIndex1",
+          "parent": "lefthand",
+          "length": 0.118059,
+          "direction": [
+            0.545589,
+            -0.834916,
+            0.072442
+          ]
+        },
+        "lefthandindex2": {
+          "source_bone": "mixamorig:LeftHandIndex2",
+          "parent": "lefthandindex1",
+          "length": 0.112015,
+          "direction": [
+            0.391844,
+            -0.919024,
+            0.043053
+          ]
+        },
+        "lefthandindex3": {
+          "source_bone": "mixamorig:LeftHandIndex3",
+          "parent": "lefthandindex2",
+          "length": 0.09798,
+          "direction": [
+            0.405686,
+            -0.912871,
+            0.045659
+          ]
+        },
+        "lefthandindex4": {
+          "source_bone": "mixamorig:LeftHandIndex4",
+          "parent": "lefthandindex3",
+          "length": 0.09798,
+          "direction": [
+            0.405686,
+            -0.912871,
+            0.045659
+          ]
+        },
+        "lefthandmiddle1": {
+          "source_bone": "mixamorig:LeftHandMiddle1",
+          "parent": "lefthand",
+          "length": 0.121658,
+          "direction": [
+            0.398268,
+            -0.914636,
+            -0.069451
+          ]
+        },
+        "lefthandmiddle2": {
+          "source_bone": "mixamorig:LeftHandMiddle2",
+          "parent": "lefthandmiddle1",
+          "length": 0.110832,
+          "direction": [
+            0.362856,
+            -0.928838,
+            -0.074801
+          ]
+        },
+        "lefthandmiddle3": {
+          "source_bone": "mixamorig:LeftHandMiddle3",
+          "parent": "lefthandmiddle2",
+          "length": 0.09329,
+          "direction": [
+            0.359064,
+            -0.930265,
+            -0.075363
+          ]
+        },
+        "lefthandmiddle4": {
+          "source_bone": "mixamorig:LeftHandMiddle4",
+          "parent": "lefthandmiddle3",
+          "length": 0.09329,
+          "direction": [
+            0.359064,
+            -0.930265,
+            -0.075363
+          ]
+        },
+        "lefthandring1": {
+          "source_bone": "mixamorig:LeftHandRing1",
+          "parent": "lefthand",
+          "length": 0.098661,
+          "direction": [
+            0.384812,
+            -0.920161,
+            -0.072268
+          ]
+        },
+        "lefthandring2": {
+          "source_bone": "mixamorig:LeftHandRing2",
+          "parent": "lefthandring1",
+          "length": 0.093107,
+          "direction": [
+            0.21883,
+            -0.971087,
+            -0.095411
+          ]
+        },
+        "lefthandring3": {
+          "source_bone": "mixamorig:LeftHandRing3",
+          "parent": "lefthandring2",
+          "length": 0.075708,
+          "direction": [
+            0.266267,
+            -0.959764,
+            -0.089188
+          ]
+        },
+        "lefthandring4": {
+          "source_bone": "mixamorig:LeftHandRing4",
+          "parent": "lefthandring3",
+          "length": 0.075708,
+          "direction": [
+            0.266267,
+            -0.959764,
+            -0.089188
+          ]
+        },
+        "lefthandpinky1": {
+          "source_bone": "mixamorig:LeftHandPinky1",
+          "parent": "lefthand",
+          "length": 0.113865,
+          "direction": [
+            0.45805,
+            -0.886779,
+            -0.061746
+          ]
+        },
+        "lefthandpinky2": {
+          "source_bone": "mixamorig:LeftHandPinky2",
+          "parent": "lefthandpinky1",
+          "length": 0.101293,
+          "direction": [
+            0.247158,
+            -0.964535,
+            -0.092661
+          ]
+        },
+        "lefthandpinky3": {
+          "source_bone": "mixamorig:LeftHandPinky3",
+          "parent": "lefthandpinky2",
+          "length": 0.082801,
+          "direction": [
+            0.397742,
+            -0.914724,
+            -0.071284
+          ]
+        },
+        "lefthandpinky4": {
+          "source_bone": "mixamorig:LeftHandPinky4",
+          "parent": "lefthandpinky3",
+          "length": 0.082801,
+          "direction": [
+            0.397742,
+            -0.914724,
+            -0.071284
+          ]
+        },
+        "rightshoulder": {
+          "source_bone": "mixamorig:RightShoulder",
+          "parent": "spine2",
+          "length": 0.48694,
+          "direction": [
+            -0.912188,
+            -0.395522,
+            -0.107121
+          ]
+        },
+        "rightarm": {
+          "source_bone": "mixamorig:RightArm",
+          "parent": "rightshoulder",
+          "length": 1.160311,
+          "direction": [
+            -0.675916,
+            -0.736144,
+            -0.035061
+          ]
+        },
+        "rightforearm": {
+          "source_bone": "mixamorig:RightForeArm",
+          "parent": "rightarm",
+          "length": 1.085953,
+          "direction": [
+            -0.646278,
+            -0.762275,
+            0.035535
+          ]
+        },
+        "righthand": {
+          "source_bone": "mixamorig:RightHand",
+          "parent": "rightforearm",
+          "length": 0.333199,
+          "direction": [
+            -0.583331,
+            -0.794454,
+            -0.16902
+          ]
+        },
+        "righthandthumb1": {
+          "source_bone": "mixamorig:RightHandThumb1",
+          "parent": "righthand",
+          "length": 0.111698,
+          "direction": [
+            -0.179492,
+            -0.923266,
+            0.339651
+          ]
+        },
+        "righthandthumb2": {
+          "source_bone": "mixamorig:RightHandThumb2",
+          "parent": "righthandthumb1",
+          "length": 0.125437,
+          "direction": [
+            -0.199174,
+            -0.917882,
+            0.343251
+          ]
+        },
+        "righthandthumb3": {
+          "source_bone": "mixamorig:RightHandThumb3",
+          "parent": "righthandthumb2",
+          "length": 0.112453,
+          "direction": [
+            -0.321593,
+            -0.874705,
+            0.362587
+          ]
+        },
+        "righthandthumb4": {
+          "source_bone": "mixamorig:RightHandThumb4",
+          "parent": "righthandthumb3",
+          "length": 0.112453,
+          "direction": [
+            -0.321593,
+            -0.874705,
+            0.362587
+          ]
+        },
+        "righthandindex1": {
+          "source_bone": "mixamorig:RightHandIndex1",
+          "parent": "righthand",
+          "length": 0.101773,
+          "direction": [
+            -0.570589,
+            -0.818019,
+            -0.072616
+          ]
+        },
+        "righthandindex2": {
+          "source_bone": "mixamorig:RightHandIndex2",
+          "parent": "righthandindex1",
+          "length": 0.089061,
+          "direction": [
+            -0.32555,
+            -0.942275,
+            -0.078324
+          ]
+        },
+        "righthandindex3": {
+          "source_bone": "mixamorig:RightHandIndex3",
+          "parent": "righthandindex2",
+          "length": 0.072457,
+          "direction": [
+            -0.516656,
+            -0.852949,
+            -0.074461
+          ]
+        },
+        "righthandindex4": {
+          "source_bone": "mixamorig:RightHandIndex4",
+          "parent": "righthandindex3",
+          "length": 0.072457,
+          "direction": [
+            -0.516656,
+            -0.852949,
+            -0.074461
+          ]
+        },
+        "righthandmiddle1": {
+          "source_bone": "mixamorig:RightHandMiddle1",
+          "parent": "righthand",
+          "length": 0.099732,
+          "direction": [
+            -0.541916,
+            -0.839949,
+            -0.028488
+          ]
+        },
+        "righthandmiddle2": {
+          "source_bone": "mixamorig:RightHandMiddle2",
+          "parent": "righthandmiddle1",
+          "length": 0.099563,
+          "direction": [
+            -0.31054,
+            -0.9499,
+            -0.035438
+          ]
+        },
+        "righthandmiddle3": {
+          "source_bone": "mixamorig:RightHandMiddle3",
+          "parent": "righthandmiddle2",
+          "length": 0.074889,
+          "direction": [
+            -0.469212,
+            -0.882541,
+            -0.031001
+          ]
+        },
+        "righthandmiddle4": {
+          "source_bone": "mixamorig:RightHandMiddle4",
+          "parent": "righthandmiddle3",
+          "length": 0.074889,
+          "direction": [
+            -0.469212,
+            -0.882541,
+            -0.031001
+          ]
+        },
+        "righthandring1": {
+          "source_bone": "mixamorig:RightHandRing1",
+          "parent": "righthand",
+          "length": 0.080242,
+          "direction": [
+            -0.393115,
+            -0.916136,
+            -0.078459
+          ]
+        },
+        "righthandring2": {
+          "source_bone": "mixamorig:RightHandRing2",
+          "parent": "righthandring1",
+          "length": 0.074134,
+          "direction": [
+            -0.165166,
+            -0.983024,
+            -0.079902
+          ]
+        },
+        "righthandring3": {
+          "source_bone": "mixamorig:RightHandRing3",
+          "parent": "righthandring2",
+          "length": 0.05891,
+          "direction": [
+            -0.263983,
+            -0.961217,
+            -0.079841
+          ]
+        },
+        "righthandring4": {
+          "source_bone": "mixamorig:RightHandRing4",
+          "parent": "righthandring3",
+          "length": 0.05891,
+          "direction": [
+            -0.263983,
+            -0.961217,
+            -0.079841
+          ]
+        },
+        "righthandpinky1": {
+          "source_bone": "mixamorig:RightHandPinky1",
+          "parent": "righthand",
+          "length": 0.1075,
+          "direction": [
+            -0.380039,
+            -0.916175,
+            -0.127257
+          ]
+        },
+        "righthandpinky2": {
+          "source_bone": "mixamorig:RightHandPinky2",
+          "parent": "righthandpinky1",
+          "length": 0.09045,
+          "direction": [
+            -0.200203,
+            -0.97168,
+            -0.125526
+          ]
+        },
+        "righthandpinky3": {
+          "source_bone": "mixamorig:RightHandPinky3",
+          "parent": "righthandpinky2",
+          "length": 0.074262,
+          "direction": [
+            -0.376798,
+            -0.917511,
+            -0.127266
+          ]
+        },
+        "righthandpinky4": {
+          "source_bone": "mixamorig:RightHandPinky4",
+          "parent": "righthandpinky3",
+          "length": 0.074262,
+          "direction": [
+            -0.376798,
+            -0.917511,
+            -0.127266
+          ]
+        },
+        "leftupleg": {
+          "source_bone": "mixamorig:LeftUpLeg",
+          "parent": "hips",
+          "length": 1.674941,
+          "direction": [
+            0.116668,
+            -0.991532,
+            -0.057041
+          ]
+        },
+        "leftleg": {
+          "source_bone": "mixamorig:LeftLeg",
+          "parent": "leftupleg",
+          "length": 1.494808,
+          "direction": [
+            0.089007,
+            -0.994494,
+            -0.055316
+          ]
+        },
+        "leftfoot": {
+          "source_bone": "mixamorig:LeftFoot",
+          "parent": "leftleg",
+          "length": 0.834636,
+          "direction": [
+            0.063893,
+            -0.650636,
+            0.756697
+          ]
+        },
+        "lefttoebase": {
+          "source_bone": "mixamorig:LeftToeBase",
+          "parent": "leftfoot",
+          "length": 0.302676,
+          "direction": [
+            0.082911,
+            0.035304,
+            0.995931
+          ]
+        },
+        "lefttoeend": {
+          "source_bone": "mixamorig:LeftToe_End",
+          "parent": "lefttoebase",
+          "length": 0.302676,
+          "direction": [
+            0.082911,
+            0.035305,
+            0.995931
+          ]
+        },
+        "rightupleg": {
+          "source_bone": "mixamorig:RightUpLeg",
+          "parent": "hips",
+          "length": 1.677086,
+          "direction": [
+            -0.116519,
+            -0.990263,
+            -0.076172
+          ]
+        },
+        "rightleg": {
+          "source_bone": "mixamorig:RightLeg",
+          "parent": "rightupleg",
+          "length": 1.495267,
+          "direction": [
+            -0.088978,
+            -0.994194,
+            -0.060502
+          ]
+        },
+        "rightfoot": {
+          "source_bone": "mixamorig:RightFoot",
+          "parent": "rightleg",
+          "length": 0.815016,
+          "direction": [
+            -0.065421,
+            -0.666229,
+            0.742872
+          ]
+        },
+        "righttoebase": {
+          "source_bone": "mixamorig:RightToeBase",
+          "parent": "rightfoot",
+          "length": 0.30095,
+          "direction": [
+            -0.083374,
+            0.035601,
+            0.995882
+          ]
+        },
+        "righttoeend": {
+          "source_bone": "mixamorig:RightToe_End",
+          "parent": "righttoebase",
+          "length": 0.30095,
+          "direction": [
+            -0.083374,
+            0.035601,
+            0.995882
+          ]
+        }
+      }
     }
   ],
   "comparisons": [
     {
       "source": "Gunplay.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.7536,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 65,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 78.917,
+        "max_direction_angle_degrees": 96.962,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 66.567,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 85.237,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 64.473,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 59.128,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 89.244,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 58.692,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 89.717,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 65.538,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 85.645,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 64.359,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 58.575,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 89.182,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 58.693,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 90.445,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 96.794,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 93.244,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 81.068,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1736,11 +7035,160 @@
     {
       "source": "Rifle Run To Dying.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.7536,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 65,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 78.917,
+        "max_direction_angle_degrees": 96.962,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 66.567,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 85.237,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 64.473,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 59.128,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 89.244,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 58.692,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 89.717,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 65.538,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 85.645,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 64.359,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 58.575,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 89.182,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 58.693,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 90.445,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 96.794,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 93.244,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 81.068,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1766,11 +7214,160 @@
     {
       "source": "Rockin' Shackle A.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.7536,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 65,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 79.789,
+        "max_direction_angle_degrees": 99.379,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 68.161,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 90.781,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 64.737,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 60.229,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 88.335,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 53.901,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 91.85,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 68.495,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 90.089,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 64.598,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 60.345,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 88.142,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 53.901,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 91.621,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 99.379,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 95.83,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 83.653,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1796,11 +7393,160 @@
     {
       "source": "Rockin' Shackle B.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.459,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 33,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 85.944,
+        "max_direction_angle_degrees": 104.006,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 104.006,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 72.283,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 100.077,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 91.82,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 99.221,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 96.221,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 103.46,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 66.269,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 45.97,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 59.664,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 79.48,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 84.304,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 96.166,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 82.092,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 91.701,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 88.204,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 76.209,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1842,11 +7588,160 @@
     {
       "source": "Shooting Gun.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.459,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 33,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 85.373,
+        "max_direction_angle_degrees": 105.516,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 105.516,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 72.432,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 98.955,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 83.898,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 102.557,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 96.944,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 100.123,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 64.318,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 45.871,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 60.586,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 75.14,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 80.888,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 96.889,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 85.475,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 91.699,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 88.206,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 76.225,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1888,11 +7783,160 @@
     {
       "source": "Surprise Uppercut (1).fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.7536,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 65,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 78.249,
+        "max_direction_angle_degrees": 97.302,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 68.34,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 81.333,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 68.097,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 60.609,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 88.715,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 56.868,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 89.636,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 64.2,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 80.14,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 62.269,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 56.584,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 88.418,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 56.86,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 88.537,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 97.302,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 93.752,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 81.576,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1918,11 +7962,160 @@
     {
       "source": "Surprise Uppercut (2).fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.459,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 33,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 85.373,
+        "max_direction_angle_degrees": 105.516,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 105.516,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 72.432,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 98.955,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 83.898,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 102.557,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 96.944,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 100.123,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 64.318,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 45.871,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 60.586,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 75.14,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 80.888,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 96.889,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 85.475,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 91.699,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 88.206,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 76.225,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -1964,11 +8157,160 @@
     {
       "source": "Surprise Uppercut (3).fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.459,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 33,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 85.373,
+        "max_direction_angle_degrees": 105.516,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 105.516,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 72.432,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 98.955,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 83.898,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 102.557,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 96.944,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 100.123,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 64.318,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 45.871,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 60.586,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 75.14,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 80.888,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 96.889,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 85.475,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 91.699,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 88.206,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 76.225,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
@@ -2010,11 +8352,160 @@
     {
       "source": "Surprise Uppercut.fbx",
       "target": "male_base_mesh.glb",
-      "verdict": "partial humanoid match; manual review required",
+      "verdict": "core body semantic match; helper/finger differences",
       "full_bone_similarity": 0.7536,
-      "body_bone_similarity": 0.7586,
+      "body_bone_similarity": 1.0,
+      "core_bone_similarity": 1.0,
       "source_bones": 65,
       "target_bones": 56,
+      "rest_pose": {
+        "compared_core_bones": 20,
+        "mean_direction_angle_degrees": 78.249,
+        "max_direction_angle_degrees": 97.302,
+        "parent_similarity": 1.0,
+        "bones": [
+          {
+            "bone": "head",
+            "angle_degrees": 90.403,
+            "parent_match": true,
+            "source_parent": "neck",
+            "target_parent": "neck"
+          },
+          {
+            "bone": "hips",
+            "angle_degrees": 96.962,
+            "parent_match": true,
+            "source_parent": null,
+            "target_parent": null
+          },
+          {
+            "bone": "leftarm",
+            "angle_degrees": 68.34,
+            "parent_match": true,
+            "source_parent": "leftshoulder",
+            "target_parent": "leftshoulder"
+          },
+          {
+            "bone": "leftfoot",
+            "angle_degrees": 81.333,
+            "parent_match": true,
+            "source_parent": "leftleg",
+            "target_parent": "leftleg"
+          },
+          {
+            "bone": "leftforearm",
+            "angle_degrees": 68.097,
+            "parent_match": true,
+            "source_parent": "leftarm",
+            "target_parent": "leftarm"
+          },
+          {
+            "bone": "lefthand",
+            "angle_degrees": 60.609,
+            "parent_match": true,
+            "source_parent": "leftforearm",
+            "target_parent": "leftforearm"
+          },
+          {
+            "bone": "leftleg",
+            "angle_degrees": 88.715,
+            "parent_match": true,
+            "source_parent": "leftupleg",
+            "target_parent": "leftupleg"
+          },
+          {
+            "bone": "leftshoulder",
+            "angle_degrees": 56.868,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "leftupleg",
+            "angle_degrees": 89.636,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "neck",
+            "angle_degrees": 94.376,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightarm",
+            "angle_degrees": 64.2,
+            "parent_match": true,
+            "source_parent": "rightshoulder",
+            "target_parent": "rightshoulder"
+          },
+          {
+            "bone": "rightfoot",
+            "angle_degrees": 80.14,
+            "parent_match": true,
+            "source_parent": "rightleg",
+            "target_parent": "rightleg"
+          },
+          {
+            "bone": "rightforearm",
+            "angle_degrees": 62.269,
+            "parent_match": true,
+            "source_parent": "rightarm",
+            "target_parent": "rightarm"
+          },
+          {
+            "bone": "righthand",
+            "angle_degrees": 56.584,
+            "parent_match": true,
+            "source_parent": "rightforearm",
+            "target_parent": "rightforearm"
+          },
+          {
+            "bone": "rightleg",
+            "angle_degrees": 88.418,
+            "parent_match": true,
+            "source_parent": "rightupleg",
+            "target_parent": "rightupleg"
+          },
+          {
+            "bone": "rightshoulder",
+            "angle_degrees": 56.86,
+            "parent_match": true,
+            "source_parent": "spine2",
+            "target_parent": "spine2"
+          },
+          {
+            "bone": "rightupleg",
+            "angle_degrees": 88.537,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine",
+            "angle_degrees": 97.302,
+            "parent_match": true,
+            "source_parent": "hips",
+            "target_parent": "hips"
+          },
+          {
+            "bone": "spine1",
+            "angle_degrees": 93.752,
+            "parent_match": true,
+            "source_parent": "spine",
+            "target_parent": "spine"
+          },
+          {
+            "bone": "spine2",
+            "angle_degrees": 81.576,
+            "parent_match": true,
+            "source_parent": "spine1",
+            "target_parent": "spine1"
+          }
+        ]
+      },
       "missing_on_target": [
         "headtopend",
         "lefthandindex4",
