@@ -241,10 +241,15 @@ Outputs:
 - Blender\worker_output\retarget\<source>\<source>_on_<target>.glb
 - local start/middle/end PNG previews
 
-Published report:
+Published report and small diagnostic previews:
 
 - docs/blender/generated/retarget-test-report.json
 - docs/blender/generated/retarget-test-report.md
+- docs/blender/generated/retarget-previews/<source>/preview_start.png
+- docs/blender/generated/retarget-previews/<source>/preview_mid.png
+- docs/blender/generated/retarget-previews/<source>/preview_end.png
+
+Only the 512x512 diagnostic PNGs are published. The source FBX/GLB/GLTF and retargeted GLB remain local.
 
 To test another source animation:
 
