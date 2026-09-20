@@ -214,6 +214,16 @@ def align_source_armature(source_arm, source_mapping, target_arm, target_mapping
     source_arm.matrix_world = align @ source_arm.matrix_world
     bpy.context.view_layer.update()
 
+    # Bone-heat weighting is much more reliable when the armature object has
+    # unit rotation/scale. Bake the global alignment into the armature data
+    # before attempting automatic weights. Pose animation remains on the same
+    # bones; only the armature object's transform is normalized.
+    bpy.ops.object.select_all(action="DESELECT")
+    source_arm.select_set(True)
+    bpy.context.view_layer.objects.active = source_arm
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    bpy.context.view_layer.update()
+
     return {
         "source_height": round(source_height, 6),
         "target_height": round(target_height, 6),
@@ -262,42 +272,115 @@ def bind_automatic(meshes, source_arm):
     if not meshes:
         raise RuntimeError("Target contains no meshes to bind.")
 
-    bpy.ops.object.select_all(action="DESELECT")
-
-    for mesh in meshes:
-        mesh.select_set(True)
-
-    source_arm.select_set(True)
-    bpy.context.view_layer.objects.active = source_arm
+    results = []
+    bound_count = 0
 
     source_arm.data.pose_position = "REST"
     bpy.context.view_layer.update()
 
-    try:
-        bpy.ops.object.parent_set(type="ARMATURE_AUTO")
-    except Exception as exc:
-        raise RuntimeError(
-            "Automatic Mixamo binding failed: {}".format(exc)
+    for mesh in meshes:
+        record = {
+            "mesh": mesh.name,
+            "vertices": len(mesh.data.vertices),
+            "method": None,
+            "status": "pending",
+            "vertex_groups": 0,
+        }
+
+        # Normalize mesh rotation/scale before bone-heat weighting while
+        # preserving its world-space position.
+        bpy.ops.object.select_all(action="DESELECT")
+        mesh.select_set(True)
+        bpy.context.view_layer.objects.active = mesh
+        try:
+            bpy.ops.object.transform_apply(
+                location=False,
+                rotation=True,
+                scale=True,
+            )
+        except Exception as exc:
+            record["transform_warning"] = "{}: {}".format(
+                type(exc).__name__,
+                str(exc),
+            )
+
+        methods = (
+            ("automatic", "ARMATURE_AUTO"),
+            ("envelope", "ARMATURE_ENVELOPE"),
         )
 
-    bpy.context.view_layer.update()
+        last_error = None
 
-    for mesh in meshes:
-        armature_modifiers = [
-            modifier
-            for modifier in mesh.modifiers
-            if modifier.type == "ARMATURE"
-        ]
-        if not armature_modifiers:
-            raise RuntimeError(
-                "Automatic binding created no armature modifier for {}".format(
-                    mesh.name
+        for method_name, parent_type in methods:
+            # Clear any partial result from a previous attempt.
+            for modifier in list(mesh.modifiers):
+                if modifier.type == "ARMATURE":
+                    mesh.modifiers.remove(modifier)
+
+            mesh.vertex_groups.clear()
+            mesh.parent = None
+
+            bpy.ops.object.select_all(action="DESELECT")
+            mesh.select_set(True)
+            source_arm.select_set(True)
+            bpy.context.view_layer.objects.active = source_arm
+
+            try:
+                bpy.ops.object.parent_set(type=parent_type)
+                bpy.context.view_layer.update()
+            except Exception as exc:
+                last_error = "{}: {}".format(
+                    type(exc).__name__,
+                    str(exc),
+                )
+                continue
+
+            modifiers = [
+                modifier
+                for modifier in mesh.modifiers
+                if modifier.type == "ARMATURE"
+            ]
+
+            # A modifier plus at least one generated vertex group is enough
+            # for this prototype playback test. Envelope mode is deliberately
+            # allowed as a fallback when bone heat cannot solve a mesh.
+            if modifiers and len(mesh.vertex_groups) > 0:
+                record["method"] = method_name
+                record["status"] = "bound"
+                record["vertex_groups"] = len(mesh.vertex_groups)
+                bound_count += 1
+                break
+
+            last_error = (
+                "{} produced no usable armature binding "
+                "(modifiers={}, groups={})".format(
+                    method_name,
+                    len(modifiers),
+                    len(mesh.vertex_groups),
                 )
             )
 
+        if record["status"] != "bound":
+            # Do not kill the entire prototype test because one accessory or
+            # tiny helper mesh cannot be automatically weighted. Leave it
+            # static, record it, and continue so we can still judge the main
+            # body deformation.
+            record["status"] = "unbound"
+            record["error"] = last_error or "Unknown binding failure"
+
+        results.append(record)
+
+    if bound_count == 0:
+        raise RuntimeError(
+            "No prototype meshes could be rebound to the Mixamo armature."
+        )
+
     return {
         "mesh_count": len(meshes),
+        "bound_count": bound_count,
+        "unbound_count": len(meshes) - bound_count,
         "meshes": [mesh.name for mesh in meshes],
+        "results": results,
         "vertex_group_counts": {
             mesh.name: len(mesh.vertex_groups)
             for mesh in meshes
@@ -465,7 +548,9 @@ def markdown(report):
         lines.extend([
             "## Binding",
             "",
-            "- Meshes rebound: {}".format(report["binding"]["mesh_count"]),
+            "- Meshes found: {}".format(report["binding"]["mesh_count"]),
+            "- Meshes rebound: {}".format(report["binding"]["bound_count"]),
+            "- Meshes left unbound: {}".format(report["binding"]["unbound_count"]),
             "- Mesh names: {}".format(", ".join(report["binding"]["meshes"])),
             "",
         ])
