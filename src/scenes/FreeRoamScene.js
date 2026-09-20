@@ -633,11 +633,6 @@ export class FreeRoamScene {
 this.ENTER_CAR_YAW_OFFSET =
   -Math.PI / 2;
 
-  // Extra distance outward AFTER F is pressed.
-// Does not affect where the F prompt appears.
-this.ENTER_CAR_START_EXTRA_DISTANCE =
-  0.65;
-
 // Only lowers Entering Car.glb.
 // Does NOT affect Driving.glb.
 this.ENTER_CAR_Y_OFFSET =
@@ -2165,25 +2160,18 @@ this.subaruDriverSeatPoint
 // ========================================================
 
 // ========================================================
-// ENTER CAR MUST FACE FROM OUTSIDE -> DRIVER SEAT
+// ENTER CAR FACES STRAIGHT THROUGH THE DRIVER DOOR
 // ========================================================
-
+// Do not aim the entry anchor diagonally at the seat. The old
+// seatWorld - entryWorld direction could contain a front/rear
+// component and made the character begin the enter animation
+// from an odd angle near the rear of the car.
 const enterCarFacing =
-  seatWorld
+  driverSideDirection
     .clone()
-    .sub(
-      entryWorld
+    .multiplyScalar(
+      -1
     );
-
-enterCarFacing.y =
-  0;
-
-if (
-  enterCarFacing.lengthSq() >
-  0.0001
-) {
-  enterCarFacing.normalize();
-}
 
 this.setInteractionAnchorFacing(
   this.subaruDriverEntryPoint,
@@ -3329,59 +3317,34 @@ this.subaruDriverEntryPoint
     this.tempWorldPoint
   );
 
-// Get driver-seat position too.
-// We use seat -> door direction to know which way is OUTSIDE.
-this.subaruDriverSeatPoint
-  .getWorldPosition(
-    this.tempWorldPoint2
-  );
-
-const outsideDirection =
-  this.tempWorldPoint
-    .clone()
-    .sub(
-      this.tempWorldPoint2
-    );
-
-outsideDirection.y =
-  0;
-
-if (
-  outsideDirection.lengthSq() >
-  0.0001
-) {
-  outsideDirection.normalize();
-}
-
 // ==========================================================
-// SEPARATE ANIMATION START FROM F INTERACTION POINT
+// ENTER ANIMATION START
 // ==========================================================
-//
-// subaruDriverEntryPoint:
-//     stays near the car so F still appears.
-//
-// animationStart:
-//     farther outward and only used AFTER F is pressed.
-// ==========================================================
-
+// Start from the actual driver-door entry anchor. The previous
+// code pushed the player another 0.65m along entry -> seat's
+// reverse vector, which also contained a front/rear component.
+// That diagonal push is what could place the character near the
+// rear door before the enter animation even began.
 const animationStart =
   this.tempWorldPoint
-    .clone()
-    .addScaledVector(
-      outsideDirection,
-      this.ENTER_CAR_START_EXTRA_DISTANCE
-    );
+    .clone();
+
+// Move only along the car's front/rear axis to line the body up
+// with the exterior handle. This is deliberately NOT an outward
+// diagonal offset.
+animationStart.addScaledVector(
+  this.getSubaruFrontDirection(),
+  this.ENTER_CAR_HANDLE_OFFSET
+);
 
 animationStart.y =
   this.SUBARU_SPAWN.y;
 
-this.player.position.set(
-  animationStart.x,
-  animationStart.y,
-  animationStart.z
+this.player.position.copy(
+  animationStart
 );
 
-// Still use the original entry anchor's facing direction.
+// Entry anchor now faces straight inward through the driver door.
 this.facePlayerFromAnchor(
   this.subaruDriverEntryPoint
 );
@@ -3399,15 +3362,20 @@ this.player.emoteYOffset =
   );
 
   console.log(
-    'Racing Life: entering Subaru.'
+    'Racing Life: entering Subaru.',
+    {
+      animationStart: {
+        x: animationStart.x.toFixed(2),
+        z: animationStart.z.toFixed(2)
+      },
+      entryFacingY:
+        THREE.MathUtils
+          .radToDeg(
+            this.player.rotation.y
+          )
+          .toFixed(1)
+    }
   );
-
-// Move slightly toward the rear edge of the front door,
-// where the exterior handle actually is.
-animationStart.addScaledVector(
-  this.getSubaruFrontDirection(),
-  this.ENTER_CAR_HANDLE_OFFSET
-);
 
   // ----------------------------------------------------------
   // OPEN DRIVER DOOR
