@@ -1,6 +1,7 @@
 import { RaceScene3D as BaseRaceScene3D } from './RaceScene3DLegacy.js';
 import { RaceRuntime } from '../racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../racing/RaceSceneRuntimeBridge.js';
+import { getActiveMatchManager } from '../racing/MatchManager.js';
 
 // P0 integration layer around the established Three.js race scene. The base
 // scene remains responsible for Barcelona placement, collision and chase
@@ -9,7 +10,10 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   constructor(options = {}) {
     super(options);
 
-    this.matchManager = options.matchManager ?? null;
+    // main.js already owns the faction MatchManager. Prefer an explicit
+    // injection, but use that active app instance so existing construction
+    // remains backward-compatible while P0 is integrated incrementally.
+    this.matchManager = options.matchManager ?? getActiveMatchManager();
     this.applyCareerResult = options.applyCareerResult ?? null;
     this.onRaceCompletion = options.onRaceCompletion ?? null;
 
