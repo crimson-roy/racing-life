@@ -100,16 +100,20 @@ goto parse_args
 if not exist "%INPUT_DIR%" mkdir "%INPUT_DIR%"
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
 
-dir /b "%INPUT_DIR%\*.fbx" >nul 2>nul
-if errorlevel 1 (
+set "HAS_ASSET="
+if exist "%INPUT_DIR%\*.fbx" set "HAS_ASSET=1"
+if exist "%INPUT_DIR%\*.glb" set "HAS_ASSET=1"
+if exist "%INPUT_DIR%\*.gltf" set "HAS_ASSET=1"
+
+if not defined HAS_ASSET (
     echo.
     echo ============================================================
-    echo NO FBX FILES FOUND
+    echo NO SUPPORTED 3D ASSETS FOUND
     echo ============================================================
-    echo Put FBX files here:
+    echo Put FBX, GLB or GLTF files here:
     echo   %INPUT_DIR%
     echo.
-    echo Or pass/drag a folder containing FBX files.
+    echo Or pass/drag a folder containing supported files.
     echo.
     pause
     exit /b 2
