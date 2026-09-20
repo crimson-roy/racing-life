@@ -125,7 +125,33 @@ def target_canonical_name(name):
         "footr": "rightfoot",
         "toer": "righttoebase",
     }
-    return direct.get(n, n)
+    if n in direct:
+        return direct[n]
+
+    finger_patterns = (
+        ("findex", "index"),
+        ("fmiddle", "middle"),
+        ("fring", "ring"),
+        ("fpinky", "pinky"),
+        ("thumb", "thumb"),
+    )
+    for prefix, part in finger_patterns:
+        if not n.startswith(prefix):
+            continue
+
+        side = "left" if n.endswith("l") else "right" if n.endswith("r") else None
+        if side is None:
+            return n
+
+        digits = "".join(ch for ch in n[len(prefix):-1] if ch.isdigit())
+        if not digits:
+            return n
+
+        # Blender metarig names are typically .01/.02/.03 while Mixamo
+        # uses 1/2/3 for the corresponding finger joints.
+        return "{}hand{}{}".format(side, part, int(digits))
+
+    return n
 
 
 def target_map(armature):
@@ -243,17 +269,75 @@ def remove_source_meshes(source_objects, source_arm):
             bpy.data.objects.remove(obj, do_unlink=True)
 
 
-def prepare_target_meshes(target_objects, old_target_armature):
+def mesh_world_center(mesh):
+    if mesh.type != "MESH" or not mesh.data.vertices:
+        return mesh.matrix_world.translation.copy()
+
+    total = Vector((0.0, 0.0, 0.0))
+    for vertex in mesh.data.vertices:
+        total += mesh.matrix_world @ vertex.co
+    return total / len(mesh.data.vertices)
+
+
+def nearest_target_bone(mesh, target_arm, target_mapping):
+    center = mesh_world_center(mesh)
+    best = None
+    best_distance = math.inf
+
+    preferred = {
+        "hips", "spine", "spine1", "spine2", "neck", "head",
+        "leftshoulder", "leftarm", "leftforearm", "lefthand",
+        "rightshoulder", "rightarm", "rightforearm", "righthand",
+        "leftupleg", "leftleg", "leftfoot",
+        "rightupleg", "rightleg", "rightfoot",
+    }
+
+    for canonical in sorted(preferred & set(target_mapping)):
+        head = bone_world_head(target_arm, target_mapping[canonical])
+        tail = bone_world_tail(target_arm, target_mapping[canonical])
+        midpoint = (head + tail) * 0.5
+        distance = float((center - midpoint).length)
+
+        if distance < best_distance:
+            best_distance = distance
+            best = canonical
+
+    return best, best_distance
+
+
+def rebind_using_existing_weights(
+    target_objects,
+    old_target_armature,
+    source_arm,
+    source_mapping,
+    target_mapping,
+):
     meshes = [obj for obj in target_objects if obj.type == "MESH"]
+    if not meshes:
+        raise RuntimeError("Target contains no meshes.")
 
-    if old_target_armature is not None:
-        old_target_armature.data.pose_position = "REST"
-
+    old_target_armature.data.pose_position = "REST"
+    source_arm.data.pose_position = "REST"
     bpy.context.view_layer.update()
 
+    results = []
+    weighted_meshes = []
+    rigid_meshes = []
+
     for mesh in meshes:
+        record = {
+            "mesh": mesh.name,
+            "vertices": len(mesh.data.vertices),
+            "status": "pending",
+            "mapped_groups": 0,
+            "unmapped_groups": [],
+        }
+
         world_matrix = mesh.matrix_world.copy()
 
+        # Remove the old armature relationship but KEEP the prototype's
+        # authored vertex weights. Those weights already deform this body
+        # correctly; we only remap their group names to Mixamo bone names.
         for modifier in list(mesh.modifiers):
             if modifier.type == "ARMATURE":
                 mesh.modifiers.remove(modifier)
@@ -261,131 +345,88 @@ def prepare_target_meshes(target_objects, old_target_armature):
         mesh.parent = None
         mesh.matrix_world = world_matrix
 
-        # Old Rigify/metarig groups are not valid for the canonical Mixamo
-        # skeleton. Automatic weights will rebuild the skinning groups.
-        mesh.vertex_groups.clear()
+        original_groups = [group.name for group in mesh.vertex_groups]
+        rename_plan = []
 
-    return meshes
+        for group_name in original_groups:
+            canonical = target_canonical_name(group_name)
+            source_bone_name = source_mapping.get(canonical)
 
+            if source_bone_name:
+                rename_plan.append((group_name, source_bone_name, canonical))
+            else:
+                record["unmapped_groups"].append(group_name)
 
-def bind_automatic(meshes, source_arm):
-    if not meshes:
-        raise RuntimeError("Target contains no meshes to bind.")
-
-    results = []
-    bound_count = 0
-
-    source_arm.data.pose_position = "REST"
-    bpy.context.view_layer.update()
-
-    for mesh in meshes:
-        record = {
-            "mesh": mesh.name,
-            "vertices": len(mesh.data.vertices),
-            "method": None,
-            "status": "pending",
-            "vertex_groups": 0,
-        }
-
-        # Normalize mesh rotation/scale before bone-heat weighting while
-        # preserving its world-space position.
-        bpy.ops.object.select_all(action="DESELECT")
-        mesh.select_set(True)
-        bpy.context.view_layer.objects.active = mesh
-        try:
-            bpy.ops.object.transform_apply(
-                location=False,
-                rotation=True,
-                scale=True,
-            )
-        except Exception as exc:
-            record["transform_warning"] = "{}: {}".format(
-                type(exc).__name__,
-                str(exc),
-            )
-
-        methods = (
-            ("automatic", "ARMATURE_AUTO"),
-            ("envelope", "ARMATURE_ENVELOPE"),
-        )
-
-        last_error = None
-
-        for method_name, parent_type in methods:
-            # Clear any partial result from a previous attempt.
-            for modifier in list(mesh.modifiers):
-                if modifier.type == "ARMATURE":
-                    mesh.modifiers.remove(modifier)
-
-            mesh.vertex_groups.clear()
-            mesh.parent = None
-
-            bpy.ops.object.select_all(action="DESELECT")
-            mesh.select_set(True)
-            source_arm.select_set(True)
-            bpy.context.view_layer.objects.active = source_arm
-
-            try:
-                bpy.ops.object.parent_set(type=parent_type)
-                bpy.context.view_layer.update()
-            except Exception as exc:
-                last_error = "{}: {}".format(
-                    type(exc).__name__,
-                    str(exc),
-                )
+        # Rename through unique temporary names first to avoid Blender adding
+        # .001 suffixes when target names overlap.
+        for index, (old_name, new_name, canonical) in enumerate(rename_plan):
+            group = mesh.vertex_groups.get(old_name)
+            if group is None:
                 continue
+            group.name = "__RL_TMP_{}__".format(index)
 
-            modifiers = [
-                modifier
-                for modifier in mesh.modifiers
-                if modifier.type == "ARMATURE"
-            ]
+        for index, (old_name, new_name, canonical) in enumerate(rename_plan):
+            group = mesh.vertex_groups.get("__RL_TMP_{}__".format(index))
+            if group is None:
+                continue
+            group.name = new_name
+            record["mapped_groups"] += 1
 
-            # A modifier plus at least one generated vertex group is enough
-            # for this prototype playback test. Envelope mode is deliberately
-            # allowed as a fallback when bone heat cannot solve a mesh.
-            if modifiers and len(mesh.vertex_groups) > 0:
-                record["method"] = method_name
-                record["status"] = "bound"
-                record["vertex_groups"] = len(mesh.vertex_groups)
-                bound_count += 1
-                break
+        if record["mapped_groups"] > 0:
+            modifier = mesh.modifiers.new(
+                name="RacingLifeMixamoArmature",
+                type="ARMATURE",
+            )
+            modifier.object = source_arm
 
-            last_error = (
-                "{} produced no usable armature binding "
-                "(modifiers={}, groups={})".format(
-                    method_name,
-                    len(modifiers),
-                    len(mesh.vertex_groups),
-                )
+            weighted_meshes.append(mesh)
+            record["status"] = "weight-groups-remapped"
+            record["method"] = "reuse-prototype-skin-weights"
+            record["vertex_groups"] = len(mesh.vertex_groups)
+        else:
+            # Small helper meshes such as the 42-vertex Icosphere may have no
+            # skin weights at all. Attach those rigidly to the nearest mapped
+            # body bone so they do not remain behind when the character moves.
+            canonical, distance = nearest_target_bone(
+                mesh,
+                old_target_armature,
+                target_mapping,
             )
 
-        if record["status"] != "bound":
-            # Do not kill the entire prototype test because one accessory or
-            # tiny helper mesh cannot be automatically weighted. Leave it
-            # static, record it, and continue so we can still judge the main
-            # body deformation.
-            record["status"] = "unbound"
-            record["error"] = last_error or "Unknown binding failure"
+            if canonical and canonical in source_mapping:
+                source_bone = source_mapping[canonical]
+                mesh.parent = source_arm
+                mesh.parent_type = "BONE"
+                mesh.parent_bone = source_bone
+                mesh.matrix_world = world_matrix
+
+                rigid_meshes.append(mesh)
+                record["status"] = "rigid-bone-parent"
+                record["method"] = "nearest-body-bone"
+                record["canonical_bone"] = canonical
+                record["source_bone"] = source_bone
+                record["distance"] = round(distance, 6)
+            else:
+                record["status"] = "unbound"
+                record["method"] = None
 
         results.append(record)
 
-    if bound_count == 0:
+    if not weighted_meshes:
         raise RuntimeError(
-            "No prototype meshes could be rebound to the Mixamo armature."
+            "No prototype mesh had reusable skin weights for the Mixamo rig."
         )
 
     return {
         "mesh_count": len(meshes),
-        "bound_count": bound_count,
-        "unbound_count": len(meshes) - bound_count,
+        "weighted_mesh_count": len(weighted_meshes),
+        "rigid_mesh_count": len(rigid_meshes),
+        "unbound_count": sum(
+            1 for item in results if item["status"] == "unbound"
+        ),
         "meshes": [mesh.name for mesh in meshes],
         "results": results,
-        "vertex_group_counts": {
-            mesh.name: len(mesh.vertex_groups)
-            for mesh in meshes
-        },
-    }
+    }, meshes
 
 
 def primary_action(armature):
@@ -549,7 +590,8 @@ def markdown(report):
             "## Binding",
             "",
             "- Meshes found: {}".format(report["binding"]["mesh_count"]),
-            "- Meshes rebound: {}".format(report["binding"]["bound_count"]),
+            "- Weighted meshes remapped: {}".format(report["binding"]["weighted_mesh_count"]),
+            "- Rigid helper meshes attached: {}".format(report["binding"]["rigid_mesh_count"]),
             "- Meshes left unbound: {}".format(report["binding"]["unbound_count"]),
             "- Mesh names: {}".format(", ".join(report["binding"]["meshes"])),
             "",
@@ -604,7 +646,7 @@ def main():
         "blender_version": bpy.app.version_string,
         "source_file": source_path.name,
         "target_file": target_path.name,
-        "strategy": "rebind-prototype-to-canonical-mixamo-skeleton",
+        "strategy": "reuse-prototype-skin-weights-on-canonical-mixamo-skeleton",
         "status": "ok",
     }
 
@@ -670,14 +712,12 @@ def main():
             target_mapping,
         )
 
-        meshes = prepare_target_meshes(
+        report["binding"], meshes = rebind_using_existing_weights(
             target_objects,
             old_target_arm,
-        )
-
-        report["binding"] = bind_automatic(
-            meshes,
             source_arm,
+            source_mapping,
+            target_mapping,
         )
 
         source_arm.data.pose_position = "POSE"
