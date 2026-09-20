@@ -270,7 +270,10 @@ def render_preview(path, meshes, frame):
     except Exception:
         pass
 
+    if scene.world is None:
+        scene.world = bpy.data.worlds.new("RLPreviewWorld")
     scene.world.color = (0.035, 0.035, 0.045)
+
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
     bpy.data.objects.remove(camera, do_unlink=True)
