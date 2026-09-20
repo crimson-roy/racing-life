@@ -31,20 +31,32 @@ export function commitRaceToMatch(matchManager, raceController, details = {}) {
   });
 }
 
-// Convert race state into the shape used by the current prototype career
-// result function. This does not invent new rewards or progression values;
-// careerState remains the single owner of those existing prototype rules.
-export function createCareerRaceResult(raceController) {
+// Convert race state into the shape owned by the current prototype career
+// result function. Reward values remain in careerState; this function only
+// preserves authoritative measured race/session facts for career history.
+export function createCareerRaceResult(raceController, details = {}) {
   if (!raceController) {
     throw new Error('createCareerRaceResult requires a raceController.');
   }
 
   const snapshot = raceController.getSnapshot();
   const player = snapshot.racers.find((racer) => racer.id === raceController.playerId);
+  const classification = snapshot.racers.map((racer) => racer.id);
+  const classificationIndex = classification.indexOf(raceController.playerId);
 
   return {
     finished: Boolean(player?.finished),
     lapsCompleted: player?.completedLaps ?? 0,
-    totalLaps: snapshot.totalLaps
+    totalLaps: snapshot.totalLaps,
+    trackId: details.trackId ?? null,
+    raceNumber: Number.isInteger(details.raceNumber) ? details.raceNumber : null,
+    winnerSide: snapshot.winnerSide,
+    classificationPosition: classificationIndex >= 0
+      ? classificationIndex + 1
+      : null,
+    finishPosition: player?.finishPosition ?? null,
+    finishTimeMs: player?.finishTimeMs ?? null,
+    classification,
+    finishOrder: [...snapshot.finishOrder]
   };
 }
