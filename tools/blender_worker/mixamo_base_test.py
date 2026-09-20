@@ -284,8 +284,8 @@ def mesh_world_center(mesh):
 # waist. Split them between Hips and the matching upper leg so the waist keeps
 # its volume while the thigh still follows the leg correctly.
 HELPER_GROUP_SPLITS = {
-    "pelvisl": (("hips", 0.60), ("leftupleg", 0.40)),
-    "pelvisr": (("hips", 0.60), ("rightupleg", 0.40)),
+    "pelvisl": (("hips", 0.70), ("leftupleg", 0.30)),
+    "pelvisr": (("hips", 0.70), ("rightupleg", 0.30)),
     "heel02l": (("leftfoot", 1.00),),
     "heel02r": (("rightfoot", 1.00),),
 }
