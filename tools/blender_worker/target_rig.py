@@ -215,7 +215,7 @@ def build_markdown(report):
         "- This stage validates retarget compatibility only; it does not transfer animation yet.",
         "- Finger differences are evaluated separately from the main body skeleton.",
         "- A target with no armature cannot receive skeletal animation until a rigged target is supplied.",
-        "- Source and target binary assets are not published by this worker.",
+        "- Source and target FBX/GLB/GLTF assets are not published by this worker.",
         "",
     ])
     return "\n".join(lines)
@@ -285,11 +285,15 @@ def main():
         raise SystemExit("Target rig file does not exist: {}".format(target_path))
 
     sources = sorted(
-        [p for p in source_dir.iterdir() if p.is_file() and p.suffix.lower() == ".fbx"],
+        [
+            p
+            for p in source_dir.iterdir()
+            if p.is_file() and p.suffix.lower() in (".fbx", ".glb", ".gltf")
+        ],
         key=lambda p: p.name.lower(),
     )
     if not sources:
-        raise SystemExit("No source FBX files found in: {}".format(source_dir))
+        raise SystemExit("No source FBX, GLB or GLTF files found in: {}".format(source_dir))
 
     output_root.mkdir(parents=True, exist_ok=True)
 
