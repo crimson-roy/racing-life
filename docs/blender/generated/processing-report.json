@@ -1,0 +1,752 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-20T00:24:25.371714+00:00",
+  "blender_version": "5.2.0 LTS",
+  "mode": "process",
+  "target_height": 1.8,
+  "summary": {
+    "files": 9,
+    "ok": 0,
+    "errors": 9
+  },
+  "assets": [
+    {
+      "source_file": "Gunplay.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Gunplay/Gunplay_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.325865,
+          -0.737118,
+          -0.005155
+        ],
+        "max": [
+          0.194168,
+          0.604509,
+          1.882544
+        ],
+        "dimensions": [
+          0.520033,
+          1.341627,
+          1.887699
+        ],
+        "center": [
+          -0.065848,
+          -0.066304,
+          0.938695
+        ]
+      },
+      "source_height": 1.887699,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 13.0,
+        "fps": 60.0,
+        "duration_seconds": 0.2
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 0.95354185,
+      "output_bounds": {
+        "min": [
+          -0.310726,
+          -0.702873,
+          -0.004916
+        ],
+        "max": [
+          0.185147,
+          0.576425,
+          1.795085
+        ],
+        "dimensions": [
+          0.495873,
+          1.279297,
+          1.8
+        ],
+        "center": [
+          -0.062789,
+          -0.063224,
+          0.895085
+        ]
+      },
+      "output_height": 1.8,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Rifle Run To Dying.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Rifle Run To Dying/Rifle Run To Dying_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.312221,
+          -0.883225,
+          -0.011994
+        ],
+        "max": [
+          0.228852,
+          0.334153,
+          1.769991
+        ],
+        "dimensions": [
+          0.541073,
+          1.217378,
+          1.781985
+        ],
+        "center": [
+          -0.041684,
+          -0.274536,
+          0.878998
+        ]
+      },
+      "source_height": 1.781985,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 149.0,
+        "fps": 60.0,
+        "duration_seconds": 2.4667
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 1.01010951,
+      "output_bounds": {
+        "min": [
+          -0.315377,
+          -0.892154,
+          -0.012116
+        ],
+        "max": [
+          0.231166,
+          0.337531,
+          1.787884
+        ],
+        "dimensions": [
+          0.546543,
+          1.229686,
+          1.8
+        ],
+        "center": [
+          -0.042106,
+          -0.277311,
+          0.887884
+        ]
+      },
+      "output_height": 1.8,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Rockin' Shackle A.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Rockin' Shackle A/Rockin' Shackle A_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -43.129589,
+          -207.096222,
+          -2.281325
+        ],
+        "max": [
+          42.712761,
+          -51.283237,
+          280.126556
+        ],
+        "dimensions": [
+          85.842346,
+          155.812988,
+          282.407867
+        ],
+        "center": [
+          -0.208414,
+          -129.189728,
+          138.922623
+        ]
+      },
+      "source_height": 282.407867,
+      "mesh_count": 7,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 301.0,
+        "fps": 60.0,
+        "duration_seconds": 5.0
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 0.00637376,
+      "output_bounds": {
+        "min": [
+          -0.274898,
+          -1.319981,
+          -0.014541
+        ],
+        "max": [
+          0.272241,
+          -0.326867,
+          1.785459
+        ],
+        "dimensions": [
+          0.547138,
+          0.993114,
+          1.8
+        ],
+        "center": [
+          -0.001328,
+          -0.823424,
+          0.885459
+        ]
+      },
+      "output_height": 1.8,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Rockin' Shackle B.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Rockin' Shackle B/Rockin' Shackle B_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.316242,
+          0.20524,
+          0.006025
+        ],
+        "max": [
+          0.327351,
+          0.802721,
+          1.103405
+        ],
+        "dimensions": [
+          0.643594,
+          0.597481,
+          1.09738
+        ],
+        "center": [
+          0.005554,
+          0.503981,
+          0.554715
+        ]
+      },
+      "source_height": 1.09738,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 301.0,
+        "fps": 60.0,
+        "duration_seconds": 5.0
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 1.64027046,
+      "output_bounds": {
+        "min": [
+          -0.518723,
+          0.336649,
+          0.009883
+        ],
+        "max": [
+          0.536945,
+          1.31668,
+          1.809883
+        ],
+        "dimensions": [
+          1.055668,
+          0.980031,
+          1.8
+        ],
+        "center": [
+          0.009111,
+          0.826665,
+          0.909883
+        ]
+      },
+      "output_height": 1.8,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Shooting Gun.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Shooting Gun/Shooting Gun_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.295414,
+          -0.161187,
+          0.006861
+        ],
+        "max": [
+          0.308305,
+          0.192244,
+          1.132553
+        ],
+        "dimensions": [
+          0.603719,
+          0.353431,
+          1.125693
+        ],
+        "center": [
+          0.006446,
+          0.015529,
+          0.569707
+        ]
+      },
+      "source_height": 1.125693,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 160.0,
+        "fps": 30.0,
+        "duration_seconds": 5.3
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 1.59901501,
+      "output_bounds": {
+        "min": [
+          -0.472371,
+          -0.25774,
+          0.01097
+        ],
+        "max": [
+          0.492984,
+          0.307401,
+          1.81097
+        ],
+        "dimensions": [
+          0.965355,
+          0.565142,
+          1.799999
+        ],
+        "center": [
+          0.010307,
+          0.024831,
+          0.91097
+        ]
+      },
+      "output_height": 1.799999,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Surprise Uppercut (1).fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Surprise Uppercut (1)/Surprise Uppercut (1)_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.011685,
+          -0.025558,
+          -0.00056
+        ],
+        "max": [
+          0.014247,
+          0.015231,
+          0.068727
+        ],
+        "dimensions": [
+          0.025932,
+          0.040789,
+          0.069287
+        ],
+        "center": [
+          0.001281,
+          -0.005163,
+          0.034083
+        ]
+      },
+      "source_height": 0.069287,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 106.0,
+        "fps": 30.0,
+        "duration_seconds": 3.5
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 25.97889936,
+      "output_bounds": {
+        "min": [
+          -0.303565,
+          -0.663965,
+          -0.014557
+        ],
+        "max": [
+          0.370115,
+          0.39569,
+          1.785449
+        ],
+        "dimensions": [
+          0.67368,
+          1.059656,
+          1.800006
+        ],
+        "center": [
+          0.033275,
+          -0.134137,
+          0.885446
+        ]
+      },
+      "output_height": 1.800006,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Surprise Uppercut (2).fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Surprise Uppercut (2)/Surprise Uppercut (2)_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.264278,
+          -0.415,
+          -0.005636
+        ],
+        "max": [
+          0.235528,
+          0.256396,
+          1.032573
+        ],
+        "dimensions": [
+          0.499807,
+          0.671396,
+          1.038209
+        ],
+        "center": [
+          -0.014375,
+          -0.079302,
+          0.513468
+        ]
+      },
+      "source_height": 1.038209,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 106.0,
+        "fps": 30.0,
+        "duration_seconds": 3.5
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 1.73375496,
+      "output_bounds": {
+        "min": [
+          -0.458194,
+          -0.719509,
+          -0.009771
+        ],
+        "max": [
+          0.408349,
+          0.444527,
+          1.790228
+        ],
+        "dimensions": [
+          0.866542,
+          1.164036,
+          1.799999
+        ],
+        "center": [
+          -0.024923,
+          -0.137491,
+          0.890228
+        ]
+      },
+      "output_height": 1.799999,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Surprise Uppercut (3).fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Surprise Uppercut (3)/Surprise Uppercut (3)_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.253786,
+          -0.404248,
+          -0.005639
+        ],
+        "max": [
+          0.249737,
+          0.280981,
+          1.032407
+        ],
+        "dimensions": [
+          0.503523,
+          0.685229,
+          1.038046
+        ],
+        "center": [
+          -0.002024,
+          -0.061633,
+          0.513384
+        ]
+      },
+      "source_height": 1.038046,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 106.0,
+        "fps": 30.0,
+        "duration_seconds": 3.5
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 1.7340272,
+      "output_bounds": {
+        "min": [
+          -0.440072,
+          -0.700976,
+          -0.009779
+        ],
+        "max": [
+          0.433051,
+          0.487229,
+          1.790221
+        ],
+        "dimensions": [
+          0.873123,
+          1.188205,
+          1.799999
+        ],
+        "center": [
+          -0.00351,
+          -0.106874,
+          0.890221
+        ]
+      },
+      "output_height": 1.799999,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    },
+    {
+      "source_file": "Surprise Uppercut.fbx",
+      "mode": "process",
+      "status": "error",
+      "outputs": {
+        "glb": "processed/Surprise Uppercut/Surprise Uppercut_normalized.glb"
+      },
+      "source_bounds": {
+        "min": [
+          -0.011685,
+          -0.025558,
+          -0.00056
+        ],
+        "max": [
+          0.014247,
+          0.015231,
+          0.068727
+        ],
+        "dimensions": [
+          0.025932,
+          0.040789,
+          0.069287
+        ],
+        "center": [
+          0.001281,
+          -0.005163,
+          0.034083
+        ]
+      },
+      "source_height": 0.069287,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "animation": {
+        "count": 1,
+        "names": [
+          "Armature|mixamo.com|Layer0"
+        ],
+        "frame_start": 1.0,
+        "frame_end": 106.0,
+        "fps": 30.0,
+        "duration_seconds": 3.5
+      },
+      "normalized": true,
+      "target_height": 1.8,
+      "scale_factor": 25.97889936,
+      "output_bounds": {
+        "min": [
+          -0.303565,
+          -0.663965,
+          -0.014557
+        ],
+        "max": [
+          0.370115,
+          0.39569,
+          1.785449
+        ],
+        "dimensions": [
+          0.67368,
+          1.059656,
+          1.800006
+        ],
+        "center": [
+          0.033275,
+          -0.134137,
+          0.885446
+        ]
+      },
+      "output_height": 1.800006,
+      "error": "TypeError: 'float' object is not callable",
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 348, in process_one",
+        "    render_preview(start_path, meshes, start)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 248, in render_preview",
+        "    camera = create_preview_camera(meshes)",
+        "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\process_fbx.py\", line 230, in create_preview_camera",
+        "    radius = max(size.length() * 0.5, 0.5)",
+        "                 ~~~~~~~~~~~^^",
+        "TypeError: 'float' object is not callable"
+      ]
+    }
+  ]
+}
