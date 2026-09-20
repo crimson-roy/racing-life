@@ -17,6 +17,7 @@ rem   RacingLife-Blender.bat validate-rig
 rem   RacingLife-Blender.bat compare-skeletons
 rem   RacingLife-Blender.bat extract-animation
 rem   RacingLife-Blender.bat inspect-target
+rem   RacingLife-Blender.bat retarget-test
 rem
 rem Optional:
 rem   add a folder path to use it instead of Blender\worker_input
@@ -35,6 +36,8 @@ set "TARGET_HEIGHT=%RACING_LIFE_TARGET_HEIGHT%"
 if not defined TARGET_HEIGHT set "TARGET_HEIGHT=1.80"
 set "TARGET_RIG=%RACING_LIFE_TARGET_RIG%"
 if not defined TARGET_RIG set "TARGET_RIG=%REPO_ROOT%\Blender\male_base_mesh.glb"
+set "RETARGET_SOURCE=%RACING_LIFE_RETARGET_SOURCE%"
+if not defined RETARGET_SOURCE set "RETARGET_SOURCE=%INPUT_DIR%\Surprise Uppercut.fbx"
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -81,6 +84,11 @@ if /I "%~1"=="extract-animation" (
 )
 if /I "%~1"=="inspect-target" (
     set "MODE=inspect-target"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="retarget-test" (
+    set "MODE=retarget-test"
     shift
     goto parse_args
 )
@@ -254,6 +262,32 @@ if /I "%MODE%"=="inspect" (
       --output "%OUTPUT_DIR%" ^
       --repo "%REPO_ROOT%" ^
       %PUBLISH_ARG%
+) else if /I "%MODE%"=="retarget-test" (
+    if not exist "%TARGET_RIG%" (
+        echo.
+        echo TARGET RIG NOT FOUND:
+        echo   %TARGET_RIG%
+        echo.
+        pause
+        exit /b 7
+    )
+    if not exist "%RETARGET_SOURCE%" (
+        echo.
+        echo RETARGET SOURCE NOT FOUND:
+        echo   %RETARGET_SOURCE%
+        echo.
+        echo Set RACING_LIFE_RETARGET_SOURCE to another FBX/GLB/GLTF animation asset.
+        echo.
+        pause
+        exit /b 8
+    )
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\retarget_test.py" -- ^
+      --source "%RETARGET_SOURCE%" ^
+      --target "%TARGET_RIG%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      %PUBLISH_ARG%
 ) else (
     "%BLENDER_EXE%" --background --factory-startup ^
       --python "%REPO_ROOT%\tools\blender_worker\process_fbx.py" -- ^
@@ -295,6 +329,13 @@ if "%EXIT_CODE%"=="0" (
         echo Target rig reports:
         echo   %OUTPUT_DIR%\target-rig-report.json
         echo   %OUTPUT_DIR%\target-rig-report.md
+    ) else if /I "%MODE%"=="retarget-test" (
+        echo Retarget test reports:
+        echo   %OUTPUT_DIR%\retarget-test-report.json
+        echo   %OUTPUT_DIR%\retarget-test-report.md
+        echo.
+        echo Retargeted test asset:
+        echo   %OUTPUT_DIR%\retarget\
     ) else (
         echo Processing reports:
         echo   %OUTPUT_DIR%\processing-report.json
