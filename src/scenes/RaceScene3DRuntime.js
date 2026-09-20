@@ -13,11 +13,16 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     this.matchManager = options.matchManager ?? getActiveMatchManager();
     this.applyCareerResult = options.applyCareerResult ?? null;
     this.onRaceCompletion = options.onRaceCompletion ?? null;
+    this.raceSessionCompleted = false;
 
     if (this.runtimeBridge) {
       this.runtimeBridge.matchManager = this.matchManager;
       this.runtimeBridge.applyCareerResult = this.applyCareerResult;
       this.runtimeBridge.onCompletion = (completion) => {
+        // A rendered race scene represents exactly one MatchManager race.
+        // Once committed, setup toggles/reset keys must not be able to start
+        // the stale session again and award another faction point.
+        this.raceSessionCompleted = true;
         this.showRaceCompletion(completion);
         this.onRaceCompletion?.(completion);
       };
@@ -56,7 +61,7 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   }
 
   advanceRuntimeAfterCollision(dt) {
-    if (this.setupMode || !this.runtimeBridge) return;
+    if (this.setupMode || !this.runtimeBridge || this.raceSessionCompleted) return;
     if (!this.raceRuntime.recordingLine && !this.runtimeBridge.started) return;
 
     const opponentBefore = this.opponentCar.position.clone();
@@ -133,6 +138,13 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     this.handleRuntimeKeyDown = (event) => {
       if (event.repeat || !this.runtimeBridge) return;
 
+      if (event.code === 'KeyL' || event.code === 'KeyX') {
+        if (this.raceSessionCompleted) {
+          this.setStatus('Race result already committed · Esc returns home for the next match race.');
+          return;
+        }
+      }
+
       if (event.code === 'KeyL') {
         if (this.raceRuntime.recordingLine) {
           const count = this.runtimeBridge.finishAuthoring();
@@ -196,6 +208,12 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     super.toggleSetupMode();
 
     if (wasSetup && !this.setupMode && this.runtimeBridge) {
+      if (this.raceSessionCompleted) {
+        this.setStatus('Race complete · result locked · Esc returns home for the next match race.');
+        this.updateRaceHud();
+        return;
+      }
+
       const hud = this.runtimeBridge.getHudState();
       if (hud.ready) {
         this.runtimeBridge.start(performance.now());
@@ -217,11 +235,13 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     const playerLap = player ? Math.min(hud.totalLaps, player.lap) : 0;
     const opponentLap = opponent ? Math.min(hud.totalLaps, opponent.lap) : 0;
 
-    this.runtimeStatusElement.textContent = hud.recordingLine
-      ? `RECORDING · ${hud.authoredPointCount} points`
-      : hud.ready
-        ? `Line ${hud.racingLinePointCount} pts · Player lap ${playerLap}/${hud.totalLaps} · AI lap ${opponentLap}/${hud.totalLaps}`
-        : 'No authored racing line · press L, then drive the route.';
+    this.runtimeStatusElement.textContent = this.raceSessionCompleted
+      ? 'RESULT LOCKED · Esc returns home for the next match race'
+      : hud.recordingLine
+        ? `RECORDING · ${hud.authoredPointCount} points`
+        : hud.ready
+          ? `Line ${hud.racingLinePointCount} pts · Player lap ${playerLap}/${hud.totalLaps} · AI lap ${opponentLap}/${hud.totalLaps}`
+          : 'No authored racing line · press L, then drive the route.';
   }
 
   showRaceCompletion(completion) {
@@ -233,7 +253,9 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     const matchEnd = summary?.completed
       ? ` · ${summary.winner === 'A' ? 'AZURE' : 'CRIMSON'} WINS MATCH`
       : '';
-    this.runtimeResultElement.textContent = `${winner} WINS · ${order}${score}${matchEnd}`;
+    const next = summary?.completed ? ' · MATCH COMPLETE' : ' · ESC → NEXT RACE';
+    this.runtimeResultElement.textContent = `${winner} WINS · ${order}${score}${matchEnd}${next}`;
+    this.updateRaceHud();
   }
 
   dispose() {
