@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T09:42:49.126716+00:00",
+  "generated_at_utc": "2026-09-20T09:53:48.286437+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
@@ -46,12 +46,12 @@
                 {
                   "canonical": "hips",
                   "mixamo_bone": "mixamorig:Hips",
-                  "factor": 0.6
+                  "factor": 0.7
                 },
                 {
                   "canonical": "leftupleg",
                   "mixamo_bone": "mixamorig:LeftUpLeg",
-                  "factor": 0.4
+                  "factor": 0.3
                 }
               ]
             },
@@ -61,12 +61,12 @@
                 {
                   "canonical": "hips",
                   "mixamo_bone": "mixamorig:Hips",
-                  "factor": 0.6
+                  "factor": 0.7
                 },
                 {
                   "canonical": "rightupleg",
                   "mixamo_bone": "mixamorig:RightUpLeg",
-                  "factor": 0.4
+                  "factor": 0.3
                 }
               ]
             }
