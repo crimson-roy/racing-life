@@ -4,7 +4,7 @@
 - Blender: **5.2.0 LTS**
 - Source Mixamo asset: **Surprise Uppercut.fbx**
 - Prototype target: **male_base_mesh.glb**
-- Strategy: **bake-prototype-bind-pose-to-mixamo-rest-and-reuse-skin-weights**
+- Strategy: **mixamo-rest-bake-with-split-pelvis-weight-transfer**
 
 ## Alignment
 
