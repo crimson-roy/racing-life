@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import { RaceProgress } from '../src/racing/RaceProgress.js';
 import { RaceRuntime } from '../src/racing/RaceRuntime.js';
+import { MatchManager } from '../src/racing/MatchManager.js';
 import { TrackSetupStore } from '../src/racing/TrackSetupStore.js';
 
 class MemoryStorage {
@@ -76,4 +77,33 @@ test('completion payload keeps strict finishers separate from full 1v1 classific
   assert.equal(completion.racers[0].finished, true);
   assert.equal(completion.racers[1].classificationPosition, 2);
   assert.equal(completion.racers[1].finished, false);
+});
+
+test('MatchManager ignores duplicate committed race numbers and rejects stale future scoring', () => {
+  const match = new MatchManager({
+    trackOrder: ['barcelona', 'glen_canyon_dam', 'lake_como'],
+    winTarget: 2
+  });
+
+  match.recordResult('A', { raceNumber: 1, trackId: 'barcelona' });
+  match.recordResult('A', { raceNumber: 1, trackId: 'barcelona' });
+
+  let summary = match.getSummary();
+  assert.equal(summary.scoreA, 1);
+  assert.equal(summary.results.length, 1);
+  assert.equal(match.getCurrentRace().raceNumber, 2);
+
+  assert.throws(
+    () => match.recordResult('B', { raceNumber: 3, trackId: 'lake_como' }),
+    /Stale race result/
+  );
+
+  assert.throws(
+    () => match.recordResult('B', { raceNumber: 2, trackId: 'lake_como' }),
+    /Race track mismatch/
+  );
+
+  summary = match.getSummary();
+  assert.equal(summary.scoreB, 0);
+  assert.equal(summary.results.length, 1);
 });
