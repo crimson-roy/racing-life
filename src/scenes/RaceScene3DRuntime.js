@@ -2,6 +2,7 @@ import { RaceScene3D as BaseRaceScene3D } from './RaceScene3DLegacy.js';
 import { RaceRuntime } from '../racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../racing/RaceSceneRuntimeBridge.js';
 import { getActiveMatchManager } from '../racing/MatchManager.js';
+import { getTrack } from '../racing/TrackRegistry.js';
 import { applyRaceResult } from '../state/careerState.js';
 
 // P0 integration layer around the established Three.js race scene. The base
@@ -35,9 +36,13 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   createCars() {
     super.createCars();
 
+    const track = getTrack(this.session.trackId);
+
     this.raceRuntime = new RaceRuntime({
       trackId: this.session.trackId,
-      totalLaps: 1
+      // TrackRegistry already owns the configured lap count for each circuit;
+      // keep race rules out of the Three.js scene instead of hard-coding one lap.
+      totalLaps: track.laps
     });
 
     this.runtimeBridge = new RaceSceneRuntimeBridge({
@@ -226,7 +231,7 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
       if (hud.ready) {
         this.runtimeBridge.start(performance.now());
         if (this.runtimeResultElement) this.runtimeResultElement.textContent = '';
-        this.setStatus(`Race started · ${hud.racingLinePointCount} authored points`);
+        this.setStatus(`Race started · ${hud.racingLinePointCount} authored points · ${hud.totalLaps} laps`);
       } else {
         this.setStatus('Driving mode · press L to author the racing line · C returns to overview');
       }
