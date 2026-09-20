@@ -21,6 +21,32 @@ function distanceSqXZ(a, b) {
   return dx * dx + dz * dz;
 }
 
+// A fast car can move from one side of a checkpoint to the other between two
+// render/physics samples. Measure the checkpoint against the accepted movement
+// segment as well as the current point so legitimate crossings are not lost.
+function distanceSqPointToSegmentXZ(point, start, end) {
+  const segmentX = end.x - start.x;
+  const segmentZ = end.z - start.z;
+  const lengthSq = segmentX * segmentX + segmentZ * segmentZ;
+
+  if (lengthSq <= Number.EPSILON) {
+    return distanceSqXZ(point, end);
+  }
+
+  const offsetX = point.x - start.x;
+  const offsetZ = point.z - start.z;
+  const t = Math.max(0, Math.min(1, (
+    offsetX * segmentX + offsetZ * segmentZ
+  ) / lengthSq));
+
+  const closest = {
+    x: start.x + segmentX * t,
+    z: start.z + segmentZ * t
+  };
+
+  return distanceSqXZ(point, closest);
+}
+
 export class RaceProgress {
   constructor(options = {}) {
     this.totalLaps = Math.max(1, Math.floor(options.totalLaps ?? 1));
@@ -57,7 +83,8 @@ export class RaceProgress {
       checkpointsPassed: 0,
       finished: false,
       finishPosition: null,
-      finishTimeMs: null
+      finishTimeMs: null,
+      previousPosition: null
     };
   }
 
@@ -86,10 +113,24 @@ export class RaceProgress {
       return this.getRacerState(id);
     }
 
+    const currentPosition = normalizePoint(position);
     const checkpoint = this.checkpoints[state.nextCheckpoint];
     const radiusSq = this.checkpointRadius * this.checkpointRadius;
+    const reachedAtCurrentPosition = distanceSqXZ(currentPosition, checkpoint) <= radiusSq;
+    const crossedBetweenFrames = state.previousPosition
+      ? distanceSqPointToSegmentXZ(
+          checkpoint,
+          state.previousPosition,
+          currentPosition
+        ) <= radiusSq
+      : false;
 
-    if (distanceSqXZ(position, checkpoint) > radiusSq) {
+    // Always remember the latest accepted scene position, even when no
+    // checkpoint was reached. RaceScene3D only calls this after collision
+    // rollback, so rejected wall/sidewalk movement never enters this segment.
+    state.previousPosition = currentPosition;
+
+    if (!reachedAtCurrentPosition && !crossedBetweenFrames) {
       return this.getRacerState(id);
     }
 
@@ -117,12 +158,23 @@ export class RaceProgress {
 
   getRacerState(id) {
     const state = this.racers.get(id);
-    return state ? { ...state } : null;
+    if (!state) return null;
+    return {
+      ...state,
+      previousPosition: state.previousPosition
+        ? { ...state.previousPosition }
+        : null
+    };
   }
 
   getLeaderBoard() {
     return [...this.racers.values()]
-      .map((state) => ({ ...state }))
+      .map((state) => ({
+        ...state,
+        previousPosition: state.previousPosition
+          ? { ...state.previousPosition }
+          : null
+      }))
       .sort((a, b) => {
         if (a.finished !== b.finished) return a.finished ? -1 : 1;
         if (a.finished && b.finished) {
