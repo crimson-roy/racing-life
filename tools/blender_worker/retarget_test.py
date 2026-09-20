@@ -302,6 +302,74 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     }
 
 
+def canonical_pose_positions(armature, mapping, frame):
+    bpy.context.scene.frame_set(int(frame))
+    bpy.context.view_layer.update()
+
+    result = {}
+    for canonical, bone_name in mapping.items():
+        pose_bone = armature.pose.bones.get(bone_name)
+        if pose_bone is None:
+            continue
+        world_matrix = armature.matrix_world @ pose_bone.matrix
+        p = world_matrix.translation
+        result[canonical] = [float(p.x), float(p.y), float(p.z)]
+    return result
+
+
+def normalized_pose_error(source_arm, target_arm, source_map, target_map, frame):
+    source_positions = canonical_pose_positions(source_arm, source_map, frame)
+    target_positions = canonical_pose_positions(target_arm, target_map, frame)
+
+    shared = sorted(set(source_positions) & set(target_positions))
+    source_height = skeleton_height_world(source_arm)
+    target_height = skeleton_height_world(target_arm)
+
+    source_hips = Vector(source_positions.get("hips", [0.0, 0.0, 0.0]))
+    target_hips = Vector(target_positions.get("hips", [0.0, 0.0, 0.0]))
+
+    bones = []
+    distances = []
+    for canonical in shared:
+        source_relative = (
+            Vector(source_positions[canonical]) - source_hips
+        ) / max(source_height, 1e-8)
+        target_relative = (
+            Vector(target_positions[canonical]) - target_hips
+        ) / max(target_height, 1e-8)
+
+        distance = float((source_relative - target_relative).length)
+        distances.append(distance)
+        bones.append({
+            "bone": canonical,
+            "source_relative": [round(float(v), 5) for v in source_relative],
+            "target_relative": [round(float(v), 5) for v in target_relative],
+            "normalized_position_error": round(distance, 5),
+        })
+
+    return {
+        "frame": int(frame),
+        "shared_bones": len(shared),
+        "mean_normalized_position_error": round(
+            sum(distances) / len(distances),
+            5,
+        ) if distances else None,
+        "max_normalized_position_error": round(max(distances), 5) if distances else None,
+        "bones": bones,
+    }
+
+
+def classify_unmapped(name):
+    normalized = normalize_bone_name(name)
+    if normalized.endswith("end") or normalized == "headtopend":
+        return "terminal/helper"
+    if any(token in normalized for token in ("thumb", "index", "middle", "ring", "pinky")):
+        return "finger-detail"
+    if normalized.startswith("heel") or normalized.startswith("pelvis"):
+        return "rig-helper"
+    return "unmapped"
+
+
 def export_target_glb(path, target_objects, target_arm):
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -469,6 +537,24 @@ def markdown(report):
         "- Status: **{}**".format(report["status"]),
         "- Mapped bones: **{}**".format(report.get("retarget", {}).get("mapped_count", 0)),
         "- Translation scale: **{}**".format(report.get("retarget", {}).get("translation_scale", "-")),
+        "- Shared mapped joints: **{}**".format(report.get("mapping", {}).get("shared_count", "-")),
+        "- Source-only joints: **{}**".format(len(report.get("mapping", {}).get("source_only", []))),
+        "- Target-only joints: **{}**".format(len(report.get("mapping", {}).get("target_only", []))),
+        "",
+        "## Pose diagnostics",
+        "",
+    ]
+
+    for snapshot in report.get("pose_diagnostics", {}).get("snapshots", []):
+        lines.append(
+            "- Frame {}: mean normalized joint error {}, max {}".format(
+                snapshot.get("frame"),
+                snapshot.get("mean_normalized_position_error"),
+                snapshot.get("max_normalized_position_error"),
+            )
+        )
+
+    lines.extend([
         "",
         "## Output",
         "",
@@ -487,7 +573,7 @@ def markdown(report):
         "",
         "This is a first-pass matrix-delta retarget bake. It compensates for different rest-bone orientations instead of directly copying Mixamo rotation channels. Visual inspection is still required before treating the result as production-ready.",
         "",
-    ]
+    ])
     if report.get("error"):
         lines.extend(["## Error", "", report["error"], ""])
     return "\n".join(lines)
@@ -543,6 +629,29 @@ def main():
             raise RuntimeError("No armature found in target asset.")
         target_family, target_map = bone_map(target_arm)
 
+        shared_canonical = sorted(set(source_map) & set(target_map))
+        source_only = sorted(set(source_map) - set(target_map))
+        target_only = sorted(set(target_map) - set(source_map))
+        report["mapping"] = {
+            "shared_count": len(shared_canonical),
+            "source_only": [
+                {
+                    "canonical": name,
+                    "source_bone": source_map[name],
+                    "category": classify_unmapped(name),
+                }
+                for name in source_only
+            ],
+            "target_only": [
+                {
+                    "canonical": name,
+                    "target_bone": target_map[name],
+                    "category": classify_unmapped(name),
+                }
+                for name in target_only
+            ],
+        }
+
         bpy.context.scene.render.fps = max(1, int(round(fps)))
         retarget_info = retarget(
             source_arm,
@@ -554,6 +663,21 @@ def main():
         )
 
         report["retarget"] = retarget_info
+
+        middle_frame = int(round((frame_start + frame_end) * 0.5))
+        report["pose_diagnostics"] = {
+            "snapshots": [
+                normalized_pose_error(
+                    source_arm,
+                    target_arm,
+                    source_map,
+                    target_map,
+                    frame,
+                )
+                for frame in (frame_start, middle_frame, frame_end)
+            ]
+        }
+
         report["source_rig_family"] = source_family
         report["target_rig_family"] = target_family
         report["frame_start"] = frame_start
@@ -572,9 +696,8 @@ def main():
 
         export_target_glb(glb_path, target_objects, target_arm)
 
-        middle = int(round((frame_start + frame_end) * 0.5))
         render_preview(preview_start, target_objects, frame_start)
-        render_preview(preview_mid, target_objects, middle)
+        render_preview(preview_mid, target_objects, middle_frame)
         render_preview(preview_end, target_objects, frame_end)
 
         report["outputs"] = {
