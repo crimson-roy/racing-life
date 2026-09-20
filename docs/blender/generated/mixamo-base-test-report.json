@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-20T08:32:37.944777+00:00",
+  "blender_version": "5.2.0 LTS",
+  "source_file": "Surprise Uppercut.fbx",
+  "target_file": "male_base_mesh.glb",
+  "strategy": "rebind-prototype-to-canonical-mixamo-skeleton",
+  "status": "error",
+  "alignment": {
+    "source_height": 0.083266,
+    "target_height": 1.763366,
+    "scale_factor": 21.177588,
+    "rotation_angle_degrees": 96.5741
+  },
+  "error": "RuntimeError: Automatic binding created no armature modifier for Icosphere",
+  "traceback_tail": [
+    "Traceback (most recent call last):",
+    "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\mixamo_base_test.py\", line 593, in main",
+    "    report[\"binding\"] = bind_automatic(",
+    "                        ~~~~~~~~~~~~~~^",
+    "        meshes,",
+    "        ^^^^^^^",
+    "        source_arm,",
+    "        ^^^^^^^^^^^",
+    "    )",
+    "    ^",
+    "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\mixamo_base_test.py\", line 292, in bind_automatic",
+    "    raise RuntimeError(",
+    "    ...<3 lines>...",
+    "    )",
+    "RuntimeError: Automatic binding created no armature modifier for Icosphere"
+  ]
+}
