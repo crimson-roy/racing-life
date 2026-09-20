@@ -1,6 +1,6 @@
 # Racing Life Mixamo Base Test
 
-- Status: **error**
+- Status: **ok**
 - Blender: **5.2.0 LTS**
 - Source Mixamo asset: **Surprise Uppercut.fbx**
 - Prototype target: **male_base_mesh.glb**
@@ -13,12 +13,22 @@
 - Scale factor: 21.177588
 - Global facing correction: 96.5741 degrees
 
-## Error
+## Binding
 
-RuntimeError: Automatic binding created no armature modifier for Icosphere
+- Meshes found: 2
+- Meshes rebound: 1
+- Meshes left unbound: 1
+- Mesh names: mesh, Icosphere
+
+## Animation
+
+- Action: RL_Mixamo_Uppercut
+- Frames: 1–106
+- FPS: 30.0
+- Duration: 3.5 s
 
 ## Runtime asset
 
--
+/assets/characters/retarget-tests/surprise-uppercut-prototype.glb
 
 This test changes the prototype's skinning once so it uses a canonical Mixamo armature, instead of retargeting every Mixamo animation onto the prototype's Rigify/metarig skeleton.

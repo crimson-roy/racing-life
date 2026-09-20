@@ -1,33 +1,54 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T08:32:37.944777+00:00",
+  "generated_at_utc": "2026-09-20T08:42:42.185414+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
   "strategy": "rebind-prototype-to-canonical-mixamo-skeleton",
-  "status": "error",
+  "status": "ok",
   "alignment": {
     "source_height": 0.083266,
     "target_height": 1.763366,
     "scale_factor": 21.177588,
     "rotation_angle_degrees": 96.5741
   },
-  "error": "RuntimeError: Automatic binding created no armature modifier for Icosphere",
-  "traceback_tail": [
-    "Traceback (most recent call last):",
-    "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\mixamo_base_test.py\", line 593, in main",
-    "    report[\"binding\"] = bind_automatic(",
-    "                        ~~~~~~~~~~~~~~^",
-    "        meshes,",
-    "        ^^^^^^^",
-    "        source_arm,",
-    "        ^^^^^^^^^^^",
-    "    )",
-    "    ^",
-    "  File \"C:\\Users\\USER\\Desktop\\Racing Life\\Racing Life 3D\\tools\\blender_worker\\mixamo_base_test.py\", line 292, in bind_automatic",
-    "    raise RuntimeError(",
-    "    ...<3 lines>...",
-    "    )",
-    "RuntimeError: Automatic binding created no armature modifier for Icosphere"
-  ]
+  "binding": {
+    "mesh_count": 2,
+    "bound_count": 1,
+    "unbound_count": 1,
+    "meshes": [
+      "mesh",
+      "Icosphere"
+    ],
+    "results": [
+      {
+        "mesh": "mesh",
+        "vertices": 1226,
+        "method": "automatic",
+        "status": "bound",
+        "vertex_groups": 65
+      },
+      {
+        "mesh": "Icosphere",
+        "vertices": 42,
+        "method": null,
+        "status": "unbound",
+        "vertex_groups": 0,
+        "error": "envelope produced no usable armature binding (modifiers=0, groups=0)"
+      }
+    ],
+    "vertex_group_counts": {
+      "mesh": 65,
+      "Icosphere": 0
+    }
+  },
+  "runtime_test_asset": "/assets/characters/retarget-tests/surprise-uppercut-prototype.glb",
+  "output_glb": "mixamo-base-test/prototype_mixamo_uppercut.glb",
+  "animation": {
+    "name": "RL_Mixamo_Uppercut",
+    "frame_start": 1,
+    "frame_end": 106,
+    "fps": 30.0,
+    "duration_seconds": 3.5
+  }
 }
