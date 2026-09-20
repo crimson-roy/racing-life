@@ -6,6 +6,15 @@ const DEFAULT_TRACK_ORDER = [
   'track_05'
 ];
 
+let activeMatchManager = null;
+
+// The app owns one MatchManager in main.js. Race scenes are constructed from
+// the current session object, so exposing that same active instance lets the
+// P0 runtime commit results without moving match ownership into Three.js.
+export function getActiveMatchManager() {
+  return activeMatchManager;
+}
+
 export class MatchManager {
   constructor(options = {}) {
     this.winTarget = options.winTarget ?? 3;
@@ -13,6 +22,7 @@ export class MatchManager {
     this.factionA = options.factionA ?? 'azure';
     this.factionB = options.factionB ?? 'crimson';
     this.reset();
+    activeMatchManager = this;
   }
 
   reset() {
