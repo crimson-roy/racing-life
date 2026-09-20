@@ -17,6 +17,7 @@ from mathutils import Vector
 BRANCH = "feature/3d-racing-foundation"
 PUBLISH_JSON = Path("docs/blender/generated/retarget-test-report.json")
 PUBLISH_MD = Path("docs/blender/generated/retarget-test-report.md")
+PUBLISH_PREVIEW_ROOT = Path("docs/blender/generated/retarget-previews")
 
 
 def parse_args():
@@ -394,7 +395,7 @@ def render_preview(path, target_objects, frame):
     bpy.data.objects.remove(camera, do_unlink=True)
 
 
-def publish_reports(repo_root, json_path, md_path):
+def publish_reports(repo_root, json_path, md_path, preview_files=None):
     if not (repo_root / ".git").exists():
         return False
 
@@ -416,7 +417,14 @@ def publish_reports(repo_root, json_path, md_path):
             shutil.copy2(json_path, out_json)
             shutil.copy2(md_path, out_md)
 
-            run(["git", "add", str(PUBLISH_JSON), str(PUBLISH_MD)], cwd=worktree)
+            publish_paths = [str(PUBLISH_JSON), str(PUBLISH_MD)]
+            for local_path, relative_publish_path in (preview_files or []):
+                destination = worktree / relative_publish_path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(local_path, destination)
+                publish_paths.append(str(relative_publish_path))
+
+            run(["git", "add", *publish_paths], cwd=worktree)
             diff = run(["git", "diff", "--cached", "--quiet"], cwd=worktree, check=False)
             if diff.returncode == 0:
                 return True
@@ -468,6 +476,12 @@ def markdown(report):
         "- Start preview: {}".format(report.get("outputs", {}).get("preview_start", "-")),
         "- Mid preview: {}".format(report.get("outputs", {}).get("preview_mid", "-")),
         "- End preview: {}".format(report.get("outputs", {}).get("preview_end", "-")),
+        "",
+        "## Published previews",
+        "",
+        "- Start: {}".format(report.get("published_previews", {}).get("preview_start", "-")),
+        "- Mid: {}".format(report.get("published_previews", {}).get("preview_mid", "-")),
+        "- End: {}".format(report.get("published_previews", {}).get("preview_end", "-")),
         "",
         "## Interpretation",
         "",
@@ -570,6 +584,14 @@ def main():
             "preview_end": str(preview_end.relative_to(output_root)).replace("\\", "/"),
         }
 
+        safe_source = re.sub(r"[^A-Za-z0-9._-]+", "_", source_path.stem).strip("_") or "source"
+        published_preview_root = PUBLISH_PREVIEW_ROOT / safe_source
+        report["published_previews"] = {
+            "preview_start": str(published_preview_root / "preview_start.png").replace("\\", "/"),
+            "preview_mid": str(published_preview_root / "preview_mid.png").replace("\\", "/"),
+            "preview_end": str(published_preview_root / "preview_end.png").replace("\\", "/"),
+        }
+
     except Exception as exc:
         report["status"] = "error"
         report["error"] = "{}: {}".format(type(exc).__name__, str(exc))
@@ -593,7 +615,22 @@ def main():
     print("============================================================")
 
     if args.publish:
-        publish_reports(repo_root, json_path, md_path)
+        preview_files = []
+        if report.get("status") == "ok":
+            for key in ("preview_start", "preview_mid", "preview_end"):
+                local_rel = report.get("outputs", {}).get(key)
+                publish_rel = report.get("published_previews", {}).get(key)
+                if local_rel and publish_rel:
+                    local_path = output_root / local_rel
+                    if local_path.exists():
+                        preview_files.append((local_path, Path(publish_rel)))
+
+        publish_reports(
+            repo_root,
+            json_path,
+            md_path,
+            preview_files=preview_files,
+        )
 
     if report["status"] != "ok":
         raise SystemExit(8)
