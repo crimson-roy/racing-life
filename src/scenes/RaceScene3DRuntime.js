@@ -10,9 +10,6 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   constructor(options = {}) {
     super(options);
 
-    // main.js already owns the faction MatchManager. Prefer an explicit
-    // injection, but use that active app instance so existing construction
-    // remains backward-compatible while P0 is integrated incrementally.
     this.matchManager = options.matchManager ?? getActiveMatchManager();
     this.applyCareerResult = options.applyCareerResult ?? null;
     this.onRaceCompletion = options.onRaceCompletion ?? null;
@@ -40,24 +37,30 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     });
 
     this.runtimeSetup = this.runtimeBridge.load();
+    this.runtimeFrameDt = 0;
 
-    // RaceScene3D already owns the stable render/physics loop. Wrap only the
-    // player instance's drive method so P0 state advances exactly once per
-    // driving frame without copying that large loop into this integration.
+    // Preserve the proven base render/physics loop. Capture its dt here, then
+    // advance race state from readStatus(), which the base loop calls AFTER
+    // player grounding/collision rollback. Authored points therefore cannot be
+    // accidentally sampled from an invalid wall/sidewalk position.
     const basePlayerDrive = this.playerCar.drive.bind(this.playerCar);
     this.playerCar.drive = (throttle, brake, steering, dt) => {
       basePlayerDrive(throttle, brake, steering, dt);
-      this.afterPlayerPhysicsStep(dt);
+      this.runtimeFrameDt = dt;
     };
   }
 
-  afterPlayerPhysicsStep(dt) {
-    if (this.setupMode || !this.runtimeBridge) return;
+  readStatus() {
+    this.advanceRuntimeAfterCollision(this.runtimeFrameDt);
+    super.readStatus();
+  }
 
-    // Authoring must sample while the player drives before a race has started.
-    // Once a valid line exists and the runtime starts, the same bridge also
-    // advances AI, checkpoints, laps and completion.
+  advanceRuntimeAfterCollision(dt) {
+    if (this.setupMode || !this.runtimeBridge) return;
     if (!this.raceRuntime.recordingLine && !this.runtimeBridge.started) return;
+
+    const opponentBefore = this.opponentCar.position.clone();
+    const opponentYawBefore = this.opponentCar.rotation.y;
 
     const { snapshot } = this.runtimeBridge.update({
       playerCar: this.playerCar,
@@ -70,9 +73,22 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     });
 
     if (this.runtimeBridge.started) {
-      // Keep AI on the imported venue surface. Collision/camera ownership stays
-      // in the base scene; this only grounds the opponent after controller input.
-      this.snapCarToSurface(this.opponentCar);
+      const grounded = this.snapCarToSurface(this.opponentCar);
+      const swept = grounded
+        ? this.getSweptVehicleCollision(this.opponentCar, opponentBefore)
+        : null;
+      const pedestrian = grounded
+        ? this.getPedestrianZoneCollision(this.opponentCar)
+        : null;
+      const box = grounded
+        ? this.getCarObjectCollision(this.opponentCar)
+        : null;
+
+      if (!grounded || swept || pedestrian || box) {
+        this.opponentCar.position.copy(opponentBefore);
+        this.opponentCar.rotation.y = opponentYawBefore;
+        this.opponentCar.speed = 0;
+      }
     }
 
     this.updateRaceHud(snapshot);
