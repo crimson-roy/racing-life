@@ -17,7 +17,11 @@ export function commitRaceToMatch(matchManager, raceController, details = {}) {
   const opponent = snapshot.racers.find((racer) => racer.id === raceController.opponentId) ?? null;
 
   return matchManager.recordResult(winnerSide, {
+    // finishOrder remains the strict list of racers that actually crossed the
+    // finish. classification is the complete current leaderboard, so a 1v1
+    // result can still present winner/runner-up when the race locks on P1.
     finishOrder: [...snapshot.finishOrder],
+    classification: snapshot.racers.map((racer) => racer.id),
     playerFinishTimeMs: player?.finishTimeMs ?? null,
     opponentFinishTimeMs: opponent?.finishTimeMs ?? null,
     totalLaps: snapshot.totalLaps,
