@@ -280,10 +280,12 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
             # Keep only rotation for normal joints so the target keeps its own
             # proportions. Root/hips also receives scaled translation.
             delta_rotation = source_delta.to_quaternion()
+            # Keep the prototype in place during body-retarget validation.
+            # The imported Surprise Uppercut FBX uses a very different unit
+            # scale, and its root translation was sending the target more than
+            # 100 world units away from the viewer. Root locomotion will be
+            # reintroduced only after the rotational retarget is visually sane.
             delta_translation = Vector((0.0, 0.0, 0.0))
-
-            if canonical == "hips":
-                delta_translation = source_delta.translation * translation_scale
 
             delta_matrix = delta_rotation.to_matrix().to_4x4()
             delta_matrix.translation = delta_translation
@@ -366,7 +368,7 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
         "translation_scale": round(float(translation_scale), 6),
         "action_name": action.name,
         "rotation_method": "parent_local_rest_delta",
-        "root_translation_method": "parent_local_delta_height_scaled",
+        "root_translation_method": "locked-in-place-for-body-validation",
         "finger_transfer": "disabled-for-body-validation",
         "sample_frames": sample_frames,
         "moving_bone_count": len(moving_bones),
