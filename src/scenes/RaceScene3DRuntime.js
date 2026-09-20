@@ -1,11 +1,11 @@
-import { RaceScene3D } from './RaceScene3D.js';
+import { RaceScene3D as BaseRaceScene3D } from './RaceScene3DLegacy.js';
 import { RaceRuntime } from '../racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../racing/RaceSceneRuntimeBridge.js';
 
 // P0 integration layer around the established Three.js race scene. The base
 // scene remains responsible for Barcelona placement, collision and chase
 // camera behaviour; this subclass only adds authored-line/race state.
-export class RaceScene3DRuntime extends RaceScene3D {
+export class RaceScene3DRuntime extends BaseRaceScene3D {
   constructor(options = {}) {
     super(options);
 
@@ -48,21 +48,29 @@ export class RaceScene3DRuntime extends RaceScene3D {
   }
 
   afterPlayerPhysicsStep(dt) {
-    if (this.setupMode || !this.runtimeBridge?.started) return;
+    if (this.setupMode || !this.runtimeBridge) return;
+
+    // Authoring must sample while the player drives before a race has started.
+    // Once a valid line exists and the runtime starts, the same bridge also
+    // advances AI, checkpoints, laps and completion.
+    if (!this.raceRuntime.recordingLine && !this.runtimeBridge.started) return;
 
     const { snapshot } = this.runtimeBridge.update({
       playerCar: this.playerCar,
       opponentCar: this.opponentCar,
       dt,
-      driveOpponent: true,
+      driveOpponent: this.runtimeBridge.started,
       details: {
         raceNumber: this.session.raceNumber
       }
     });
 
-    // Keep AI on the imported venue surface. Collision/camera ownership stays
-    // in RaceScene3D; this only grounds the opponent after controller input.
-    this.snapCarToSurface(this.opponentCar);
+    if (this.runtimeBridge.started) {
+      // Keep AI on the imported venue surface. Collision/camera ownership stays
+      // in the base scene; this only grounds the opponent after controller input.
+      this.snapCarToSurface(this.opponentCar);
+    }
+
     this.updateRaceHud(snapshot);
   }
 
@@ -110,7 +118,7 @@ export class RaceScene3DRuntime extends RaceScene3D {
           const count = this.runtimeBridge.finishAuthoring();
           this.setStatus(
             count >= 2
-              ? `Racing line saved · ${count} points · C starts race`
+              ? `Racing line saved · ${count} points · C overview then C starts race`
               : 'Racing line needs at least two spaced points.'
           );
         } else {
@@ -174,7 +182,7 @@ export class RaceScene3DRuntime extends RaceScene3D {
         if (this.runtimeResultElement) this.runtimeResultElement.textContent = '';
         this.setStatus(`Race started · ${hud.racingLinePointCount} authored points`);
       } else {
-        this.setStatus('Driving mode · press C for setup, author a racing line with L for race/AI');
+        this.setStatus('Driving mode · press L to author the racing line · C returns to overview');
       }
       this.updateRaceHud();
     }
