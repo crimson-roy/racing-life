@@ -21,7 +21,7 @@ PUBLISH_MD = Path("docs/blender/generated/processing-report.md")
 def parse_args():
     argv = sys.argv
     argv = argv[argv.index("--") + 1:] if "--" in argv else []
-    parser = argparse.ArgumentParser(description="Racing Life Blender FBX processor")
+    parser = argparse.ArgumentParser(description="Racing Life Blender asset processor")
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--repo", required=True)
@@ -59,16 +59,22 @@ def run(cmd, cwd=None, check=True, env=None):
     return result
 
 
-def import_fbx(path):
-    try:
-        bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
-        return
-    except Exception as first_error:
+def import_asset(path):
+    ext = path.suffix.lower()
+    if ext == ".fbx":
         try:
-            bpy.ops.wm.fbx_import(filepath=str(path))
+            bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
             return
-        except Exception:
-            raise first_error
+        except Exception as first_error:
+            try:
+                bpy.ops.wm.fbx_import(filepath=str(path))
+                return
+            except Exception:
+                raise first_error
+    if ext in (".glb", ".gltf"):
+        bpy.ops.import_scene.gltf(filepath=str(path))
+        return
+    raise RuntimeError("Unsupported asset format: {}".format(ext))
 
 
 def scene_objects():
@@ -297,7 +303,7 @@ def process_one(source, output_root, mode, target_height):
     }
 
     try:
-        import_fbx(source)
+        import_asset(source)
         objects, meshes, armatures = scene_objects()
 
         before = world_bounds(meshes)
@@ -401,7 +407,7 @@ def markdown_report(report):
         "",
         "## Safety / interpretation",
         "",
-        "- Source FBX files are not uploaded by the worker.",
+        "- Source FBX/GLB/GLTF files are not uploaded by the worker.",
         "- Normalize and process modes scale the imported top-level hierarchy so the mesh height matches the configured target height; source files are never overwritten.",
         "- Convert mode preserves imported scale and only exports a GLB copy.",
         "- Preview PNGs use Blender Workbench rendering and are intended for quick structural/animation inspection, not final art quality.",
@@ -489,11 +495,11 @@ def main():
         raise SystemExit("Input folder does not exist: {}".format(input_dir))
 
     files = sorted(
-        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() == ".fbx"],
+        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() in (".fbx", ".glb", ".gltf")],
         key=lambda p: p.name.lower(),
     )
     if not files:
-        raise SystemExit("No FBX files found in: {}".format(input_dir))
+        raise SystemExit("No FBX, GLB or GLTF files found in: {}".format(input_dir))
 
     output_root.mkdir(parents=True, exist_ok=True)
 
