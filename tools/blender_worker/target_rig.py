@@ -66,11 +66,27 @@ def is_finger_bone(name):
     return any(token in n for token in ("thumb", "index", "middle", "ring", "pinky", "little"))
 
 
-def detect_rig_family(names):
+def detect_rig_family(names, armature_name=""):
     raw = [str(name) for name in names]
     lower = [name.lower() for name in raw]
+    normalized = {normalize_bone_name(name) for name in raw}
+
     if any("mixamorig" in name for name in lower):
         return "mixamo"
+
+    # Blender's stock human metarig normally exports names such as
+    # spine.001, upper_arm.L, forearm.L, thigh.L, etc. The armature
+    # object is also commonly named "metarig".
+    if (
+        str(armature_name).lower() == "metarig"
+        or (
+            "spine001" in normalized
+            and "upperarml" in normalized
+            and "thighl" in normalized
+        )
+    ):
+        return "rigify-metarig"
+
     if any(name.startswith("DEF-") or name.startswith("ORG-") for name in raw):
         return "rigify"
     if any(name.lower().startswith("bip") for name in raw):
@@ -78,6 +94,71 @@ def detect_rig_family(names):
     if any(normalize_bone_name(name) in ("root", "pelvis", "spine01") for name in raw):
         return "unreal-style-or-generic"
     return "generic-or-unknown"
+
+
+def canonical_bone_name(name, rig_family):
+    n = normalize_bone_name(name)
+
+    if rig_family != "rigify-metarig":
+        return n
+
+    # Explicit semantic map for Blender's default human metarig.
+    # This avoids falsely declaring a rig incompatible simply because
+    # Rigify and Mixamo use different labels for the same body joints.
+    direct = {
+        "spine": "hips",
+        "spine001": "spine",
+        "spine002": "spine1",
+        "spine003": "spine2",
+        "spine004": "neck",
+        "spine005": "head",
+        "shoulderl": "leftshoulder",
+        "upperarml": "leftarm",
+        "forearml": "leftforearm",
+        "handl": "lefthand",
+        "thighl": "leftupleg",
+        "shinl": "leftleg",
+        "footl": "leftfoot",
+        "toel": "lefttoebase",
+        "shoulderr": "rightshoulder",
+        "upperarmr": "rightarm",
+        "forearmr": "rightforearm",
+        "handr": "righthand",
+        "thighr": "rightupleg",
+        "shinr": "rightleg",
+        "footr": "rightfoot",
+        "toer": "righttoebase",
+    }
+    if n in direct:
+        return direct[n]
+
+    finger_patterns = (
+        ("findex", "index"),
+        ("fmiddle", "middle"),
+        ("fring", "ring"),
+        ("fpinky", "pinky"),
+        ("thumb", "thumb"),
+    )
+    for prefix, mixamo_part in finger_patterns:
+        if not n.startswith(prefix):
+            continue
+
+        side = None
+        if n.endswith("l"):
+            side = "left"
+        elif n.endswith("r"):
+            side = "right"
+        if side is None:
+            return n
+
+        digits = "".join(ch for ch in n[len(prefix):-1] if ch.isdigit())
+        if not digits:
+            return n
+
+        index = int(digits)
+        return "{}hand{}{}".format(side, mixamo_part, index)
+
+    return n
 
 
 def import_asset(path):
@@ -109,7 +190,9 @@ def inspect_rig(path):
 
         arm = max(armatures, key=lambda obj: len(obj.data.bones))
         names = [bone.name for bone in arm.data.bones]
-        normalized = sorted(set(normalize_bone_name(name) for name in names))
+        rig_family = detect_rig_family(names, arm.name)
+        raw_normalized = sorted(set(normalize_bone_name(name) for name in names))
+        normalized = sorted(set(canonical_bone_name(name, rig_family) for name in names))
         normalized_set = set(normalized)
         core_present = sorted(CORE_BONES & normalized_set)
         core_missing = sorted(CORE_BONES - normalized_set)
@@ -117,8 +200,9 @@ def inspect_rig(path):
 
         rec.update({
             "armature_object": arm.name,
-            "rig_family": detect_rig_family(names),
+            "rig_family": rig_family,
             "bone_count": len(names),
+            "raw_normalized_bones": raw_normalized,
             "normalized_bones": normalized,
             "root_bones": [bone.name for bone in arm.data.bones if bone.parent is None],
             "core_bones_present": core_present,
@@ -214,6 +298,8 @@ def build_markdown(report):
         "",
         "- This stage validates retarget compatibility only; it does not transfer animation yet.",
         "- Finger differences are evaluated separately from the main body skeleton.",
+        "- Blender Rigify metarig labels are translated to equivalent Mixamo-style semantic joints before compatibility scoring.",
+        "- That semantic mapping is explicit and conservative; it does not prove rest-pose/orientation compatibility by itself.",
         "- A target with no armature cannot receive skeletal animation until a rigged target is supplied.",
         "- Source and target FBX/GLB/GLTF assets are not published by this worker.",
         "",
