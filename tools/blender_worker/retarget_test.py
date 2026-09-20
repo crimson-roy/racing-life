@@ -294,11 +294,57 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     scene.frame_start = int(frame_start)
     scene.frame_end = int(frame_end)
 
+    # Measure whether the baked target pose actually changes across
+    # the clip before export. This catches accidental constant-action bakes.
+    sample_frames = [
+        int(frame_start),
+        int(round((frame_start + frame_end) * 0.5)),
+        int(frame_end),
+    ]
+    sample_positions = []
+    for sample_frame in sample_frames:
+        scene.frame_set(sample_frame)
+        bpy.context.view_layer.update()
+        frame_positions = {}
+        for canonical in mapped:
+            pose_bone = target_arm.pose.bones.get(target_map[canonical])
+            if pose_bone is None:
+                continue
+            world_pos = (target_arm.matrix_world @ pose_bone.matrix).translation
+            frame_positions[canonical] = [
+                float(world_pos.x),
+                float(world_pos.y),
+                float(world_pos.z),
+            ]
+        sample_positions.append(frame_positions)
+
+    moving_bones = []
+    if len(sample_positions) >= 2:
+        first = sample_positions[0]
+        for canonical in mapped:
+            if canonical not in first:
+                continue
+            start = Vector(first[canonical])
+            max_distance = 0.0
+            for frame_positions in sample_positions[1:]:
+                if canonical not in frame_positions:
+                    continue
+                distance = float((Vector(frame_positions[canonical]) - start).length)
+                max_distance = max(max_distance, distance)
+            if max_distance > 1e-5:
+                moving_bones.append({
+                    "bone": canonical,
+                    "sampled_world_displacement": round(max_distance, 6),
+                })
+
     return {
         "mapped_bones": mapped,
         "mapped_count": len(mapped),
         "translation_scale": round(float(translation_scale), 6),
         "action_name": action.name,
+        "sample_frames": sample_frames,
+        "moving_bone_count": len(moving_bones),
+        "moving_bones": moving_bones,
     }
 
 
@@ -432,6 +478,13 @@ def classify_unmapped(name):
 def export_target_glb(path, target_objects, target_arm):
     path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Export only the baked retarget action. Imported source/target files can
+    # carry extra actions; ACTIVE_ACTIONS prevents a wrong/static clip from
+    # becoming animation[0] in the GLB.
+    if target_arm.animation_data is None or target_arm.animation_data.action is None:
+        raise RuntimeError("Target armature has no active retarget action before export.")
+    active_action_name = target_arm.animation_data.action.name
+
     bpy.ops.object.select_all(action="DESELECT")
     for obj in target_objects:
         if obj.name in bpy.context.scene.objects:
@@ -452,7 +505,7 @@ def export_target_glb(path, target_objects, target_arm):
     try:
         bpy.ops.export_scene.gltf(
             **kwargs,
-            export_animation_mode="ACTIONS",
+            export_animation_mode="ACTIVE_ACTIONS",
             export_force_sampling=True,
             export_frame_range=True,
         )
@@ -801,6 +854,15 @@ def main():
         preview_end = out_dir / "preview_end.png"
 
         export_target_glb(glb_path, target_objects, target_arm)
+
+        report["export"] = {
+            "animation_mode": "ACTIVE_ACTIONS",
+            "active_action": (
+                target_arm.animation_data.action.name
+                if target_arm.animation_data and target_arm.animation_data.action
+                else None
+            ),
+        }
 
         runtime_dir = (
             repo_root
