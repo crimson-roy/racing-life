@@ -194,3 +194,28 @@ Published rig reports:
 
 - docs/blender/generated/rig-report.json
 - docs/blender/generated/rig-report.md
+
+
+## Target rig inspection
+
+Run:
+
+    RacingLife-Blender.bat inspect-target
+
+The default target is:
+
+    Blender\male_base_mesh.glb
+
+This stage checks whether the target character actually contains an armature and compares its normalized body-bone set against every source FBX in Blender\worker_input.
+
+It publishes:
+
+- docs/blender/generated/target-rig-report.json
+- docs/blender/generated/target-rig-report.md
+
+To inspect a different rigged character, set:
+
+    set RACING_LIFE_TARGET_RIG=C:\Path\To\RiggedCharacter.glb
+    RacingLife-Blender.bat inspect-target
+
+This command validates compatibility only. It does not retarget animation yet.
