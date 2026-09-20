@@ -23,12 +23,16 @@ export class RaceRuntime {
     });
     this.resultCommitted = false;
     this.completion = null;
+    this.loadedSetup = null;
   }
 
   load() {
     const setup = this.store.load();
+    this.loadedSetup = setup;
     if (setup.racingLine.length >= 2) {
       this.controller.configure(setup.racingLine);
+    } else {
+      this.controller.configure([]);
     }
     return {
       grid: setup.grid,
@@ -38,7 +42,9 @@ export class RaceRuntime {
   }
 
   saveGrid(spawn) {
-    return this.store.saveGrid(spawn);
+    const grid = this.store.saveGrid(spawn);
+    this.loadedSetup = this.store.load();
+    return grid;
   }
 
   beginLineRecording(position = null) {
@@ -54,15 +60,31 @@ export class RaceRuntime {
     if (points.length < 2) return 0;
     this.authoring.saveTo(this.store);
     this.controller.configure(points);
+    this.loadedSetup = this.store.load();
+    this.resultCommitted = false;
+    this.completion = null;
     return points.length;
+  }
+
+  cancelLineRecording() {
+    this.authoring.clear();
   }
 
   clearLine() {
     this.authoring.clear();
     this.store.clearRacingLine();
     this.controller.configure([]);
+    this.loadedSetup = this.store.load();
     this.resultCommitted = false;
     this.completion = null;
+  }
+
+  get recordingLine() {
+    return this.authoring.recording;
+  }
+
+  get authoredPointCount() {
+    return this.authoring.points.length;
   }
 
   start(nowMs = performance.now()) {
@@ -86,6 +108,27 @@ export class RaceRuntime {
     if (this.resultCommitted) return false;
     this.resultCommitted = true;
     return true;
+  }
+
+  getHudState() {
+    const snapshot = this.controller.getSnapshot();
+    const player = snapshot.racers.find((racer) => racer.id === this.controller.playerId) ?? null;
+    const opponent = snapshot.racers.find((racer) => racer.id === this.controller.opponentId) ?? null;
+
+    return {
+      ready: snapshot.ready,
+      started: snapshot.started,
+      completed: snapshot.completed,
+      winnerSide: snapshot.winnerSide,
+      finishOrder: [...snapshot.finishOrder],
+      totalLaps: snapshot.totalLaps,
+      checkpointCount: snapshot.checkpointCount,
+      racingLinePointCount: snapshot.racingLinePointCount,
+      recordingLine: this.recordingLine,
+      authoredPointCount: this.authoredPointCount,
+      player,
+      opponent
+    };
   }
 
   // Scene-facing completion bridge. It is deliberately idempotent because a
