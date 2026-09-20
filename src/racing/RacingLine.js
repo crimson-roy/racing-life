@@ -103,7 +103,13 @@ export function getWaypointControls(car, target, options = {}) {
   // has the opposite sign from the usual mathematical yaw error. Deriving the
   // current heading from getFrontDirection also respects the imported Subaru's
   // normalized visual/front orientation instead of assuming local +Z.
-  const steering = Math.max(-1, Math.min(1, -error / (Math.PI * 0.32)));
+  const rawSteering = Math.max(
+    -1,
+    Math.min(1, -error / (Math.PI * 0.32))
+  );
+  // JavaScript preserves signed zero. Normalize it because neutral steering is
+  // an input value, not a direction, and strict diagnostics should see 0.
+  const steering = Object.is(rawSteering, -0) ? 0 : rawSteering;
   const absError = Math.abs(error);
   const cornerBrakeAngle = options.cornerBrakeAngle ?? 0.9;
   const hardTurn = absError > cornerBrakeAngle;
