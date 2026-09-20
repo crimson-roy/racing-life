@@ -5,7 +5,7 @@ import { RaceProgress } from '../src/racing/RaceProgress.js';
 import { RaceController } from '../src/racing/RaceController.js';
 import { RaceRuntime } from '../src/racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../src/racing/RaceSceneRuntimeBridge.js';
-import { MatchManager } from '../src/racing/MatchManager.js';
+import { MatchManager, getActiveMatchManager } from '../src/racing/MatchManager.js';
 import { commitRaceToMatch, createCareerRaceResult } from '../src/racing/RaceSession.js';
 import { TrackSetupStore } from '../src/racing/TrackSetupStore.js';
 
@@ -70,6 +70,11 @@ test('MatchManager ends confirmed faction format when one side reaches three win
   assert.equal(summary.scoreA, 3);
   assert.equal(summary.scoreB, 1);
   assert.equal(summary.results.length, 4);
+});
+
+test('latest MatchManager is available to incrementally integrated 3D race scenes', () => {
+  const match = new MatchManager({ factionA: 'azure', factionB: 'crimson' });
+  assert.equal(getActiveMatchManager(), match);
 });
 
 test('RaceSession commits one completed 1v1 result into MatchManager only when finished', () => {
