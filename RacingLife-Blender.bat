@@ -18,6 +18,7 @@ rem   RacingLife-Blender.bat compare-skeletons
 rem   RacingLife-Blender.bat extract-animation
 rem   RacingLife-Blender.bat inspect-target
 rem   RacingLife-Blender.bat retarget-test
+rem   RacingLife-Blender.bat mixamo-base-test
 rem
 rem Optional:
 rem   add a folder path to use it instead of Blender\worker_input
@@ -89,6 +90,11 @@ if /I "%~1"=="inspect-target" (
 )
 if /I "%~1"=="retarget-test" (
     set "MODE=retarget-test"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="mixamo-base-test" (
+    set "MODE=mixamo-base-test"
     shift
     goto parse_args
 )
@@ -288,6 +294,32 @@ if /I "%MODE%"=="inspect" (
       --output "%OUTPUT_DIR%" ^
       --repo "%REPO_ROOT%" ^
       %PUBLISH_ARG%
+) else if /I "%MODE%"=="mixamo-base-test" (
+    if not exist "%TARGET_RIG%" (
+        echo.
+        echo TARGET RIG NOT FOUND:
+        echo   %TARGET_RIG%
+        echo.
+        pause
+        exit /b 7
+    )
+    if not exist "%RETARGET_SOURCE%" (
+        echo.
+        echo MIXAMO SOURCE NOT FOUND:
+        echo   %RETARGET_SOURCE%
+        echo.
+        echo Set RACING_LIFE_RETARGET_SOURCE to another Mixamo FBX.
+        echo.
+        pause
+        exit /b 8
+    )
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\mixamo_base_test.py" -- ^
+      --source "%RETARGET_SOURCE%" ^
+      --target "%TARGET_RIG%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      %PUBLISH_ARG%
 ) else (
     "%BLENDER_EXE%" --background --factory-startup ^
       --python "%REPO_ROOT%\tools\blender_worker\process_fbx.py" -- ^
@@ -336,6 +368,13 @@ if "%EXIT_CODE%"=="0" (
         echo.
         echo Retargeted test asset:
         echo   %OUTPUT_DIR%\retarget\
+    ) else if /I "%MODE%"=="mixamo-base-test" (
+        echo Mixamo base test reports:
+        echo   %OUTPUT_DIR%\mixamo-base-test-report.json
+        echo   %OUTPUT_DIR%\mixamo-base-test-report.md
+        echo.
+        echo Rebound runtime test asset:
+        echo   %OUTPUT_DIR%\mixamo-base-test\prototype_mixamo_uppercut.glb
     ) else (
         echo Processing reports:
         echo   %OUTPUT_DIR%\processing-report.json
