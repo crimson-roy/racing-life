@@ -257,3 +257,26 @@ To test another source animation:
     RacingLife-Blender.bat retarget-test
 
 This is a visual/structural test, not a production retarget guarantee. Foot contact, hand contact, root motion and deformation still need review.
+
+
+## Browser retarget playback
+
+After running:
+
+    RacingLife-Blender.bat retarget-test
+
+the worker copies the generated prototype retarget GLB into the local, Git-ignored runtime path:
+
+    public\assets\characters\retarget-tests\surprise-uppercut-prototype.glb
+
+Start Vite:
+
+    npm run dev
+
+Then open:
+
+    http://localhost:5173/retarget-test.html
+
+The standalone Three.js viewer plays the full retargeted Surprise Uppercut on the prototype rig and includes pause, restart, playback-speed, orbit and zoom controls.
+
+The runtime retarget GLB remains local and is intentionally ignored by Git.
