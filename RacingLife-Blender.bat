@@ -63,6 +63,19 @@ if not defined BLENDER_EXE (
     )
 )
 
+rem Extra detection: Steam and per-user Blender installs
+if not defined BLENDER_EXE (
+    if exist "%ProgramFiles(x86)%\Steam\steamapps\common\Blender\blender.exe" (
+        set "BLENDER_EXE=%ProgramFiles(x86)%\Steam\steamapps\common\Blender\blender.exe"
+    )
+)
+
+if not defined BLENDER_EXE (
+    for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$roots=@($env:ProgramFiles+'\Blender Foundation',$env:LOCALAPPDATA+'\Programs'); $steam=${env:ProgramFiles(x86)}+'\Steam\steamapps\common\Blender'; if($steam){$roots+=$steam}; foreach($r in $roots){if($r -and (Test-Path $r)){Get-ChildItem -Path $r -Filter blender.exe -File -Recurse -ErrorAction SilentlyContinue}} | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName"`) do (
+        if not defined BLENDER_EXE set "BLENDER_EXE=%%I"
+    )
+)
+
 if not defined BLENDER_EXE (
     echo.
     echo ============================================================
