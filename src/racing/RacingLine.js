@@ -76,6 +76,17 @@ export function createLoopFromGrid(spawn, options = {}) {
   ];
 }
 
+function getCarHeading(car) {
+  if (typeof car?.getFrontDirection === 'function') {
+    const front = car.getFrontDirection();
+    if (front && Number.isFinite(front.x) && Number.isFinite(front.z)) {
+      return Math.atan2(front.x, front.z);
+    }
+  }
+
+  return Number.isFinite(car?.rotation?.y) ? car.rotation.y : 0;
+}
+
 export function getWaypointControls(car, target, options = {}) {
   if (!car || !target) {
     return { throttle: 0, brake: 1, steering: 0 };
@@ -84,10 +95,15 @@ export function getWaypointControls(car, target, options = {}) {
   const dx = target.x - car.position.x;
   const dz = target.z - car.position.z;
   const desiredYaw = Math.atan2(dx, dz);
-  let error = desiredYaw - car.rotation.y;
+  const currentYaw = getCarHeading(car);
+  let error = desiredYaw - currentYaw;
   error = Math.atan2(Math.sin(error), Math.cos(error));
 
-  const steering = Math.max(-1, Math.min(1, error / (Math.PI * 0.32)));
+  // RaceSubaru.drive subtracts positive steering from rotation.y, so steering
+  // has the opposite sign from the usual mathematical yaw error. Deriving the
+  // current heading from getFrontDirection also respects the imported Subaru's
+  // normalized visual/front orientation instead of assuming local +Z.
+  const steering = Math.max(-1, Math.min(1, -error / (Math.PI * 0.32)));
   const absError = Math.abs(error);
   const cornerBrakeAngle = options.cornerBrakeAngle ?? 0.9;
   const hardTurn = absError > cornerBrakeAngle;
