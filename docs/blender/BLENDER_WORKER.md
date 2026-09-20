@@ -219,3 +219,36 @@ To inspect a different rigged character, set:
     RacingLife-Blender.bat inspect-target
 
 This command validates compatibility only. It does not retarget animation yet.
+
+
+## Retarget test
+
+Run:
+
+    RacingLife-Blender.bat retarget-test
+
+Defaults:
+
+- source animation: Blender\worker_input\Surprise Uppercut.fbx
+- target rig: Blender\male_base_mesh.glb
+
+The test performs a first-pass matrix-delta retarget bake. It maps equivalent Mixamo and Rigify/metarig bones semantically, compensates for different rest-bone orientations, scales hips translation by source/target skeleton height, bakes the motion to the target armature, exports a local GLB, and renders start/middle/end preview PNGs.
+
+Outputs:
+
+- Blender\worker_output\retarget-test-report.json
+- Blender\worker_output\retarget-test-report.md
+- Blender\worker_output\retarget\<source>\<source>_on_<target>.glb
+- local start/middle/end PNG previews
+
+Published report:
+
+- docs/blender/generated/retarget-test-report.json
+- docs/blender/generated/retarget-test-report.md
+
+To test another source animation:
+
+    set RACING_LIFE_RETARGET_SOURCE=C:\Path\To\Animation.fbx
+    RacingLife-Blender.bat retarget-test
+
+This is a visual/structural test, not a production retarget guarantee. Foot contact, hand contact, root motion and deformation still need review.
