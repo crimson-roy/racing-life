@@ -1,11 +1,11 @@
 # Racing Life Blender Worker
 
-This worker lets a local Windows Blender installation inspect FBX files and publish a small structured report to the Racing Life feature branch. Source FBX files stay on the local computer.
+The local Blender worker lets a Windows Blender installation inspect and process FBX assets while only publishing small structured reports to the Racing Life feature branch. Source FBX files and generated binary outputs stay on the local computer unless the user explicitly moves them into the game.
 
 ## Quick use
 
 1. Pull the latest feature branch.
-2. Copy FBX files into:
+2. Put FBX files in:
 
    Blender\worker_input
 
@@ -13,68 +13,129 @@ This worker lets a local Windows Blender installation inspect FBX files and publ
 
    RacingLife-Blender.bat
 
-The launcher finds Blender automatically when it is installed normally. You can also drag a folder containing FBX files onto RacingLife-Blender.bat instead of copying files into the default inbox.
+Double-clicking with no arguments runs the safe inspection mode.
 
-## What it inspects
+## Worker modes
 
-For each FBX the worker records:
+### inspect
 
-- file size
-- mesh/object count
-- armature count
-- bone count and root bones
-- useful bone-name clues such as Mixamo/Rigify-style naming
-- material count
-- approximate geometry size and bounds
-- animation actions/takes
-- frame ranges
-- FPS and approximate duration
-- a structural classification such as rigged character/model, likely animation/emote-only FBX, mixed character plus animation, or static prop
+    RacingLife-Blender.bat inspect
 
-Local reports are written to:
+Reads each FBX and reports meshes, armatures, bones, animation actions/takes, frame ranges, FPS, duration, geometry information, bounds and rig clues.
+
+Local reports:
 
 - Blender\worker_output\asset-report.json
 - Blender\worker_output\asset-report.md
 
-The worker then attempts to publish only the two generated reports to:
+Published reports:
 
 - docs/blender/generated/asset-report.json
 - docs/blender/generated/asset-report.md
 
-on the feature/3d-racing-foundation branch.
+### convert
 
-It uses an isolated temporary Git worktree for publishing so it does not need to rebase, commit, or alter the user's current working checkout. It retries when the remote branch changes during publication.
+    RacingLife-Blender.bat convert
 
-## Source asset safety
+Imports each FBX and exports a GLB while preserving the imported world scale. This is useful when the source scale is already trustworthy.
 
-Blender\worker_input and Blender\worker_output are ignored by Git. The FBX source files are not added or pushed by this worker.
+Generated binaries are placed under:
 
-## Blender detection
+    Blender\worker_output\processed\<asset-name>\
 
-The launcher checks, in order:
+### normalize
 
-1. RACING_LIFE_BLENDER_EXE environment variable
-2. blender.exe on PATH
-3. standard Program Files Blender Foundation folders
+    RacingLife-Blender.bat normalize
 
-To set a custom portable Blender path for one Command Prompt session:
+Imports each FBX, measures its current mesh height, scales the top-level imported hierarchy to the configured target height, and exports a normalized GLB.
 
-    set RACING_LIFE_BLENDER_EXE=C:\Path\To\Blender\blender.exe
+The default target height is 1.80 meters. It is a processing default, not a locked Racing Life avatar-height design decision.
 
-Then run:
+To test another target height in the current Command Prompt:
 
-    RacingLife-Blender.bat
+    set RACING_LIFE_TARGET_HEIGHT=1.75
+    RacingLife-Blender.bat normalize
+
+The original FBX is never overwritten.
+
+### preview
+
+    RacingLife-Blender.bat preview
+
+Creates quick 512x512 Blender Workbench PNGs at the start and middle of the detected animation. These are diagnostic previews, not final-quality renders.
+
+### process
+
+    RacingLife-Blender.bat process
+
+Runs the useful processing bundle in one pass:
+
+- imports the FBX
+- measures source scale
+- normalizes to the configured target height
+- exports a GLB
+- renders start and middle preview PNGs
+- creates a processing report
+- attempts to publish only the small processing report to GitHub
+
+Local processing reports:
+
+- Blender\worker_output\processing-report.json
+- Blender\worker_output\processing-report.md
+
+Published processing reports:
+
+- docs/blender/generated/processing-report.json
+- docs/blender/generated/processing-report.md
+
+Generated GLB/PNG files stay under Blender\worker_output\processed and are ignored by Git.
+
+## Custom source folder
+
+A folder can be supplied after the mode:
+
+    RacingLife-Blender.bat process "D:\My FBX Files"
+
+The default remains Blender\worker_input.
 
 ## Local-only mode
 
-To inspect files without attempting to publish a report:
+To skip GitHub publication:
 
-    RacingLife-Blender.bat --local-only
+    RacingLife-Blender.bat process --local-only
 
-Or, for a custom folder:
+Or:
 
-    RacingLife-Blender.bat "D:\My FBX Files" --local-only
+    RacingLife-Blender.bat process "D:\My FBX Files" --local-only
 
-## Why this exists
+## Blender detection
 
-The generated report gives the GitHub-side development workflow enough information to reason about rigs and animation packages without uploading large FBX source assets or requiring screenshots of Blender's UI. Later worker commands can build on this foundation for retargeting, root-motion cleanup, looping, validation, and GLB export.
+The launcher checks:
+
+1. RACING_LIFE_BLENDER_EXE
+2. blender.exe on PATH
+3. normal Program Files Blender Foundation folders
+4. the current portable install at C:\Windows\desktop\blender.exe
+5. Steam
+6. common per-user/custom install folders
+
+To force a Blender executable:
+
+    set RACING_LIFE_BLENDER_EXE=C:\Path\To\blender.exe
+
+## Source asset safety
+
+The following folders are ignored by Git:
+
+- Blender\worker_input
+- Blender\worker_output
+
+Source FBX files are never added by the worker. Processing reports are published through an isolated temporary Git worktree so the user's current checkout and uncommitted work are not rebased or committed.
+
+## Current limits
+
+The worker can now inspect, convert, scale-normalize, preview and batch-process FBXs. It does not yet automatically retarget between skeletons, clean root motion, create loops, or generate hand/foot IK corrections.
+
+Those operations are deliberately separate because the inspected tester assets already contain both 33-bone and 65-bone Mixamo variants. Retargeting should use an explicit Racing Life target skeleton rather than assuming every Mixamo-looking file is identical.
+
+The next planned worker layer is target-rig validation and animation extraction/retargeting, followed by root-motion and loop cleanup.
