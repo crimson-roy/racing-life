@@ -256,11 +256,30 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
             source_rest = source_rest_world[canonical]
             target_rest = target_rest_world[canonical]
 
-            delta_world_rot = (
-                source_pose_world.to_quaternion()
-                @ source_rest.to_quaternion().inverted()
+            # Convert the source pose into a delta in the SOURCE bone's
+            # rest-coordinate frame, then apply that local delta to the
+            # TARGET bone's rest orientation.
+            #
+            # Quaternion order matters:
+            #   target_rest * inverse(source_rest) * source_pose
+            #
+            # The previous implementation used:
+            #   source_pose * inverse(source_rest) * target_rest
+            # which rotates the target in world-space order and causes
+            # twisted/crouched-looking motion when the two rigs have
+            # different rest bone axes.
+            source_rest_rot = source_rest.to_quaternion()
+            source_pose_rot = source_pose_world.to_quaternion()
+            target_rest_rot = target_rest.to_quaternion()
+
+            source_local_delta_rot = (
+                source_rest_rot.inverted()
+                @ source_pose_rot
             )
-            desired_world_rot = delta_world_rot @ target_rest.to_quaternion()
+            desired_world_rot = (
+                target_rest_rot
+                @ source_local_delta_rot
+            )
             desired_arm_rot = target_world_rot_inv @ desired_world_rot
 
             current_translation = target_pose.matrix.translation.copy()
@@ -268,9 +287,26 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
             if canonical == "hips" and source_hips_rest_pos is not None:
                 source_delta_world = (
                     source_pose_world.translation - source_hips_rest_pos
+                )
+
+                # Rotate source root movement from the source rest basis
+                # into the target rest basis before applying scale.
+                root_alignment = (
+                    target_rest.to_quaternion()
+                    @ source_rest.to_quaternion().inverted()
+                )
+                aligned_delta_world = (
+                    root_alignment @ source_delta_world
                 ) * translation_scale
-                desired_world_pos = target_hips_rest_pos + source_delta_world
-                current_translation = target_arm.matrix_world.inverted() @ desired_world_pos
+
+                desired_world_pos = (
+                    target_hips_rest_pos
+                    + aligned_delta_world
+                )
+                current_translation = (
+                    target_arm.matrix_world.inverted()
+                    @ desired_world_pos
+                )
 
             target_pose.matrix = matrix_with_rotation_translation(
                 desired_arm_rot,
@@ -342,6 +378,8 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
         "mapped_count": len(mapped),
         "translation_scale": round(float(translation_scale), 6),
         "action_name": action.name,
+        "rotation_method": "target_rest_x_source_rest_inverse_x_source_pose",
+        "root_translation_method": "rest-basis-aligned-and-height-scaled",
         "sample_frames": sample_frames,
         "moving_bone_count": len(moving_bones),
         "moving_bones": moving_bones,
