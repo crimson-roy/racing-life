@@ -216,8 +216,19 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     target_height = skeleton_height_world(target_arm)
     translation_scale = target_height / source_height if source_height > 1e-8 else 1.0
 
+    # First-pass production-safe set: body + hands + toe bases.
+    # Finger chains are deliberately excluded for now because the source
+    # and target finger rigs differ in detail and were amplifying errors.
+    body_canonicals = {
+        "hips", "spine", "spine1", "spine2", "neck", "head",
+        "leftshoulder", "leftarm", "leftforearm", "lefthand",
+        "rightshoulder", "rightarm", "rightforearm", "righthand",
+        "leftupleg", "leftleg", "leftfoot", "lefttoebase",
+        "rightupleg", "rightleg", "rightfoot", "righttoebase",
+    }
+
     mapped = sorted(
-        set(source_map) & set(target_map),
+        (set(source_map) & set(target_map) & body_canonicals),
         key=lambda canonical: bone_depth(target_arm, target_map[canonical]),
     )
 
@@ -226,21 +237,23 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     action = bpy.data.actions.new("RL_Retarget_Test")
     target_arm.animation_data.action = action
 
-    source_rest_world = {}
-    target_rest_world = {}
+    source_rest_local = {}
+    target_rest_local = {}
+
     for canonical in mapped:
         source_bone = source_arm.data.bones[source_map[canonical]]
         target_bone = target_arm.data.bones[target_map[canonical]]
-        source_rest_world[canonical] = source_arm.matrix_world @ source_bone.matrix_local
-        target_rest_world[canonical] = target_arm.matrix_world @ target_bone.matrix_local
 
-    source_hips_rest_pos = None
-    target_hips_rest_pos = None
-    if "hips" in mapped:
-        source_hips_rest_pos = source_rest_world["hips"].translation.copy()
-        target_hips_rest_pos = target_rest_world["hips"].translation.copy()
-
-    target_world_rot_inv = target_arm.matrix_world.to_quaternion().inverted()
+        source_rest_local[canonical] = (
+            source_bone.parent.matrix_local.inverted() @ source_bone.matrix_local
+            if source_bone.parent
+            else source_bone.matrix_local.copy()
+        )
+        target_rest_local[canonical] = (
+            target_bone.parent.matrix_local.inverted() @ target_bone.matrix_local
+            if target_bone.parent
+            else target_bone.matrix_local.copy()
+        )
 
     for frame in range(int(frame_start), int(frame_end) + 1):
         scene.frame_set(frame)
@@ -252,66 +265,39 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
             if source_pose is None or target_pose is None:
                 continue
 
-            source_pose_world = source_arm.matrix_world @ source_pose.matrix
-            source_rest = source_rest_world[canonical]
-            target_rest = target_rest_world[canonical]
-
-            # Convert the source pose into a delta in the SOURCE bone's
-            # rest-coordinate frame, then apply that local delta to the
-            # TARGET bone's rest orientation.
-            #
-            # Quaternion order matters:
-            #   target_rest * inverse(source_rest) * source_pose
-            #
-            # The previous implementation used:
-            #   source_pose * inverse(source_rest) * target_rest
-            # which rotates the target in world-space order and causes
-            # twisted/crouched-looking motion when the two rigs have
-            # different rest bone axes.
-            source_rest_rot = source_rest.to_quaternion()
-            source_pose_rot = source_pose_world.to_quaternion()
-            target_rest_rot = target_rest.to_quaternion()
-
-            source_local_delta_rot = (
-                source_rest_rot.inverted()
-                @ source_pose_rot
+            source_pose_local = (
+                source_pose.parent.matrix.inverted() @ source_pose.matrix
+                if source_pose.parent
+                else source_pose.matrix.copy()
             )
-            desired_world_rot = (
-                target_rest_rot
-                @ source_local_delta_rot
+
+            # Animation delta in the SOURCE bone's own parent-local rest frame.
+            source_delta = (
+                source_rest_local[canonical].inverted()
+                @ source_pose_local
             )
-            desired_arm_rot = target_world_rot_inv @ desired_world_rot
 
-            current_translation = target_pose.matrix.translation.copy()
+            # Keep only rotation for normal joints so the target keeps its own
+            # proportions. Root/hips also receives scaled translation.
+            delta_rotation = source_delta.to_quaternion()
+            delta_translation = Vector((0.0, 0.0, 0.0))
 
-            if canonical == "hips" and source_hips_rest_pos is not None:
-                source_delta_world = (
-                    source_pose_world.translation - source_hips_rest_pos
-                )
+            if canonical == "hips":
+                delta_translation = source_delta.translation * translation_scale
 
-                # Rotate source root movement from the source rest basis
-                # into the target rest basis before applying scale.
-                root_alignment = (
-                    target_rest.to_quaternion()
-                    @ source_rest.to_quaternion().inverted()
-                )
-                aligned_delta_world = (
-                    root_alignment @ source_delta_world
-                ) * translation_scale
+            delta_matrix = delta_rotation.to_matrix().to_4x4()
+            delta_matrix.translation = delta_translation
 
-                desired_world_pos = (
-                    target_hips_rest_pos
-                    + aligned_delta_world
-                )
-                current_translation = (
-                    target_arm.matrix_world.inverted()
-                    @ desired_world_pos
-                )
+            # Apply the source local animation delta to the TARGET's own rest
+            # transform, then rebuild the target pose down its hierarchy.
+            desired_local = target_rest_local[canonical] @ delta_matrix
 
-            target_pose.matrix = matrix_with_rotation_translation(
-                desired_arm_rot,
-                current_translation,
-            )
+            if target_pose.parent:
+                desired_armature = target_pose.parent.matrix @ desired_local
+            else:
+                desired_armature = desired_local
+
+            target_pose.matrix = desired_armature
             bpy.context.view_layer.update()
 
             target_pose.rotation_mode = "QUATERNION"
@@ -320,6 +306,7 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
                 frame=frame,
                 group=target_pose.name,
             )
+
             if canonical == "hips":
                 target_pose.keyframe_insert(
                     data_path="location",
@@ -330,8 +317,6 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
     scene.frame_start = int(frame_start)
     scene.frame_end = int(frame_end)
 
-    # Measure whether the baked target pose actually changes across
-    # the clip before export. This catches accidental constant-action bakes.
     sample_frames = [
         int(frame_start),
         int(round((frame_start + frame_end) * 0.5)),
@@ -360,12 +345,14 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
         for canonical in mapped:
             if canonical not in first:
                 continue
-            start = Vector(first[canonical])
+            start_pos = Vector(first[canonical])
             max_distance = 0.0
             for frame_positions in sample_positions[1:]:
                 if canonical not in frame_positions:
                     continue
-                distance = float((Vector(frame_positions[canonical]) - start).length)
+                distance = float(
+                    (Vector(frame_positions[canonical]) - start_pos).length
+                )
                 max_distance = max(max_distance, distance)
             if max_distance > 1e-5:
                 moving_bones.append({
@@ -378,8 +365,9 @@ def retarget(source_arm, target_arm, source_map, target_map, frame_start, frame_
         "mapped_count": len(mapped),
         "translation_scale": round(float(translation_scale), 6),
         "action_name": action.name,
-        "rotation_method": "target_rest_x_source_rest_inverse_x_source_pose",
-        "root_translation_method": "rest-basis-aligned-and-height-scaled",
+        "rotation_method": "parent_local_rest_delta",
+        "root_translation_method": "parent_local_delta_height_scaled",
+        "finger_transfer": "disabled-for-body-validation",
         "sample_frames": sample_frames,
         "moving_bone_count": len(moving_bones),
         "moving_bones": moving_bones,
