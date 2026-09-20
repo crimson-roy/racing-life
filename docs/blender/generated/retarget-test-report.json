@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T08:01:33.578914+00:00",
+  "generated_at_utc": "2026-09-20T08:06:34.606567+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
@@ -107,127 +107,123 @@
     "mapped_bones": [
       "hips",
       "spine",
-      "rightupleg",
       "leftupleg",
-      "rightleg",
+      "rightupleg",
       "spine1",
       "leftleg",
+      "rightleg",
       "spine2",
       "rightfoot",
       "leftfoot",
+      "leftshoulder",
       "lefttoebase",
+      "rightshoulder",
       "righttoebase",
       "neck",
-      "rightshoulder",
-      "leftshoulder",
-      "leftarm",
       "head",
+      "leftarm",
       "rightarm",
-      "rightforearm",
       "leftforearm",
-      "lefthand",
-      "righthand"
+      "rightforearm",
+      "righthand",
+      "lefthand"
     ],
     "mapped_count": 22,
     "translation_scale": 21.177588,
     "action_name": "RL_Retarget_Test",
     "rotation_method": "parent_local_rest_delta",
-    "root_translation_method": "parent_local_delta_height_scaled",
+    "root_translation_method": "locked-in-place-for-body-validation",
     "finger_transfer": "disabled-for-body-validation",
     "sample_frames": [
       1,
       54,
       106
     ],
-    "moving_bone_count": 22,
+    "moving_bone_count": 21,
     "moving_bones": [
       {
-        "bone": "hips",
-        "sampled_world_displacement": 125.197837
-      },
-      {
         "bone": "spine",
-        "sampled_world_displacement": 125.148957
-      },
-      {
-        "bone": "rightupleg",
-        "sampled_world_displacement": 125.125731
+        "sampled_world_displacement": 0.058621
       },
       {
         "bone": "leftupleg",
-        "sampled_world_displacement": 125.230828
+        "sampled_world_displacement": 0.084067
       },
       {
-        "bone": "rightleg",
-        "sampled_world_displacement": 125.290043
+        "bone": "rightupleg",
+        "sampled_world_displacement": 0.116022
       },
       {
         "bone": "spine1",
-        "sampled_world_displacement": 125.057441
+        "sampled_world_displacement": 0.178098
       },
       {
         "bone": "leftleg",
-        "sampled_world_displacement": 125.379259
+        "sampled_world_displacement": 0.429356
+      },
+      {
+        "bone": "rightleg",
+        "sampled_world_displacement": 0.373908
       },
       {
         "bone": "spine2",
-        "sampled_world_displacement": 124.988731
+        "sampled_world_displacement": 0.261422
       },
       {
         "bone": "rightfoot",
-        "sampled_world_displacement": 125.319713
+        "sampled_world_displacement": 0.445014
       },
       {
         "bone": "leftfoot",
-        "sampled_world_displacement": 125.14391
-      },
-      {
-        "bone": "lefttoebase",
-        "sampled_world_displacement": 125.125309
-      },
-      {
-        "bone": "righttoebase",
-        "sampled_world_displacement": 125.298891
-      },
-      {
-        "bone": "neck",
-        "sampled_world_displacement": 124.921018
-      },
-      {
-        "bone": "rightshoulder",
-        "sampled_world_displacement": 124.910783
+        "sampled_world_displacement": 0.427812
       },
       {
         "bone": "leftshoulder",
-        "sampled_world_displacement": 124.939506
+        "sampled_world_displacement": 0.35903
       },
       {
-        "bone": "leftarm",
-        "sampled_world_displacement": 125.065444
+        "bone": "lefttoebase",
+        "sampled_world_displacement": 0.483418
+      },
+      {
+        "bone": "rightshoulder",
+        "sampled_world_displacement": 0.383203
+      },
+      {
+        "bone": "righttoebase",
+        "sampled_world_displacement": 0.354491
+      },
+      {
+        "bone": "neck",
+        "sampled_world_displacement": 0.322367
       },
       {
         "bone": "head",
-        "sampled_world_displacement": 124.905846
+        "sampled_world_displacement": 0.343425
+      },
+      {
+        "bone": "leftarm",
+        "sampled_world_displacement": 0.181507
       },
       {
         "bone": "rightarm",
-        "sampled_world_displacement": 124.79206
-      },
-      {
-        "bone": "rightforearm",
-        "sampled_world_displacement": 124.594135
+        "sampled_world_displacement": 0.464039
       },
       {
         "bone": "leftforearm",
-        "sampled_world_displacement": 125.161696
+        "sampled_world_displacement": 0.488704
       },
       {
-        "bone": "lefthand",
-        "sampled_world_displacement": 125.170489
+        "bone": "rightforearm",
+        "sampled_world_displacement": 0.689482
       },
       {
         "bone": "righthand",
-        "sampled_world_displacement": 124.458174
+        "sampled_world_displacement": 0.832171
+      },
+      {
+        "bone": "lefthand",
+        "sampled_world_displacement": 0.784655
       }
     ]
   },
@@ -238,18 +234,18 @@
         "shared_bones": 52,
         "coordinate_space": "anatomical-facing-normalized",
         "all_joints": {
-          "mean": 0.28481,
-          "max": 0.51348,
+          "mean": 0.28478,
+          "max": 0.51344,
           "count": 52
         },
         "core_body": {
-          "mean": 0.15735,
-          "max": 0.41093,
+          "mean": 0.15734,
+          "max": 0.41088,
           "count": 20
         },
         "finger_detail": {
-          "mean": 0.38198,
-          "max": 0.51348,
+          "mean": 0.38194,
+          "max": 0.51344,
           "count": 30
         },
         "bones": [
@@ -262,7 +258,7 @@
             ],
             "target_anatomical": [
               0.0,
-              0.0,
+              -0.0,
               0.44733
             ],
             "normalized_position_error": 0.13657
@@ -290,10 +286,10 @@
             ],
             "target_anatomical": [
               -0.11698,
-              0.00797,
-              0.38694
+              0.00799,
+              0.38695
             ],
-            "normalized_position_error": 0.1544
+            "normalized_position_error": 0.15441
           },
           {
             "bone": "leftfoot",
@@ -303,11 +299,11 @@
               -0.20413
             ],
             "target_anatomical": [
-              -0.04047,
+              -0.04048,
               -0.05476,
               -0.21224
             ],
-            "normalized_position_error": 0.03478
+            "normalized_position_error": 0.03477
           },
           {
             "bone": "leftforearm",
@@ -317,11 +313,11 @@
               0.16224
             ],
             "target_anatomical": [
-              -0.08529,
-              -0.0596,
+              -0.08532,
+              -0.05958,
               0.21655
             ],
-            "normalized_position_error": 0.1942
+            "normalized_position_error": 0.19418
           },
           {
             "bone": "lefthand",
@@ -331,11 +327,11 @@
               0.03728
             ],
             "target_anatomical": [
-              -0.18337,
-              -0.13328,
-              0.1577
+              -0.18342,
+              -0.13325,
+              0.15771
             ],
-            "normalized_position_error": 0.27297
+            "normalized_position_error": 0.27294
           },
           {
             "bone": "lefthandindex1",
@@ -345,11 +341,11 @@
               0.0104
             ],
             "target_anatomical": [
-              -0.24265,
-              -0.15869,
-              0.13973
+              -0.24271,
+              -0.15863,
+              0.13974
             ],
-            "normalized_position_error": 0.28923
+            "normalized_position_error": 0.28921
           },
           {
             "bone": "lefthandindex2",
@@ -359,11 +355,11 @@
               -0.00219
             ],
             "target_anatomical": [
-              -0.26157,
-              -0.16265,
-              0.12304
+              -0.26163,
+              -0.16259,
+              0.12305
             ],
-            "normalized_position_error": 0.29184
+            "normalized_position_error": 0.29182
           },
           {
             "bone": "lefthandindex3",
@@ -373,11 +369,11 @@
               -0.00738
             ],
             "target_anatomical": [
-              -0.27165,
-              -0.16506,
-              0.11084
+              -0.27171,
+              -0.16499,
+              0.11085
             ],
-            "normalized_position_error": 0.30311
+            "normalized_position_error": 0.30308
           },
           {
             "bone": "lefthandmiddle1",
@@ -387,11 +383,11 @@
               0.00562
             ],
             "target_anatomical": [
-              -0.24495,
-              -0.14576,
+              -0.24501,
+              -0.1457,
               0.13864
             ],
-            "normalized_position_error": 0.28464
+            "normalized_position_error": 0.28461
           },
           {
             "bone": "lefthandmiddle2",
@@ -401,11 +397,11 @@
               -0.00813
             ],
             "target_anatomical": [
-              -0.26411,
-              -0.15053,
+              -0.26416,
+              -0.15047,
               0.11865
             ],
-            "normalized_position_error": 0.29086
+            "normalized_position_error": 0.29083
           },
           {
             "bone": "lefthandmiddle3",
@@ -415,11 +411,11 @@
               -0.01142
             ],
             "target_anatomical": [
-              -0.27308,
-              -0.15354,
-              0.10303
+              -0.27313,
+              -0.15347,
+              0.10304
             ],
-            "normalized_position_error": 0.29999
+            "normalized_position_error": 0.29996
           },
           {
             "bone": "lefthandpinky1",
@@ -429,11 +425,11 @@
               0.00956
             ],
             "target_anatomical": [
-              -0.24496,
-              -0.11901,
+              -0.24501,
+              -0.11896,
               0.13116
             ],
-            "normalized_position_error": 0.27636
+            "normalized_position_error": 0.27633
           },
           {
             "bone": "lefthandpinky2",
@@ -443,11 +439,11 @@
               -0.00304
             ],
             "target_anatomical": [
-              -0.25186,
-              -0.12084,
-              0.11705
+              -0.25191,
+              -0.12078,
+              0.11706
             ],
-            "normalized_position_error": 0.28017
+            "normalized_position_error": 0.28014
           },
           {
             "bone": "lefthandpinky3",
@@ -457,11 +453,11 @@
               -0.00593
             ],
             "target_anatomical": [
-              -0.25636,
-              -0.12226,
-              0.10514
+              -0.25641,
+              -0.1222,
+              0.10515
             ],
-            "normalized_position_error": 0.2867
+            "normalized_position_error": 0.28667
           },
           {
             "bone": "lefthandring1",
@@ -471,11 +467,11 @@
               0.00195
             ],
             "target_anatomical": [
-              -0.24557,
-              -0.13205,
+              -0.24562,
+              -0.13199,
               0.13644
             ],
-            "normalized_position_error": 0.27966
+            "normalized_position_error": 0.27963
           },
           {
             "bone": "lefthandring2",
@@ -485,11 +481,11 @@
               -0.00915
             ],
             "target_anatomical": [
-              -0.26065,
-              -0.13583,
+              -0.26069,
+              -0.13577,
               0.11633
             ],
-            "normalized_position_error": 0.28295
+            "normalized_position_error": 0.28292
           },
           {
             "bone": "lefthandring3",
@@ -499,11 +495,11 @@
               -0.00928
             ],
             "target_anatomical": [
-              -0.26902,
-              -0.13826,
-              0.10054
+              -0.26907,
+              -0.1382,
+              0.10055
             ],
-            "normalized_position_error": 0.28908
+            "normalized_position_error": 0.28905
           },
           {
             "bone": "lefthandthumb1",
@@ -513,11 +509,11 @@
               0.02726
             ],
             "target_anatomical": [
-              -0.19704,
-              -0.15102,
+              -0.19709,
+              -0.15098,
               0.14279
             ],
-            "normalized_position_error": 0.27842
+            "normalized_position_error": 0.2784
           },
           {
             "bone": "lefthandthumb2",
@@ -527,11 +523,11 @@
               0.0199
             ],
             "target_anatomical": [
-              -0.2103,
-              -0.16417,
-              0.12824
+              -0.21036,
+              -0.16412,
+              0.12825
             ],
-            "normalized_position_error": 0.28036
+            "normalized_position_error": 0.28034
           },
           {
             "bone": "lefthandthumb3",
@@ -541,11 +537,11 @@
               0.00632
             ],
             "target_anatomical": [
-              -0.22484,
-              -0.16939,
-              0.11723
+              -0.2249,
+              -0.16934,
+              0.11724
             ],
-            "normalized_position_error": 0.28394
+            "normalized_position_error": 0.28392
           },
           {
             "bone": "leftleg",
@@ -555,11 +551,11 @@
               -0.07756
             ],
             "target_anatomical": [
-              -0.04472,
-              0.18975,
+              -0.04467,
+              0.18976,
               -0.06582
             ],
-            "normalized_position_error": 0.40018
+            "normalized_position_error": 0.40019
           },
           {
             "bone": "leftshoulder",
@@ -569,7 +565,7 @@
               0.2604
             ],
             "target_anatomical": [
-              -0.01266,
+              -0.01268,
               -0.0519,
               0.38461
             ],
@@ -583,11 +579,11 @@
               -0.29854
             ],
             "target_anatomical": [
-              -0.03089,
+              -0.03093,
               -0.12277,
               -0.18664
             ],
-            "normalized_position_error": 0.12477
+            "normalized_position_error": 0.12476
           },
           {
             "bone": "leftupleg",
@@ -597,11 +593,11 @@
               -0.03173
             ],
             "target_anatomical": [
-              -0.05641,
-              -0.01177,
+              -0.05642,
+              -0.01176,
               0.03179
             ],
-            "normalized_position_error": 0.06431
+            "normalized_position_error": 0.06432
           },
           {
             "bone": "neck",
@@ -615,7 +611,7 @@
               0.00176,
               0.41471
             ],
-            "normalized_position_error": 0.14315
+            "normalized_position_error": 0.14316
           },
           {
             "bone": "rightarm",
@@ -626,10 +622,10 @@
             ],
             "target_anatomical": [
               0.09906,
-              0.02522,
+              0.02519,
               0.39988
             ],
-            "normalized_position_error": 0.17704
+            "normalized_position_error": 0.17703
           },
           {
             "bone": "rightfoot",
@@ -639,11 +635,11 @@
               -0.36518
             ],
             "target_anatomical": [
-              0.1266,
-              -0.04543,
+              0.12657,
+              -0.04548,
               -0.40061
             ],
-            "normalized_position_error": 0.06731
+            "normalized_position_error": 0.0673
           },
           {
             "bone": "rightforearm",
@@ -653,11 +649,11 @@
               0.11498
             ],
             "target_anatomical": [
-              0.2712,
-              0.05766,
-              0.33729
+              0.27121,
+              0.05758,
+              0.33728
             ],
-            "normalized_position_error": 0.29867
+            "normalized_position_error": 0.29863
           },
           {
             "bone": "righthand",
@@ -668,10 +664,10 @@
             ],
             "target_anatomical": [
               0.29611,
-              0.01603,
-              0.46441
+              0.01595,
+              0.4644
             ],
-            "normalized_position_error": 0.41093
+            "normalized_position_error": 0.41088
           },
           {
             "bone": "righthandindex1",
@@ -681,11 +677,11 @@
               0.21636
             ],
             "target_anatomical": [
-              0.29642,
-              -0.00101,
-              0.52916
+              0.29641,
+              -0.00109,
+              0.52915
             ],
-            "normalized_position_error": 0.44765
+            "normalized_position_error": 0.4476
           },
           {
             "bone": "righthandindex2",
@@ -696,10 +692,10 @@
             ],
             "target_anatomical": [
               0.30358,
-              0.00214,
-              0.55347
+              0.00206,
+              0.55346
             ],
-            "normalized_position_error": 0.47927
+            "normalized_position_error": 0.47923
           },
           {
             "bone": "righthandindex3",
@@ -709,11 +705,11 @@
               0.20713
             ],
             "target_anatomical": [
-              0.31019,
-              0.00504,
-              0.56776
+              0.31018,
+              0.00496,
+              0.56775
             ],
-            "normalized_position_error": 0.50469
+            "normalized_position_error": 0.50465
           },
           {
             "bone": "righthandmiddle1",
@@ -723,11 +719,11 @@
               0.21582
             ],
             "target_anatomical": [
-              0.29089,
-              0.01094,
-              0.52967
+              0.29088,
+              0.01086,
+              0.52966
             ],
-            "normalized_position_error": 0.45121
+            "normalized_position_error": 0.45116
           },
           {
             "bone": "righthandmiddle2",
@@ -737,11 +733,11 @@
               0.2176
             ],
             "target_anatomical": [
-              0.30096,
-              0.01484,
-              0.55561
+              0.30095,
+              0.01476,
+              0.5556
             ],
-            "normalized_position_error": 0.48393
+            "normalized_position_error": 0.48388
           },
           {
             "bone": "righthandmiddle3",
@@ -752,10 +748,10 @@
             ],
             "target_anatomical": [
               0.31102,
-              0.01877,
-              0.57032
+              0.01868,
+              0.57031
             ],
-            "normalized_position_error": 0.51348
+            "normalized_position_error": 0.51344
           },
           {
             "bone": "righthandpinky1",
@@ -766,10 +762,10 @@
             ],
             "target_anatomical": [
               0.28565,
-              0.03818,
-              0.52846
+              0.03811,
+              0.52845
             ],
-            "normalized_position_error": 0.46459
+            "normalized_position_error": 0.46455
           },
           {
             "bone": "righthandpinky2",
@@ -780,10 +776,10 @@
             ],
             "target_anatomical": [
               0.29488,
-              0.04257,
-              0.54052
+              0.0425,
+              0.54051
             ],
-            "normalized_position_error": 0.48675
+            "normalized_position_error": 0.4867
           },
           {
             "bone": "righthandpinky3",
@@ -794,10 +790,10 @@
             ],
             "target_anatomical": [
               0.30317,
-              0.04645,
+              0.04637,
               0.54948
             ],
-            "normalized_position_error": 0.50989
+            "normalized_position_error": 0.50984
           },
           {
             "bone": "righthandring1",
@@ -808,10 +804,10 @@
             ],
             "target_anatomical": [
               0.28663,
-              0.02415,
-              0.52897
+              0.02407,
+              0.52896
             ],
-            "normalized_position_error": 0.4549
+            "normalized_position_error": 0.45486
           },
           {
             "bone": "righthandring2",
@@ -822,10 +818,10 @@
             ],
             "target_anatomical": [
               0.29809,
-              0.02915,
-              0.5511
+              0.02907,
+              0.55109
             ],
-            "normalized_position_error": 0.48464
+            "normalized_position_error": 0.48459
           },
           {
             "bone": "righthandring3",
@@ -836,10 +832,10 @@
             ],
             "target_anatomical": [
               0.3083,
-              0.03369,
-              0.56525
+              0.03361,
+              0.56524
             ],
-            "normalized_position_error": 0.51095
+            "normalized_position_error": 0.5109
           },
           {
             "bone": "righthandthumb1",
@@ -849,11 +845,11 @@
               0.1886
             ],
             "target_anatomical": [
-              0.30985,
-              0.0063,
-              0.4854
+              0.30984,
+              0.00621,
+              0.48539
             ],
-            "normalized_position_error": 0.43417
+            "normalized_position_error": 0.43412
           },
           {
             "bone": "righthandthumb2",
@@ -863,11 +859,11 @@
               0.19382
             ],
             "target_anatomical": [
-              0.32153,
-              0.00051,
-              0.50516
+              0.32152,
+              0.00042,
+              0.50515
             ],
-            "normalized_position_error": 0.45657
+            "normalized_position_error": 0.45653
           },
           {
             "bone": "righthandthumb3",
@@ -877,11 +873,11 @@
               0.19844
             ],
             "target_anatomical": [
-              0.32649,
-              0.00019,
-              0.52346
+              0.32648,
+              0.0001,
+              0.52345
             ],
-            "normalized_position_error": 0.47943
+            "normalized_position_error": 0.47939
           },
           {
             "bone": "rightleg",
@@ -891,11 +887,11 @@
               -0.19826
             ],
             "target_anatomical": [
-              0.0626,
-              0.10752,
+              0.06263,
+              0.1075,
               -0.16876
             ],
-            "normalized_position_error": 0.2037
+            "normalized_position_error": 0.20368
           },
           {
             "bone": "rightshoulder",
@@ -905,7 +901,7 @@
               0.2596
             ],
             "target_anatomical": [
-              0.00808,
+              0.00807,
               -0.0519,
               0.38411
             ],
@@ -919,11 +915,11 @@
               -0.4001
             ],
             "target_anatomical": [
-              0.14315,
-              -0.10354,
+              0.14311,
+              -0.10359,
               -0.44211
             ],
-            "normalized_position_error": 0.0787
+            "normalized_position_error": 0.07866
           },
           {
             "bone": "rightupleg",
@@ -933,8 +929,8 @@
               -0.02899
             ],
             "target_anatomical": [
-              0.04957,
-              0.02117,
+              0.04958,
+              0.02116,
               0.03776
             ],
             "normalized_position_error": 0.06718
@@ -947,8 +943,8 @@
               0.05314
             ],
             "target_anatomical": [
-              -0.0063,
-              0.0051,
+              -0.00631,
+              0.00511,
               0.08382
             ],
             "normalized_position_error": 0.03154
@@ -962,7 +958,7 @@
             ],
             "target_anatomical": [
               -0.00581,
-              -0.00744,
+              -0.00743,
               0.2112
             ],
             "normalized_position_error": 0.0959
@@ -975,8 +971,8 @@
               0.18976
             ],
             "target_anatomical": [
-              -0.00413,
-              -0.01283,
+              -0.00414,
+              -0.01282,
               0.30908
             ],
             "normalized_position_error": 0.12084
@@ -989,17 +985,17 @@
         "coordinate_space": "anatomical-facing-normalized",
         "all_joints": {
           "mean": 0.37228,
-          "max": 0.57064,
+          "max": 0.57067,
           "count": 52
         },
         "core_body": {
           "mean": 0.18559,
-          "max": 0.46334,
+          "max": 0.46337,
           "count": 20
         },
         "finger_detail": {
           "mean": 0.50856,
-          "max": 0.57064,
+          "max": 0.57067,
           "count": 30
         },
         "bones": [
@@ -1013,7 +1009,7 @@
             "target_anatomical": [
               0.0,
               0.0,
-              0.44724
+              0.44725
             ],
             "normalized_position_error": 0.13704
           },
@@ -1040,10 +1036,10 @@
             ],
             "target_anatomical": [
               -0.10371,
-              0.02838,
+              0.0284,
               0.36284
             ],
-            "normalized_position_error": 0.11757
+            "normalized_position_error": 0.11758
           },
           {
             "bone": "leftfoot",
@@ -1053,11 +1049,11 @@
               -0.35421
             ],
             "target_anatomical": [
-              0.04348,
-              0.02007,
-              -0.42662
+              0.04347,
+              0.02005,
+              -0.42663
             ],
-            "normalized_position_error": 0.2361
+            "normalized_position_error": 0.23608
           },
           {
             "bone": "leftforearm",
@@ -1067,11 +1063,11 @@
               0.23703
             ],
             "target_anatomical": [
-              -0.25679,
-              0.13107,
-              0.38782
+              -0.25676,
+              0.13113,
+              0.38783
             ],
-            "normalized_position_error": 0.31875
+            "normalized_position_error": 0.31879
           },
           {
             "bone": "lefthand",
@@ -1081,11 +1077,11 @@
               0.29412
             ],
             "target_anatomical": [
-              -0.28303,
-              0.12859,
-              0.5213
+              -0.283,
+              0.12865,
+              0.52131
             ],
-            "normalized_position_error": 0.46334
+            "normalized_position_error": 0.46337
           },
           {
             "bone": "lefthandindex1",
@@ -1095,11 +1091,11 @@
               0.32154
             ],
             "target_anatomical": [
-              -0.2815,
-              0.13328,
-              0.58807
+              -0.28148,
+              0.13334,
+              0.58808
             ],
-            "normalized_position_error": 0.50413
+            "normalized_position_error": 0.50416
           },
           {
             "bone": "lefthandindex2",
@@ -1109,11 +1105,11 @@
               0.32997
             ],
             "target_anatomical": [
-              -0.28544,
-              0.1456,
-              0.6101
+              -0.28542,
+              0.14566,
+              0.61011
             ],
-            "normalized_position_error": 0.52967
+            "normalized_position_error": 0.5297
           },
           {
             "bone": "lefthandindex3",
@@ -1123,11 +1119,11 @@
               0.32457
             ],
             "target_anatomical": [
-              -0.28982,
-              0.15441,
-              0.62272
+              -0.28979,
+              0.15447,
+              0.62273
             ],
-            "normalized_position_error": 0.55718
+            "normalized_position_error": 0.55721
           },
           {
             "bone": "lefthandmiddle1",
@@ -1137,11 +1133,11 @@
               0.32606
             ],
             "target_anatomical": [
-              -0.27323,
-              0.14295,
-              0.58462
+              -0.27321,
+              0.14301,
+              0.58463
             ],
-            "normalized_position_error": 0.50653
+            "normalized_position_error": 0.50656
           },
           {
             "bone": "lefthandmiddle2",
@@ -1151,11 +1147,11 @@
               0.33051
             ],
             "target_anatomical": [
-              -0.27965,
-              0.1572,
-              0.60797
+              -0.27962,
+              0.15726,
+              0.60798
             ],
-            "normalized_position_error": 0.54021
+            "normalized_position_error": 0.54024
           },
           {
             "bone": "lefthandmiddle3",
@@ -1165,11 +1161,11 @@
               0.32369
             ],
             "target_anatomical": [
-              -0.28708,
-              0.16798,
-              0.62069
+              -0.28705,
+              0.16804,
+              0.6207
             ],
-            "normalized_position_error": 0.57063
+            "normalized_position_error": 0.57066
           },
           {
             "bone": "lefthandpinky1",
@@ -1179,11 +1175,11 @@
               0.31423
             ],
             "target_anatomical": [
-              -0.26172,
-              0.16614,
-              0.57458
+              -0.26169,
+              0.16619,
+              0.57459
             ],
-            "normalized_position_error": 0.51969
+            "normalized_position_error": 0.51972
           },
           {
             "bone": "lefthandpinky2",
@@ -1193,11 +1189,11 @@
               0.31632
             ],
             "target_anatomical": [
-              -0.26847,
-              0.17629,
-              0.58463
+              -0.26844,
+              0.17635,
+              0.58464
             ],
-            "normalized_position_error": 0.54477
+            "normalized_position_error": 0.5448
           },
           {
             "bone": "lefthandpinky3",
@@ -1207,11 +1203,11 @@
               0.30994
             ],
             "target_anatomical": [
-              -0.27473,
-              0.18477,
-              0.59192
+              -0.27469,
+              0.18483,
+              0.59193
             ],
-            "normalized_position_error": 0.56879
+            "normalized_position_error": 0.56882
           },
           {
             "bone": "lefthandring1",
@@ -1221,11 +1217,11 @@
               0.3279
             ],
             "target_anatomical": [
-              -0.266,
-              0.15371,
-              0.57963
+              -0.26597,
+              0.15377,
+              0.57964
             ],
-            "normalized_position_error": 0.51136
+            "normalized_position_error": 0.51139
           },
           {
             "bone": "lefthandring2",
@@ -1235,11 +1231,11 @@
               0.33083
             ],
             "target_anatomical": [
-              -0.27384,
-              0.16814,
+              -0.27381,
+              0.1682,
               0.59903
             ],
-            "normalized_position_error": 0.5427
+            "normalized_position_error": 0.54273
           },
           {
             "bone": "lefthandring3",
@@ -1249,11 +1245,11 @@
               0.3229
             ],
             "target_anatomical": [
-              -0.28132,
-              0.17934,
-              0.61102
+              -0.28128,
+              0.1794,
+              0.61103
             ],
-            "normalized_position_error": 0.57064
+            "normalized_position_error": 0.57067
           },
           {
             "bone": "lefthandthumb1",
@@ -1263,11 +1259,11 @@
               0.29844
             ],
             "target_anatomical": [
-              -0.29672,
-              0.12978,
+              -0.2967,
+              0.12984,
               0.54443
             ],
-            "normalized_position_error": 0.48826
+            "normalized_position_error": 0.48829
           },
           {
             "bone": "lefthandthumb2",
@@ -1277,11 +1273,11 @@
               0.3037
             ],
             "target_anatomical": [
-              -0.30759,
-              0.13366,
+              -0.30757,
+              0.13372,
               0.5651
             ],
-            "normalized_position_error": 0.50819
+            "normalized_position_error": 0.50822
           },
           {
             "bone": "lefthandthumb3",
@@ -1291,11 +1287,11 @@
               0.30787
             ],
             "target_anatomical": [
-              -0.31079,
-              0.14035,
-              0.58255
+              -0.31076,
+              0.14041,
+              0.58256
             ],
-            "normalized_position_error": 0.52885
+            "normalized_position_error": 0.52888
           },
           {
             "bone": "leftleg",
@@ -1305,8 +1301,8 @@
               -0.1753
             ],
             "target_anatomical": [
-              0.01469,
-              0.10496,
+              0.0147,
+              0.10495,
               -0.15606
             ],
             "normalized_position_error": 0.26497
@@ -1319,8 +1315,8 @@
               0.26031
             ],
             "target_anatomical": [
-              -0.01151,
-              -0.04578,
+              -0.01153,
+              -0.04579,
               0.38452
             ],
             "normalized_position_error": 0.13629
@@ -1333,11 +1329,11 @@
               -0.41261
             ],
             "target_anatomical": [
-              0.01652,
-              -0.04407,
+              0.01649,
+              -0.04409,
               -0.44966
             ],
-            "normalized_position_error": 0.24879
+            "normalized_position_error": 0.24877
           },
           {
             "bone": "leftupleg",
@@ -1348,7 +1344,7 @@
             ],
             "target_anatomical": [
               -0.05715,
-              0.00627,
+              0.00628,
               0.03203
             ],
             "normalized_position_error": 0.06513
@@ -1376,10 +1372,10 @@
             ],
             "target_anatomical": [
               0.08574,
-              0.04694,
+              0.04691,
               0.37904
             ],
-            "normalized_position_error": 0.15175
+            "normalized_position_error": 0.15174
           },
           {
             "bone": "rightfoot",
@@ -1389,11 +1385,11 @@
               -0.33911
             ],
             "target_anatomical": [
-              0.04001,
-              -0.00171,
+              0.03999,
+              -0.00173,
               -0.4098
             ],
-            "normalized_position_error": 0.15564
+            "normalized_position_error": 0.15563
           },
           {
             "bone": "rightforearm",
@@ -1403,11 +1399,11 @@
               0.15184
             ],
             "target_anatomical": [
-              0.26654,
-              0.08232,
-              0.35331
+              0.26655,
+              0.08225,
+              0.3533
             ],
-            "normalized_position_error": 0.33544
+            "normalized_position_error": 0.3354
           },
           {
             "bone": "righthand",
@@ -1418,10 +1414,10 @@
             ],
             "target_anatomical": [
               0.29812,
-              0.03796,
-              0.478
+              0.03788,
+              0.47799
             ],
-            "normalized_position_error": 0.45782
+            "normalized_position_error": 0.45778
           },
           {
             "bone": "righthandindex1",
@@ -1432,10 +1428,10 @@
             ],
             "target_anatomical": [
               0.26707,
-              0.022,
+              0.02194,
               0.53513
             ],
-            "normalized_position_error": 0.44887
+            "normalized_position_error": 0.44884
           },
           {
             "bone": "righthandindex2",
@@ -1446,10 +1442,10 @@
             ],
             "target_anatomical": [
               0.26683,
-              0.01531,
+              0.01524,
               0.55978
             ],
-            "normalized_position_error": 0.46091
+            "normalized_position_error": 0.46088
           },
           {
             "bone": "righthandindex3",
@@ -1459,11 +1455,11 @@
               0.25733
             ],
             "target_anatomical": [
-              0.26883,
-              0.00994,
-              0.57473
+              0.26882,
+              0.00987,
+              0.57472
             ],
-            "normalized_position_error": 0.47281
+            "normalized_position_error": 0.47279
           },
           {
             "bone": "righthandmiddle1",
@@ -1474,10 +1470,10 @@
             ],
             "target_anatomical": [
               0.27337,
-              0.03304,
+              0.03298,
               0.53862
             ],
-            "normalized_position_error": 0.47123
+            "normalized_position_error": 0.47119
           },
           {
             "bone": "righthandmiddle2",
@@ -1488,10 +1484,10 @@
             ],
             "target_anatomical": [
               0.27486,
-              0.02417,
-              0.56524
+              0.0241,
+              0.56523
             ],
-            "normalized_position_error": 0.48544
+            "normalized_position_error": 0.4854
           },
           {
             "bone": "righthandmiddle3",
@@ -1501,11 +1497,11 @@
               0.25584
             ],
             "target_anatomical": [
-              0.27945,
-              0.01643,
+              0.27944,
+              0.01636,
               0.58112
             ],
-            "normalized_position_error": 0.49956
+            "normalized_position_error": 0.49953
           },
           {
             "bone": "righthandpinky1",
@@ -1516,10 +1512,10 @@
             ],
             "target_anatomical": [
               0.2924,
-              0.0523,
+              0.05223,
               0.54481
             ],
-            "normalized_position_error": 0.51448
+            "normalized_position_error": 0.51445
           },
           {
             "bone": "righthandpinky2",
@@ -1530,10 +1526,10 @@
             ],
             "target_anatomical": [
               0.29762,
-              0.04578,
+              0.04571,
               0.55823
             ],
-            "normalized_position_error": 0.52589
+            "normalized_position_error": 0.52585
           },
           {
             "bone": "righthandpinky3",
@@ -1544,10 +1540,10 @@
             ],
             "target_anatomical": [
               0.30276,
-              0.04007,
-              0.56848
+              0.03999,
+              0.56847
             ],
-            "normalized_position_error": 0.53671
+            "normalized_position_error": 0.53667
           },
           {
             "bone": "righthandring1",
@@ -1558,10 +1554,10 @@
             ],
             "target_anatomical": [
               0.28169,
-              0.04383,
+              0.04376,
               0.54139
             ],
-            "normalized_position_error": 0.49144
+            "normalized_position_error": 0.49141
           },
           {
             "bone": "righthandring2",
@@ -1572,10 +1568,10 @@
             ],
             "target_anatomical": [
               0.28585,
-              0.03477,
+              0.0347,
               0.56477
             ],
-            "normalized_position_error": 0.50573
+            "normalized_position_error": 0.5057
           },
           {
             "bone": "righthandring3",
@@ -1586,10 +1582,10 @@
             ],
             "target_anatomical": [
               0.29115,
-              0.02729,
-              0.58031
+              0.02723,
+              0.5803
             ],
-            "normalized_position_error": 0.51905
+            "normalized_position_error": 0.51902
           },
           {
             "bone": "righthandthumb1",
@@ -1599,11 +1595,11 @@
               0.22868
             ],
             "target_anatomical": [
-              0.29218,
-              0.01913,
+              0.29217,
+              0.01905,
               0.49627
             ],
-            "normalized_position_error": 0.4464
+            "normalized_position_error": 0.44636
           },
           {
             "bone": "righthandthumb2",
@@ -1614,10 +1610,10 @@
             ],
             "target_anatomical": [
               0.28857,
-              0.00427,
+              0.0042,
               0.51435
             ],
-            "normalized_position_error": 0.44095
+            "normalized_position_error": 0.44091
           },
           {
             "bone": "righthandthumb3",
@@ -1627,11 +1623,11 @@
               0.24813
             ],
             "target_anatomical": [
-              0.28602,
-              -0.00187,
+              0.28601,
+              -0.00194,
               0.53211
             ],
-            "normalized_position_error": 0.44588
+            "normalized_position_error": 0.44584
           },
           {
             "bone": "rightleg",
@@ -1641,11 +1637,11 @@
               -0.16347
             ],
             "target_anatomical": [
-              0.02338,
-              0.11967,
+              0.0234,
+              0.11965,
               -0.15244
             ],
-            "normalized_position_error": 0.27555
+            "normalized_position_error": 0.27553
           },
           {
             "bone": "rightshoulder",
@@ -1655,11 +1651,11 @@
               0.25948
             ],
             "target_anatomical": [
-              0.00923,
-              -0.04578,
+              0.00921,
+              -0.04579,
               0.3837
             ],
-            "normalized_position_error": 0.13676
+            "normalized_position_error": 0.13677
           },
           {
             "bone": "righttoebase",
@@ -1669,11 +1665,11 @@
               -0.39705
             ],
             "target_anatomical": [
-              0.07032,
-              -0.06527,
-              -0.43014
+              0.07028,
+              -0.0653,
+              -0.43013
             ],
-            "normalized_position_error": 0.141
+            "normalized_position_error": 0.14098
           },
           {
             "bone": "rightupleg",
@@ -1684,10 +1680,10 @@
             ],
             "target_anatomical": [
               0.05385,
-              0.00457,
+              0.00455,
               0.03756
             ],
-            "normalized_position_error": 0.06643
+            "normalized_position_error": 0.06642
           },
           {
             "bone": "spine",
@@ -1726,7 +1722,7 @@
             ],
             "target_anatomical": [
               -0.00411,
-              -0.00541,
+              -0.0054,
               0.30956
             ],
             "normalized_position_error": 0.12127
@@ -1738,18 +1734,18 @@
         "shared_bones": 52,
         "coordinate_space": "anatomical-facing-normalized",
         "all_joints": {
-          "mean": 0.33885,
-          "max": 0.51053,
+          "mean": 0.33886,
+          "max": 0.51049,
           "count": 52
         },
         "core_body": {
           "mean": 0.17632,
-          "max": 0.41405,
+          "max": 0.41402,
           "count": 20
         },
         "finger_detail": {
-          "mean": 0.44774,
-          "max": 0.51053,
+          "mean": 0.44775,
+          "max": 0.51049,
           "count": 30
         },
         "bones": [
@@ -1761,8 +1757,8 @@
               0.30951
             ],
             "target_anatomical": [
-              0.0,
               -0.0,
+              0.0,
               0.44729
             ],
             "normalized_position_error": 0.13778
@@ -1790,10 +1786,10 @@
             ],
             "target_anatomical": [
               -0.10678,
-              0.02578,
-              0.38463
+              0.0258,
+              0.38464
             ],
-            "normalized_position_error": 0.15379
+            "normalized_position_error": 0.1538
           },
           {
             "bone": "leftfoot",
@@ -1803,11 +1799,11 @@
               -0.35163
             ],
             "target_anatomical": [
-              0.12238,
-              -0.00234,
-              -0.43464
+              0.12237,
+              -0.00238,
+              -0.43465
             ],
-            "normalized_position_error": 0.36082
+            "normalized_position_error": 0.3608
           },
           {
             "bone": "leftforearm",
@@ -1818,10 +1814,10 @@
             ],
             "target_anatomical": [
               -0.24884,
-              0.03278,
-              0.26474
+              0.03283,
+              0.26475
             ],
-            "normalized_position_error": 0.18668
+            "normalized_position_error": 0.18669
           },
           {
             "bone": "lefthand",
@@ -1832,10 +1828,10 @@
             ],
             "target_anatomical": [
               -0.38325,
-              0.03297,
-              0.28583
+              0.03306,
+              0.28584
             ],
-            "normalized_position_error": 0.34851
+            "normalized_position_error": 0.34855
           },
           {
             "bone": "lefthandindex1",
@@ -1846,10 +1842,10 @@
             ],
             "target_anatomical": [
               -0.43963,
-              0.05048,
-              0.3174
+              0.05059,
+              0.31741
             ],
-            "normalized_position_error": 0.42078
+            "normalized_position_error": 0.42083
           },
           {
             "bone": "lefthandindex2",
@@ -1859,11 +1855,11 @@
               0.05136
             ],
             "target_anatomical": [
-              -0.46098,
-              0.06429,
-              0.31984
+              -0.46097,
+              0.0644,
+              0.31985
             ],
-            "normalized_position_error": 0.45173
+            "normalized_position_error": 0.45179
           },
           {
             "bone": "lefthandindex3",
@@ -1873,11 +1869,11 @@
               0.04062
             ],
             "target_anatomical": [
-              -0.47439,
-              0.07298,
-              0.31887
+              -0.47438,
+              0.07309,
+              0.31888
             ],
-            "normalized_position_error": 0.47524
+            "normalized_position_error": 0.47529
           },
           {
             "bone": "lefthandmiddle1",
@@ -1887,11 +1883,11 @@
               0.04955
             ],
             "target_anatomical": [
-              -0.43279,
-              0.06173,
+              -0.43278,
+              0.06184,
               0.31793
             ],
-            "normalized_position_error": 0.41991
+            "normalized_position_error": 0.41997
           },
           {
             "bone": "lefthandmiddle2",
@@ -1901,11 +1897,11 @@
               0.04205
             ],
             "target_anatomical": [
-              -0.45663,
-              0.07659,
-              0.31829
+              -0.45662,
+              0.0767,
+              0.3183
             ],
-            "normalized_position_error": 0.45466
+            "normalized_position_error": 0.45472
           },
           {
             "bone": "lefthandmiddle3",
@@ -1915,11 +1911,11 @@
               0.0324
             ],
             "target_anatomical": [
-              -0.47179,
-              0.08591,
-              0.3142
+              -0.47178,
+              0.08602,
+              0.31421
             ],
-            "normalized_position_error": 0.47649
+            "normalized_position_error": 0.47655
           },
           {
             "bone": "lefthandpinky1",
@@ -1929,11 +1925,11 @@
               0.03572
             ],
             "target_anatomical": [
-              -0.41918,
-              0.0852,
-              0.31197
+              -0.41917,
+              0.0853,
+              0.31198
             ],
-            "normalized_position_error": 0.41729
+            "normalized_position_error": 0.41734
           },
           {
             "bone": "lefthandpinky2",
@@ -1943,11 +1939,11 @@
               0.02704
             ],
             "target_anatomical": [
-              -0.43169,
-              0.0937,
-              0.30737
+              -0.43167,
+              0.0938,
+              0.30738
             ],
-            "normalized_position_error": 0.43857
+            "normalized_position_error": 0.43862
           },
           {
             "bone": "lefthandpinky3",
@@ -1957,11 +1953,11 @@
               0.01817
             ],
             "target_anatomical": [
-              -0.44151,
-              0.10035,
-              0.30252
+              -0.44149,
+              0.10045,
+              0.30253
             ],
-            "normalized_position_error": 0.45361
+            "normalized_position_error": 0.45366
           },
           {
             "bone": "lefthandring1",
@@ -1971,11 +1967,11 @@
               0.04369
             ],
             "target_anatomical": [
-              -0.42521,
-              0.07329,
-              0.31644
+              -0.4252,
+              0.07339,
+              0.31645
             ],
-            "normalized_position_error": 0.41912
+            "normalized_position_error": 0.41918
           },
           {
             "bone": "lefthandring2",
@@ -1985,11 +1981,11 @@
               0.03704
             ],
             "target_anatomical": [
-              -0.44642,
-              0.08701,
+              -0.44641,
+              0.08712,
               0.31373
             ],
-            "normalized_position_error": 0.44743
+            "normalized_position_error": 0.44748
           },
           {
             "bone": "lefthandring3",
@@ -1999,11 +1995,11 @@
               0.02987
             ],
             "target_anatomical": [
-              -0.461,
-              0.09655,
-              0.30907
+              -0.46099,
+              0.09666,
+              0.30908
             ],
-            "normalized_position_error": 0.46453
+            "normalized_position_error": 0.46459
           },
           {
             "bone": "lefthandthumb1",
@@ -2014,10 +2010,10 @@
             ],
             "target_anatomical": [
               -0.41015,
-              0.03319,
-              0.28609
+              0.03328,
+              0.2861
             ],
-            "normalized_position_error": 0.37517
+            "normalized_position_error": 0.37522
           },
           {
             "bone": "lefthandthumb2",
@@ -2027,11 +2023,11 @@
               0.05339
             ],
             "target_anatomical": [
-              -0.43359,
-              0.03646,
-              0.28617
+              -0.4336,
+              0.03656,
+              0.28618
             ],
-            "normalized_position_error": 0.3965
+            "normalized_position_error": 0.39656
           },
           {
             "bone": "lefthandthumb3",
@@ -2041,11 +2037,11 @@
               0.05067
             ],
             "target_anatomical": [
-              -0.45042,
-              0.0446,
-              0.28935
+              -0.45043,
+              0.0447,
+              0.28936
             ],
-            "normalized_position_error": 0.42093
+            "normalized_position_error": 0.42098
           },
           {
             "bone": "leftleg",
@@ -2055,8 +2051,8 @@
               -0.18575
             ],
             "target_anatomical": [
-              0.03124,
-              0.04073,
+              0.03125,
+              0.04072,
               -0.16803
             ],
             "normalized_position_error": 0.22137
@@ -2069,8 +2065,8 @@
               0.259
             ],
             "target_anatomical": [
-              -0.00905,
-              -0.04435,
+              -0.00907,
+              -0.04436,
               0.38305
             ],
             "normalized_position_error": 0.13601
@@ -2083,11 +2079,11 @@
               -0.40946
             ],
             "target_anatomical": [
-              0.09369,
-              -0.06775,
-              -0.45108
+              0.09367,
+              -0.06778,
+              -0.45109
             ],
-            "normalized_position_error": 0.37913
+            "normalized_position_error": 0.3791
           },
           {
             "bone": "leftupleg",
@@ -2098,10 +2094,10 @@
             ],
             "target_anatomical": [
               -0.0562,
-              -0.00069,
+              -0.00068,
               0.03423
             ],
-            "normalized_position_error": 0.06414
+            "normalized_position_error": 0.06415
           },
           {
             "bone": "neck",
@@ -2126,10 +2122,10 @@
             ],
             "target_anatomical": [
               0.0926,
-              0.04383,
+              0.0438,
               0.3707
             ],
-            "normalized_position_error": 0.13478
+            "normalized_position_error": 0.13477
           },
           {
             "bone": "rightfoot",
@@ -2139,11 +2135,11 @@
               -0.36329
             ],
             "target_anatomical": [
-              -0.07007,
-              -0.1428,
+              -0.07012,
+              -0.14279,
               -0.39895
             ],
-            "normalized_position_error": 0.28899
+            "normalized_position_error": 0.28903
           },
           {
             "bone": "rightforearm",
@@ -2154,10 +2150,10 @@
             ],
             "target_anatomical": [
               0.27561,
-              0.02148,
+              0.0214,
               0.34603
             ],
-            "normalized_position_error": 0.30618
+            "normalized_position_error": 0.30615
           },
           {
             "bone": "righthand",
@@ -2167,11 +2163,11 @@
               0.22319
             ],
             "target_anatomical": [
-              0.27504,
-              0.00436,
-              0.48101
+              0.27503,
+              0.00429,
+              0.481
             ],
-            "normalized_position_error": 0.41405
+            "normalized_position_error": 0.41402
           },
           {
             "bone": "righthandindex1",
@@ -2181,11 +2177,11 @@
               0.26274
             ],
             "target_anatomical": [
-              0.24866,
-              -0.00458,
-              0.5419
+              0.24865,
+              -0.00464,
+              0.54189
             ],
-            "normalized_position_error": 0.42266
+            "normalized_position_error": 0.42263
           },
           {
             "bone": "righthandindex2",
@@ -2195,11 +2191,11 @@
               0.26528
             ],
             "target_anatomical": [
-              0.25033,
-              -0.00708,
-              0.56726
+              0.25032,
+              -0.00714,
+              0.56725
             ],
-            "normalized_position_error": 0.44315
+            "normalized_position_error": 0.44312
           },
           {
             "bone": "righthandindex3",
@@ -2209,11 +2205,11 @@
               0.25924
             ],
             "target_anatomical": [
-              0.2536,
-              -0.00969,
-              0.58271
+              0.25359,
+              -0.00975,
+              0.5827
             ],
-            "normalized_position_error": 0.46076
+            "normalized_position_error": 0.46073
           },
           {
             "bone": "righthandmiddle1",
@@ -2224,10 +2220,10 @@
             ],
             "target_anatomical": [
               0.254,
-              0.00741,
-              0.54314
+              0.00734,
+              0.54313
             ],
-            "normalized_position_error": 0.44128
+            "normalized_position_error": 0.44125
           },
           {
             "bone": "righthandmiddle2",
@@ -2237,11 +2233,11 @@
               0.26304
             ],
             "target_anatomical": [
-              0.25771,
-              0.00325,
-              0.57068
+              0.2577,
+              0.00318,
+              0.57067
             ],
-            "normalized_position_error": 0.46391
+            "normalized_position_error": 0.46387
           },
           {
             "bone": "righthandmiddle3",
@@ -2251,11 +2247,11 @@
               0.25707
             ],
             "target_anatomical": [
-              0.26384,
-              -0.0013,
+              0.26383,
+              -0.00137,
               0.58726
             ],
-            "normalized_position_error": 0.48466
+            "normalized_position_error": 0.48463
           },
           {
             "bone": "righthandpinky1",
@@ -2266,10 +2262,10 @@
             ],
             "target_anatomical": [
               0.27132,
-              0.02904,
-              0.54488
+              0.02897,
+              0.54487
             ],
-            "normalized_position_error": 0.47754
+            "normalized_position_error": 0.4775
           },
           {
             "bone": "righthandpinky2",
@@ -2280,10 +2276,10 @@
             ],
             "target_anatomical": [
               0.27783,
-              0.02533,
-              0.5588
+              0.02526,
+              0.55879
             ],
-            "normalized_position_error": 0.49455
+            "normalized_position_error": 0.49452
           },
           {
             "bone": "righthandpinky3",
@@ -2294,10 +2290,10 @@
             ],
             "target_anatomical": [
               0.28403,
-              0.02188,
-              0.56947
+              0.02181,
+              0.56946
             ],
-            "normalized_position_error": 0.51053
+            "normalized_position_error": 0.51049
           },
           {
             "bone": "righthandring1",
@@ -2308,10 +2304,10 @@
             ],
             "target_anatomical": [
               0.26134,
-              0.0192,
-              0.54359
+              0.01913,
+              0.54358
             ],
-            "normalized_position_error": 0.45813
+            "normalized_position_error": 0.4581
           },
           {
             "bone": "righthandring2",
@@ -2322,10 +2318,10 @@
             ],
             "target_anatomical": [
               0.26756,
-              0.01456,
-              0.56779
+              0.01449,
+              0.56778
             ],
-            "normalized_position_error": 0.47962
+            "normalized_position_error": 0.47959
           },
           {
             "bone": "righthandring3",
@@ -2335,11 +2331,11 @@
               0.25604
             ],
             "target_anatomical": [
-              0.27436,
-              0.01028,
-              0.58394
+              0.27435,
+              0.01021,
+              0.58393
             ],
-            "normalized_position_error": 0.49856
+            "normalized_position_error": 0.49853
           },
           {
             "bone": "righthandthumb1",
@@ -2349,11 +2345,11 @@
               0.23447
             ],
             "target_anatomical": [
-              0.27193,
-              -0.01163,
-              0.50243
+              0.27192,
+              -0.0117,
+              0.50242
             ],
-            "normalized_position_error": 0.41452
+            "normalized_position_error": 0.41449
           },
           {
             "bone": "righthandthumb2",
@@ -2363,11 +2359,11 @@
               0.2436
             ],
             "target_anatomical": [
-              0.27073,
-              -0.02353,
-              0.52286
+              0.27071,
+              -0.0236,
+              0.52285
             ],
-            "normalized_position_error": 0.41892
+            "normalized_position_error": 0.41889
           },
           {
             "bone": "righthandthumb3",
@@ -2377,11 +2373,11 @@
               0.25159
             ],
             "target_anatomical": [
-              0.2697,
-              -0.02683,
+              0.26968,
+              -0.0269,
               0.5415
             ],
-            "normalized_position_error": 0.43142
+            "normalized_position_error": 0.43139
           },
           {
             "bone": "rightleg",
@@ -2391,11 +2387,11 @@
               -0.20181
             ],
             "target_anatomical": [
-              -0.01567,
+              -0.01566,
               0.02829,
               -0.17757
             ],
-            "normalized_position_error": 0.1762
+            "normalized_position_error": 0.17619
           },
           {
             "bone": "rightshoulder",
@@ -2405,11 +2401,11 @@
               0.25972
             ],
             "target_anatomical": [
-              0.0117,
-              -0.04435,
+              0.01169,
+              -0.04436,
               0.38305
             ],
-            "normalized_position_error": 0.13553
+            "normalized_position_error": 0.13554
           },
           {
             "bone": "righttoebase",
@@ -2419,11 +2415,11 @@
               -0.41874
             ],
             "target_anatomical": [
-              -0.03232,
-              -0.20013,
+              -0.03239,
+              -0.20014,
               -0.42464
             ],
-            "normalized_position_error": 0.28264
+            "normalized_position_error": 0.2827
           },
           {
             "bone": "rightupleg",
@@ -2434,7 +2430,7 @@
             ],
             "target_anatomical": [
               0.05402,
-              0.01362,
+              0.0136,
               0.03504
             ],
             "normalized_position_error": 0.06738
@@ -2462,7 +2458,7 @@
             ],
             "target_anatomical": [
               0.00029,
-              0.00289,
+              0.0029,
               0.21152
             ],
             "normalized_position_error": 0.09628
@@ -2475,7 +2471,7 @@
               0.18921
             ],
             "target_anatomical": [
-              0.00132,
+              0.00131,
               -0.00219,
               0.30943
             ],
@@ -2497,9 +2493,9 @@
   },
   "runtime_test_asset": "/assets/characters/retarget-tests/surprise-uppercut-prototype.glb",
   "ascii_previews": {
-    "start": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::-:::::::::::::::::::::\n:::::::::::::::::::::::::+::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::",
-    "mid": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::",
-    "end": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::-::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::"
+    "start": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::++:::::::::::::::::\n::::::::::::::::::::::::::::+*+:::::::::::::::::\n::::::::::::::::::::::::::::++=:::::::::::::::::\n:::::::::::::::::::::::::=*:==-:::::::::::::::::\n:::::::::::::::::::::::::+:+*=::::::::::::::::::\n:::::::::::::::::::::::=+=+==-::::::::::::::::::\n:::::::::::::::::::::::+:---=:::::::::::::::::::\n:::::::::::::::::::::::::+::-:::::::::::::::::::\n:::::::::::::::::::::::::+=-::::::::::::::::::::\n::::::::::::::::::::::::++-::-::::::::::::::::::\n::::::::::::::::::::+*+++=::::::::::::::::::::::\n::::::::::::::::::::++*+=:::::::::::::::::::::::\n::::::::::::::::::::+++=::::::::::::::::::::::::\n:::::::::::::::::::+++::::::::::::::::::::::::::\n:::::::::::::::::::+::+:::::::::::::::::::::::::\n:::::::::::::::::::+:::+::::::::::::::::::::::::\n:::::::::::::::::::+:::++:::::::::::::::::::::::\n:::::::::::::::::::+::::::::::::::::::::::::::::\n:::::::::::::::::::+::::::::::::::::::::::::::::\n:::::::::::::::::::+::::::::::::::::::::::::::::\n:::::::::::::::::::=::::::::::::::::::::::::::::\n:::::::::::::::::::+::::::::::::::::::::::::::::\n:::::::::::::::::::-::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::",
+    "mid": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::+::::::::::::::::\n:::::::::::::::::::::::::::::::+*:::::::::::::::\n::::::::::::::::::-:::::+*-::::+::::::::::::::::\n::::::::::::::::::::::::++-::::+::::::::::::::::\n::::::::::::::::::::::::==::::==::::::::::::::::\n::::::::::::::::::::::::-=:::=+:::::::::::::::::\n::::::::::::::::::=******+--++::::::::::::::::::\n:::::::::::::::::::::+***+===:::::::::::::::::::\n::::::::::::::::::::::++*+=-::::::::::::::::::::\n::::::::::::::::::::::+++==:::::::::::::::::::::\n::::::::::::::::::::::-++=-:::::::::::::::::::::\n:::::::::::::::::::::::+==::::::::::::::::::::::\n::::::::::::::::::::::=++=::::::::::::::::::::::\n::::::::::::::::::::::+++=::::::::::::::::::::::\n::::::::::::::::::::::++=:::::::::::::::::::::::\n::::::::::::::::::::::+---::::::::::::::::::::::\n::::::::::::::::::::::-:=:::::::::::::::::::::::\n:::::::::::::::::::::::=::::::::::::::::::::::::\n::::::::::::::::::::::*:::::::::::::::::::::::::\n::::::::::::::::::::::+:::::::::::::::::::::::::\n::::::::::::::::::::::+:::::::::::::::::::::::::\n::::::::::::::::::::::+:::::::::::::::::::::::::\n::::::::::::::::::::::=:::::::::::::::::::::::::\n::::::::::::::::::::::-:::::::::::::::::::::::::\n:::::::::::::::::::::+*:::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::",
+    "end": "::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::-:::::::::::::::::::::::::::::\n::::::::::::::::::+::::::+::::::::::::::::::::::\n::::::::::::::::::+:::::+*-:::::::::::::::::::::\n::::::::::::::::::::::::++::::::::::::::::::::::\n::::::::::::::::::::::::==::::::::::::::::::::::\n:::::::::::::::::-::::::+:::::::::::::::::::::::\n::::::::::::::::::*******+++::::::::::::::::::::\n:::::::::::::::::::::+***++++:::::::::::::::::::\n::::::::::::::::::::::++++==++-::::++:::::::::::\n::::::::::::::::::::::+++=-:::+**+++::::::::::::\n::::::::::::::::::::::+++=::::::::::::::::::::::\n::::::::::::::::::::::=++=::::::::::::::::::::::\n::::::::::::::::::::::+++=::::::::::::::::::::::\n::::::::::::::::::::::+++=::::::::::::::::::::::\n::::::::::::::::::::::+++=::::::::::::::::::::::\n::::::::::::::::::::::+=+=::::::::::::::::::::::\n::::::::::::::::::::::==+:::::::::::::::::::::::\n:::::::::::::::::::::::+-:::::::::::::::::::::::\n::::::::::::::::::::::+=-:::::::::::::::::::::::\n::::::::::::::::::::::+:+:::::::::::::::::::::::\n:::::::::::::::::::::+=:+:::::::::::::::::::::::\n:::::::::::::::::::::+::*:::::::::::::::::::::::\n:::::::::::::::::::::=::*:::::::::::::::::::::::\n::::::::::::::::::::+:::*:::::::::::::::::::::::\n::::::::::::::::::::+:::*:::::::::::::::::::::::\n::::::::::::::::::::::::+:::::::::::::::::::::::\n:::::::::::::::::::::::-::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::\n::::::::::::::::::::::::::::::::::::::::::::::::"
   },
   "published_previews": {
     "preview_start": "docs/blender/generated/retarget-previews/Surprise_Uppercut/preview_start.png",
