@@ -232,6 +232,28 @@ if /I "%MODE%"=="inspect" (
       --repo "%REPO_ROOT%" ^
       --mode "%MODE%" ^
       %PUBLISH_ARG%
+) else if /I "%MODE%"=="inspect-target" (
+    if not exist "%TARGET_RIG%" (
+        echo.
+        echo ============================================================
+        echo TARGET RIG NOT FOUND
+        echo ============================================================
+        echo Expected:
+        echo   %TARGET_RIG%
+        echo.
+        echo Or set:
+        echo   RACING_LIFE_TARGET_RIG=C:\Path\To\RiggedCharacter.glb
+        echo.
+        pause
+        exit /b 7
+    )
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\target_rig.py" -- ^
+      --input "%INPUT_DIR%" ^
+      --target "%TARGET_RIG%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      %PUBLISH_ARG%
 ) else (
     "%BLENDER_EXE%" --background --factory-startup ^
       --python "%REPO_ROOT%\tools\blender_worker\process_fbx.py" -- ^
@@ -269,6 +291,10 @@ if "%EXIT_CODE%"=="0" (
         echo.
         echo Extracted animation GLBs:
         echo   %OUTPUT_DIR%\extracted\
+    ) else if /I "%MODE%"=="inspect-target" (
+        echo Target rig reports:
+        echo   %OUTPUT_DIR%\target-rig-report.json
+        echo   %OUTPUT_DIR%\target-rig-report.md
     ) else (
         echo Processing reports:
         echo   %OUTPUT_DIR%\processing-report.json
