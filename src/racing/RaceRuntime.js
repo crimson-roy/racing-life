@@ -157,12 +157,25 @@ export class RaceRuntime {
       options.applyCareerResult(careerResult);
     }
 
+    const racers = snapshot.racers.map((racer, index) => ({
+      id: racer.id,
+      classificationPosition: index + 1,
+      finished: racer.finished,
+      finishPosition: racer.finishPosition,
+      finishTimeMs: racer.finishTimeMs,
+      completedLaps: racer.completedLaps,
+      checkpointsPassed: racer.checkpointsPassed
+    }));
+
     this.resultCommitted = true;
     this.completion = {
       trackId: this.trackId,
       winnerSide: snapshot.winnerSide,
+      // finishOrder contains only cars that crossed the finish before the race
+      // locked. classification is the complete ordered 1v1 result.
       finishOrder: [...snapshot.finishOrder],
-      classification: snapshot.racers.map((racer) => racer.id),
+      classification: racers.map((racer) => racer.id),
+      racers,
       careerResult,
       matchSummary
     };
