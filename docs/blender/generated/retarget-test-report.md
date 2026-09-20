@@ -12,9 +12,9 @@
 
 ## Pose diagnostics
 
-- Frame 1: mean normalized joint error 0.30309, max 0.46096
-- Frame 54: mean normalized joint error 0.17724, max 0.32259
-- Frame 106: mean normalized joint error 0.24964, max 0.36735
+- Frame 1: core-body mean error 0.14954, max 0.33536
+- Frame 54: core-body mean error 0.15142, max 0.31619
+- Frame 106: core-body mean error 0.14883, max 0.4037
 
 ## Output
 
