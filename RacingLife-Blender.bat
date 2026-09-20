@@ -63,6 +63,13 @@ if not defined BLENDER_EXE (
     )
 )
 
+rem User portable/current Blender location
+if not defined BLENDER_EXE (
+    if exist "C:\Windows\desktop\blender.exe" (
+        set "BLENDER_EXE=C:\Windows\desktop\blender.exe"
+    )
+)
+
 rem Extra detection: Steam and per-user Blender installs
 if not defined BLENDER_EXE (
     if exist "%ProgramFiles(x86)%\Steam\steamapps\common\Blender\blender.exe" (
