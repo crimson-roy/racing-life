@@ -354,7 +354,8 @@ makeInPlaceClip(
 
 makeVehicleInPlaceClip(
   originalClip,
-  name
+  name,
+  options = {}
 ) {
   const tracks =
     originalClip.tracks.map(
@@ -403,6 +404,22 @@ makeVehicleInPlaceClip(
           const startZ =
             values[2];
 
+          // Some vehicle clips were authored with the Hips already
+          // translated several metres away from the rig origin.
+          // FreeRoamScene positions the whole MixamoPlayer at the
+          // actual door/seat anchor, so keeping that first X/Z value
+          // would add the clip's baked offset on top and make the
+          // visible body appear far behind the car.
+          const lockedX =
+            options.zeroHorizontalRoot
+              ? 0
+              : startX;
+
+          const lockedZ =
+            options.zeroHorizontalRoot
+              ? 0
+              : startZ;
+
           for (
             let i = 0;
             i < values.length;
@@ -410,7 +427,7 @@ makeVehicleInPlaceClip(
           ) {
             // Lock horizontal animation movement.
             values[i] =
-              startX;
+              lockedX;
 
             // DON'T change:
             // values[i + 1]
@@ -419,7 +436,23 @@ makeVehicleInPlaceClip(
             // sitting/crouching vertical motion.
 
             values[i + 2] =
-              startZ;
+              lockedZ;
+          }
+
+          if (
+            options.zeroHorizontalRoot &&
+            (
+              Math.abs(startX) > 0.001 ||
+              Math.abs(startZ) > 0.001
+            )
+          ) {
+            console.log(
+              `MixamoPlayer: removed baked horizontal root offset from ${name}.`,
+              {
+                startX,
+                startZ
+              }
+            );
           }
         }
 
@@ -874,7 +907,12 @@ const clip =
     : emote.inPlace
       ? this.makeVehicleInPlaceClip(
           originalClip,
-          emote.id
+          emote.id,
+          {
+            zeroHorizontalRoot:
+              emote.zeroHorizontalRoot ===
+              true
+          }
         )
       : new THREE.AnimationClip(
           emote.id,
