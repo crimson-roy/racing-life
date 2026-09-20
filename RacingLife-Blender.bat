@@ -13,6 +13,9 @@ rem   RacingLife-Blender.bat convert
 rem   RacingLife-Blender.bat normalize
 rem   RacingLife-Blender.bat preview
 rem   RacingLife-Blender.bat process
+rem   RacingLife-Blender.bat validate-rig
+rem   RacingLife-Blender.bat compare-skeletons
+rem   RacingLife-Blender.bat extract-animation
 rem
 rem Optional:
 rem   add a folder path to use it instead of Blender\worker_input
@@ -55,6 +58,21 @@ if /I "%~1"=="preview" (
 )
 if /I "%~1"=="process" (
     set "MODE=process"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="validate-rig" (
+    set "MODE=validate-rig"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="compare-skeletons" (
+    set "MODE=compare-skeletons"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="extract-animation" (
+    set "MODE=extract-animation"
     shift
     goto parse_args
 )
@@ -178,6 +196,30 @@ if /I "%MODE%"=="inspect" (
       --output "%OUTPUT_DIR%" ^
       --repo "%REPO_ROOT%" ^
       %PUBLISH_ARG%
+) else if /I "%MODE%"=="validate-rig" (
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\rig_tools.py" -- ^
+      --input "%INPUT_DIR%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      --mode "%MODE%" ^
+      %PUBLISH_ARG%
+) else if /I "%MODE%"=="compare-skeletons" (
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\rig_tools.py" -- ^
+      --input "%INPUT_DIR%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      --mode "%MODE%" ^
+      %PUBLISH_ARG%
+) else if /I "%MODE%"=="extract-animation" (
+    "%BLENDER_EXE%" --background --factory-startup ^
+      --python "%REPO_ROOT%\tools\blender_worker\rig_tools.py" -- ^
+      --input "%INPUT_DIR%" ^
+      --output "%OUTPUT_DIR%" ^
+      --repo "%REPO_ROOT%" ^
+      --mode "%MODE%" ^
+      %PUBLISH_ARG%
 ) else (
     "%BLENDER_EXE%" --background --factory-startup ^
       --python "%REPO_ROOT%\tools\blender_worker\process_fbx.py" -- ^
@@ -200,6 +242,21 @@ if "%EXIT_CODE%"=="0" (
         echo Inspection reports:
         echo   %OUTPUT_DIR%\asset-report.json
         echo   %OUTPUT_DIR%\asset-report.md
+    ) else if /I "%MODE%"=="validate-rig" (
+        echo Rig reports:
+        echo   %OUTPUT_DIR%\rig-report.json
+        echo   %OUTPUT_DIR%\rig-report.md
+    ) else if /I "%MODE%"=="compare-skeletons" (
+        echo Rig comparison reports:
+        echo   %OUTPUT_DIR%\rig-report.json
+        echo   %OUTPUT_DIR%\rig-report.md
+    ) else if /I "%MODE%"=="extract-animation" (
+        echo Rig/extraction reports:
+        echo   %OUTPUT_DIR%\rig-report.json
+        echo   %OUTPUT_DIR%\rig-report.md
+        echo.
+        echo Extracted animation GLBs:
+        echo   %OUTPUT_DIR%\extracted\
     ) else (
         echo Processing reports:
         echo   %OUTPUT_DIR%\processing-report.json
