@@ -1,6 +1,7 @@
 import argparse
 import datetime as dt
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -161,6 +162,55 @@ def canonical_bone_name(name, rig_family):
     return n
 
 
+def is_helper_bone(name):
+    n = normalize_bone_name(name)
+    return (
+        n.endswith("end")
+        or n in {"heel02l", "heel02r", "pelvisl", "pelvisr"}
+    )
+
+
+def rest_pose_map(armature, rig_family):
+    result = {}
+    for bone in armature.data.bones:
+        canonical = canonical_bone_name(bone.name, rig_family)
+        if canonical in result:
+            continue
+
+        vec = bone.tail_local - bone.head_local
+        length = float(vec.length)
+        direction = [0.0, 0.0, 0.0]
+        if length > 1e-8:
+            vec.normalize()
+            direction = [round(float(vec.x), 6), round(float(vec.y), 6), round(float(vec.z), 6)]
+
+        parent = None
+        if bone.parent is not None:
+            parent = canonical_bone_name(bone.parent.name, rig_family)
+
+        result[canonical] = {
+            "source_bone": bone.name,
+            "parent": parent,
+            "length": round(length, 6),
+            "direction": direction,
+        }
+    return result
+
+
+def vector_angle_degrees(a, b):
+    if not a or not b or len(a) != 3 or len(b) != 3:
+        return None
+
+    mag_a = math.sqrt(sum(float(v) * float(v) for v in a))
+    mag_b = math.sqrt(sum(float(v) * float(v) for v in b))
+    if mag_a <= 1e-8 or mag_b <= 1e-8:
+        return None
+
+    dot = sum(float(a[i]) * float(b[i]) for i in range(3)) / (mag_a * mag_b)
+    dot = max(-1.0, min(1.0, dot))
+    return math.degrees(math.acos(dot))
+
+
 def import_asset(path):
     ext = path.suffix.lower()
     if ext == ".fbx":
@@ -210,6 +260,7 @@ def inspect_rig(path):
             "core_coverage": round(len(core_present) / len(CORE_BONES), 4),
             "finger_bone_count": len(fingers),
             "finger_bones": fingers,
+            "rest_pose": rest_pose_map(arm, rig_family),
         })
     except Exception as exc:
         rec["status"] = "error"
@@ -226,19 +277,69 @@ def compare(source, target):
     union = src | dst
     full_similarity = len(shared) / len(union) if union else 0.0
 
-    src_body = {name for name in src if not is_finger_bone(name)}
-    dst_body = {name for name in dst if not is_finger_bone(name)}
+    src_body = {
+        name for name in src
+        if not is_finger_bone(name) and not is_helper_bone(name)
+    }
+    dst_body = {
+        name for name in dst
+        if not is_finger_bone(name) and not is_helper_bone(name)
+    }
     body_shared = src_body & dst_body
     body_union = src_body | dst_body
     body_similarity = len(body_shared) / len(body_union) if body_union else 0.0
 
+    src_core_set = CORE_BONES & src
+    dst_core_set = CORE_BONES & dst
+    core_union = src_core_set | dst_core_set
+    core_similarity = (
+        len(src_core_set & dst_core_set) / len(core_union)
+        if core_union
+        else 0.0
+    )
+
     src_core = not source.get("core_bones_missing")
     dst_core = not target.get("core_bones_missing")
 
+    source_rest = source.get("rest_pose", {})
+    target_rest = target.get("rest_pose", {})
+    rest_rows = []
+    for bone_name in sorted(CORE_BONES):
+        source_bone = source_rest.get(bone_name)
+        target_bone = target_rest.get(bone_name)
+        if not source_bone or not target_bone:
+            continue
+
+        angle = vector_angle_degrees(
+            source_bone.get("direction"),
+            target_bone.get("direction"),
+        )
+        parent_match = source_bone.get("parent") == target_bone.get("parent")
+        if angle is None:
+            continue
+
+        rest_rows.append({
+            "bone": bone_name,
+            "angle_degrees": round(angle, 3),
+            "parent_match": parent_match,
+            "source_parent": source_bone.get("parent"),
+            "target_parent": target_bone.get("parent"),
+        })
+
+    angles = [row["angle_degrees"] for row in rest_rows]
+    mean_angle = sum(angles) / len(angles) if angles else None
+    max_angle = max(angles) if angles else None
+    parent_matches = sum(1 for row in rest_rows if row["parent_match"])
+    parent_similarity = (
+        parent_matches / len(rest_rows)
+        if rest_rows
+        else None
+    )
+
     if src == dst and src:
         verdict = "direct skeleton match"
-    elif src_core and dst_core and body_similarity >= 0.95:
-        verdict = "body-compatible; finger/detail mapping only"
+    elif src_core and dst_core and core_similarity == 1.0 and body_similarity >= 0.95:
+        verdict = "core body semantic match; helper/finger differences"
     elif src_core and dst_core and body_similarity >= 0.80:
         verdict = "good retarget candidate; explicit mapping required"
     elif body_similarity >= 0.65:
@@ -252,8 +353,16 @@ def compare(source, target):
         "verdict": verdict,
         "full_bone_similarity": round(full_similarity, 4),
         "body_bone_similarity": round(body_similarity, 4),
+        "core_bone_similarity": round(core_similarity, 4),
         "source_bones": source.get("bone_count"),
         "target_bones": target.get("bone_count"),
+        "rest_pose": {
+            "compared_core_bones": len(rest_rows),
+            "mean_direction_angle_degrees": round(mean_angle, 3) if mean_angle is not None else None,
+            "max_direction_angle_degrees": round(max_angle, 3) if max_angle is not None else None,
+            "parent_similarity": round(parent_similarity, 4) if parent_similarity is not None else None,
+            "bones": rest_rows,
+        },
         "missing_on_target": sorted(src - dst),
         "target_only": sorted(dst - src),
     }
@@ -275,7 +384,7 @@ def build_markdown(report):
         "",
         "## Source compatibility",
         "",
-        "| Source | Verdict | Full similarity | Body similarity | Source bones | Target bones |",
+        "| Source | Verdict | Core similarity | Body similarity | Rest angle mean | Parent match |",
         "|---|---|---:|---:|---:|---:|",
     ]
 
@@ -283,10 +392,10 @@ def build_markdown(report):
         lines.append("| {} | {} | {} | {} | {} | {} |".format(
             row["source"].replace("|", "\\|"),
             row["verdict"],
-            row["full_bone_similarity"],
+            row["core_bone_similarity"],
             row["body_bone_similarity"],
-            row["source_bones"],
-            row["target_bones"],
+            row.get("rest_pose", {}).get("mean_direction_angle_degrees"),
+            row.get("rest_pose", {}).get("parent_similarity"),
         ))
 
     if target.get("error"):
@@ -299,7 +408,8 @@ def build_markdown(report):
         "- This stage validates retarget compatibility only; it does not transfer animation yet.",
         "- Finger differences are evaluated separately from the main body skeleton.",
         "- Blender Rigify metarig labels are translated to equivalent Mixamo-style semantic joints before compatibility scoring.",
-        "- That semantic mapping is explicit and conservative; it does not prove rest-pose/orientation compatibility by itself.",
+        "- Compatibility scoring ignores known helper/end bones and reports the core humanoid skeleton separately.",
+        "- Rest-pose diagnostics compare canonical core-bone directions and parent relationships after Blender import; they are a diagnostic, not final deformation proof.",
         "- A target with no armature cannot receive skeletal animation until a rigged target is supplied.",
         "- Source and target FBX/GLB/GLTF assets are not published by this worker.",
         "",
