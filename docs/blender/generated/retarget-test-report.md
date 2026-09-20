@@ -14,6 +14,12 @@
 - Mid preview: retarget/Surprise Uppercut/preview_mid.png
 - End preview: retarget/Surprise Uppercut/preview_end.png
 
+## Published previews
+
+- Start: docs/blender/generated/retarget-previews/Surprise_Uppercut/preview_start.png
+- Mid: docs/blender/generated/retarget-previews/Surprise_Uppercut/preview_mid.png
+- End: docs/blender/generated/retarget-previews/Surprise_Uppercut/preview_end.png
+
 ## Interpretation
 
 This is a first-pass matrix-delta retarget bake. It compensates for different rest-bone orientations instead of directly copying Mixamo rotation channels. Visual inspection is still required before treating the result as production-ready.
