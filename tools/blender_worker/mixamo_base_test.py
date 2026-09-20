@@ -280,8 +280,8 @@ def mesh_world_center(mesh):
 
 
 HELPER_GROUP_MAP = {
-    "pelvisl": "hips",
-    "pelvisr": "hips",
+    "pelvisl": "leftupleg",
+    "pelvisr": "rightupleg",
     "heel02l": "leftfoot",
     "heel02r": "rightfoot",
 }
@@ -529,6 +529,55 @@ def remap_vertex_groups(
     }
 
 
+def normalize_vertex_weights(mesh):
+    groups_by_index = {
+        group.index: group
+        for group in mesh.vertex_groups
+    }
+
+    normalized_vertices = 0
+    max_pre_normalize_sum = 0.0
+    min_pre_normalize_sum = math.inf
+
+    for vertex in mesh.data.vertices:
+        memberships = [
+            (membership.group, float(membership.weight))
+            for membership in vertex.groups
+            if membership.group in groups_by_index
+            and membership.weight > 0
+        ]
+
+        if not memberships:
+            continue
+
+        total = sum(weight for _, weight in memberships)
+        max_pre_normalize_sum = max(max_pre_normalize_sum, total)
+        min_pre_normalize_sum = min(min_pre_normalize_sum, total)
+
+        if total <= 1e-8:
+            continue
+
+        if abs(total - 1.0) > 1e-5:
+            normalized_vertices += 1
+
+        for group_index, weight in memberships:
+            groups_by_index[group_index].add(
+                [vertex.index],
+                weight / total,
+                "REPLACE",
+            )
+
+    return {
+        "vertices_normalized": normalized_vertices,
+        "min_pre_normalize_sum": (
+            round(min_pre_normalize_sum, 6)
+            if min_pre_normalize_sum is not math.inf
+            else None
+        ),
+        "max_pre_normalize_sum": round(max_pre_normalize_sum, 6),
+    }
+
+
 def rebind_using_existing_weights(
     target_objects,
     old_target_armature,
@@ -553,6 +602,9 @@ def rebind_using_existing_weights(
             "mesh": mesh.name,
             "vertices": len(mesh.data.vertices),
             "status": "pending",
+            "original_parent": mesh.parent.name if mesh.parent else None,
+            "original_parent_type": mesh.parent_type,
+            "original_parent_bone": mesh.parent_bone if mesh.parent_type == "BONE" else None,
         }
 
         world_matrix = mesh.matrix_world.copy()
@@ -581,6 +633,10 @@ def rebind_using_existing_weights(
             record["group_remap"] = remap_vertex_groups(
                 mesh,
                 source_mapping,
+            )
+
+            record["weight_normalization"] = normalize_vertex_weights(
+                mesh,
             )
 
             modifier = mesh.modifiers.new(
