@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-09-20T09:01:29.053140+00:00",
+  "generated_at_utc": "2026-09-20T09:24:48.074524+00:00",
   "blender_version": "5.2.0 LTS",
   "source_file": "Surprise Uppercut.fbx",
   "target_file": "male_base_mesh.glb",
@@ -26,6 +26,9 @@
         "mesh": "mesh",
         "vertices": 1226,
         "status": "rest-pose-baked-and-remapped",
+        "original_parent": "metarig",
+        "original_parent_type": "OBJECT",
+        "original_parent_bone": null,
         "rest_pose_bake": {
           "vertices": 1226,
           "vertices_reposed": 1226,
@@ -37,6 +40,11 @@
           "removed_unmapped_groups": [],
           "remaining_group_count": 52
         },
+        "weight_normalization": {
+          "vertices_normalized": 0,
+          "min_pre_normalize_sum": 1.0,
+          "max_pre_normalize_sum": 1.0
+        },
         "method": "prototype-weights-plus-rest-pose-geometry-transfer",
         "vertex_groups": 52
       },
@@ -44,6 +52,9 @@
         "mesh": "Icosphere",
         "vertices": 42,
         "status": "rigid-bone-parent",
+        "original_parent": null,
+        "original_parent_type": "OBJECT",
+        "original_parent_bone": null,
         "method": "nearest-body-bone",
         "canonical_bone": "hips",
         "source_bone": "mixamorig:Hips",
