@@ -76,16 +76,22 @@ def run(cmd, cwd=None, check=True, env=None):
     return result
 
 
-def import_fbx(path):
-    try:
-        bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
-        return
-    except Exception as first_error:
+def import_asset(path):
+    ext = path.suffix.lower()
+    if ext == ".fbx":
         try:
-            bpy.ops.wm.fbx_import(filepath=str(path))
+            bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
             return
-        except Exception:
-            raise first_error
+        except Exception as first_error:
+            try:
+                bpy.ops.wm.fbx_import(filepath=str(path))
+                return
+            except Exception:
+                raise first_error
+    if ext in (".glb", ".gltf"):
+        bpy.ops.import_scene.gltf(filepath=str(path))
+        return
+    raise RuntimeError("Unsupported asset format: {}".format(ext))
 
 
 def normalize_bone_name(name):
@@ -176,7 +182,7 @@ def skeleton_record(path):
     }
 
     try:
-        import_fbx(path)
+        import_asset(path)
         armature = choose_armature()
         if armature is None:
             raise RuntimeError("No armature found.")
@@ -341,7 +347,7 @@ def extract_animation(path, output_root):
     }
 
     try:
-        import_fbx(path)
+        import_asset(path)
         armature = choose_armature()
         if armature is None:
             raise RuntimeError("No armature found.")
@@ -445,7 +451,7 @@ def build_markdown(report):
         "- Validation checks structural humanoid compatibility, not final animation quality.",
         "- A 33-bone and 65-bone Mixamo-style rig can still be core-compatible when the main body hierarchy matches; finger detail may be lost or require a target-specific mapping.",
         "- Animation extraction exports only the selected armature and animation tracks into a local GLB package. It does not retarget the motion yet.",
-        "- Source FBX files are never overwritten or uploaded by this worker.",
+        "- Source FBX/GLB/GLTF files are never overwritten or uploaded by this worker.",
         "",
     ])
     return "\n".join(lines)
@@ -528,11 +534,11 @@ def main():
         raise SystemExit("Input folder does not exist: {}".format(input_dir))
 
     files = sorted(
-        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() == ".fbx"],
+        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() in (".fbx", ".glb", ".gltf")],
         key=lambda p: p.name.lower(),
     )
     if not files:
-        raise SystemExit("No FBX files found in: {}".format(input_dir))
+        raise SystemExit("No FBX, GLB or GLTF files found in: {}".format(input_dir))
 
     output_root.mkdir(parents=True, exist_ok=True)
 
