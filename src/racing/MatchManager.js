@@ -53,11 +53,46 @@ export class MatchManager {
   }
 
   // `details` is intentionally optional so existing callers remain valid.
-  // RaceScene3D/RaceController can attach lap, finish-time and racer metadata
-  // without MatchManager needing to know about Three.js or checkpoint state.
+  // When a scene supplies raceNumber/trackId, use them as an idempotency and
+  // stale-scene guard. A completed render loop must never score the next race.
   recordResult(winnerSide, details = {}) {
+    const suppliedRaceNumber = Number.isInteger(details.raceNumber)
+      ? details.raceNumber
+      : null;
+
+    if (suppliedRaceNumber !== null) {
+      const existing = this.results.find(
+        (result) => result.raceNumber === suppliedRaceNumber
+      );
+
+      if (existing) {
+        return this.getSummary();
+      }
+    }
+
     if (this.completed) {
       return this.getSummary();
+    }
+
+    const expectedRaceNumber = this.currentRaceIndex + 1;
+    const expectedTrackId = this.trackOrder[this.currentRaceIndex];
+
+    if (
+      suppliedRaceNumber !== null &&
+      suppliedRaceNumber !== expectedRaceNumber
+    ) {
+      throw new Error(
+        `Stale race result: expected race ${expectedRaceNumber}, received ${suppliedRaceNumber}.`
+      );
+    }
+
+    if (
+      details.trackId &&
+      details.trackId !== expectedTrackId
+    ) {
+      throw new Error(
+        `Race track mismatch: expected "${expectedTrackId}", received "${details.trackId}".`
+      );
     }
 
     if (winnerSide === 'A') {
@@ -68,16 +103,17 @@ export class MatchManager {
       throw new Error('winnerSide must be "A" or "B".');
     }
 
-    const raceNumber = this.currentRaceIndex + 1;
-    const trackId = this.trackOrder[this.currentRaceIndex];
+    const raceNumber = expectedRaceNumber;
+    const trackId = expectedTrackId;
 
     this.results.push({
+      ...details,
+      // Authoritative match identity cannot be overwritten by scene details.
       raceNumber,
       trackId,
       winnerSide,
       scoreA: this.scoreA,
-      scoreB: this.scoreB,
-      ...details
+      scoreB: this.scoreB
     });
 
     if (
