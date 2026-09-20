@@ -141,18 +141,23 @@ export class RaceRuntime {
     if (!snapshot.completed || !snapshot.winnerSide) return null;
     if (this.resultCommitted) return this.completion;
 
+    const sessionDetails = {
+      trackId: this.trackId,
+      ...(options.details ?? {})
+    };
+
     const matchSummary = options.matchManager
       ? commitRaceToMatch(
           options.matchManager,
           this.controller,
-          {
-            trackId: this.trackId,
-            ...(options.details ?? {})
-          }
+          sessionDetails
         )
       : null;
 
-    const careerResult = createCareerRaceResult(this.controller);
+    const careerResult = createCareerRaceResult(
+      this.controller,
+      sessionDetails
+    );
     if (typeof options.applyCareerResult === 'function') {
       options.applyCareerResult(careerResult);
     }
@@ -170,6 +175,9 @@ export class RaceRuntime {
     this.resultCommitted = true;
     this.completion = {
       trackId: this.trackId,
+      raceNumber: Number.isInteger(sessionDetails.raceNumber)
+        ? sessionDetails.raceNumber
+        : null,
       winnerSide: snapshot.winnerSide,
       // finishOrder contains only cars that crossed the finish before the race
       // locked. classification is the complete ordered 1v1 result.
