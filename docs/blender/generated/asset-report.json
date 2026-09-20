@@ -1,0 +1,1100 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-20T00:10:51.391685+00:00",
+  "blender_version": "5.2.0 LTS",
+  "summary": {
+    "files": 9,
+    "ok": 9,
+    "errors": 0
+  },
+  "assets": [
+    {
+      "file": "Gunplay.fbx",
+      "size_bytes": 1931888,
+      "size_mb": 1.842,
+      "status": "ok",
+      "scene_fps": 60.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "Material.001",
+        "Material.002",
+        "Material.003",
+        "Material.004",
+        "Material.005",
+        "Material.006"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 9567,
+      "total_polygons": 11607,
+      "bounds": {
+        "min": [
+          -0.3259,
+          -0.7371,
+          -0.0052
+        ],
+        "max": [
+          0.1942,
+          0.6045,
+          1.8825
+        ],
+        "dimensions": [
+          0.52,
+          1.3416,
+          1.8877
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 65,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandThumb1",
+            "mixamorig:LeftHandThumb2",
+            "mixamorig:LeftHandThumb3",
+            "mixamorig:LeftHandThumb4",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4",
+            "mixamorig:LeftHandRing1",
+            "mixamorig:LeftHandRing2",
+            "mixamorig:LeftHandRing3",
+            "mixamorig:LeftHandRing4",
+            "mixamorig:LeftHandPinky1",
+            "mixamorig:LeftHandPinky2",
+            "mixamorig:LeftHandPinky3",
+            "mixamorig:LeftHandPinky4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandThumb1",
+            "mixamorig:RightHandThumb2",
+            "mixamorig:RightHandThumb3",
+            "mixamorig:RightHandThumb4",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:RightHandMiddle1",
+            "mixamorig:RightHandMiddle2",
+            "mixamorig:RightHandMiddle3",
+            "mixamorig:RightHandMiddle4",
+            "mixamorig:RightHandRing1",
+            "mixamorig:RightHandRing2",
+            "mixamorig:RightHandRing3",
+            "mixamorig:RightHandRing4",
+            "mixamorig:RightHandPinky1",
+            "mixamorig:RightHandPinky2",
+            "mixamorig:RightHandPinky3",
+            "mixamorig:RightHandPinky4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 13.0,
+          "frame_span": 12.0,
+          "duration_seconds": 0.2
+        }
+      ],
+      "max_animation_duration_seconds": 0.2,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Rifle Run To Dying.fbx",
+      "size_bytes": 2190080,
+      "size_mb": 2.089,
+      "status": "ok",
+      "scene_fps": 60.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "Material.001",
+        "Material.002",
+        "Material.003",
+        "Material.004",
+        "Material.005",
+        "Material.006"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 9567,
+      "total_polygons": 11607,
+      "bounds": {
+        "min": [
+          -0.3122,
+          -0.8832,
+          -0.012
+        ],
+        "max": [
+          0.2289,
+          0.3342,
+          1.77
+        ],
+        "dimensions": [
+          0.5411,
+          1.2174,
+          1.782
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 65,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandThumb1",
+            "mixamorig:LeftHandThumb2",
+            "mixamorig:LeftHandThumb3",
+            "mixamorig:LeftHandThumb4",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4",
+            "mixamorig:LeftHandRing1",
+            "mixamorig:LeftHandRing2",
+            "mixamorig:LeftHandRing3",
+            "mixamorig:LeftHandRing4",
+            "mixamorig:LeftHandPinky1",
+            "mixamorig:LeftHandPinky2",
+            "mixamorig:LeftHandPinky3",
+            "mixamorig:LeftHandPinky4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandThumb1",
+            "mixamorig:RightHandThumb2",
+            "mixamorig:RightHandThumb3",
+            "mixamorig:RightHandThumb4",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:RightHandMiddle1",
+            "mixamorig:RightHandMiddle2",
+            "mixamorig:RightHandMiddle3",
+            "mixamorig:RightHandMiddle4",
+            "mixamorig:RightHandRing1",
+            "mixamorig:RightHandRing2",
+            "mixamorig:RightHandRing3",
+            "mixamorig:RightHandRing4",
+            "mixamorig:RightHandPinky1",
+            "mixamorig:RightHandPinky2",
+            "mixamorig:RightHandPinky3",
+            "mixamorig:RightHandPinky4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 149.0,
+          "frame_span": 148.0,
+          "duration_seconds": 2.4667
+        }
+      ],
+      "max_animation_duration_seconds": 2.4667,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Rockin' Shackle A.fbx",
+      "size_bytes": 2119488,
+      "size_mb": 2.021,
+      "status": "ok",
+      "scene_fps": 60.0,
+      "object_count": 8,
+      "mesh_count": 7,
+      "armature_count": 1,
+      "material_count": 7,
+      "materials": [
+        "Material 1",
+        "Material 2",
+        "Material 3",
+        "Material 4",
+        "Material 5",
+        "Material 6",
+        "Material.001"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 25500,
+      "total_polygons": 8500,
+      "bounds": {
+        "min": [
+          -43.1296,
+          -207.0962,
+          -2.2813
+        ],
+        "max": [
+          42.7128,
+          -51.2832,
+          280.1266
+        ],
+        "dimensions": [
+          85.8423,
+          155.813,
+          282.4079
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 65,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandThumb1",
+            "mixamorig:LeftHandThumb2",
+            "mixamorig:LeftHandThumb3",
+            "mixamorig:LeftHandThumb4",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4",
+            "mixamorig:LeftHandRing1",
+            "mixamorig:LeftHandRing2",
+            "mixamorig:LeftHandRing3",
+            "mixamorig:LeftHandRing4",
+            "mixamorig:LeftHandPinky1",
+            "mixamorig:LeftHandPinky2",
+            "mixamorig:LeftHandPinky3",
+            "mixamorig:LeftHandPinky4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandThumb1",
+            "mixamorig:RightHandThumb2",
+            "mixamorig:RightHandThumb3",
+            "mixamorig:RightHandThumb4",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:RightHandMiddle1",
+            "mixamorig:RightHandMiddle2",
+            "mixamorig:RightHandMiddle3",
+            "mixamorig:RightHandMiddle4",
+            "mixamorig:RightHandRing1",
+            "mixamorig:RightHandRing2",
+            "mixamorig:RightHandRing3",
+            "mixamorig:RightHandRing4",
+            "mixamorig:RightHandPinky1",
+            "mixamorig:RightHandPinky2",
+            "mixamorig:RightHandPinky3",
+            "mixamorig:RightHandPinky4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 301.0,
+          "frame_span": 300.0,
+          "duration_seconds": 5.0
+        }
+      ],
+      "max_animation_duration_seconds": 5.0,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Rockin' Shackle B.fbx",
+      "size_bytes": 1016288,
+      "size_mb": 0.969,
+      "status": "ok",
+      "scene_fps": 60.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.009",
+        "mat0.010",
+        "mat0.011",
+        "mat0.012",
+        "mat0.013",
+        "mat0.014"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 4414,
+      "total_polygons": 6712,
+      "bounds": {
+        "min": [
+          -0.3162,
+          0.2052,
+          0.006
+        ],
+        "max": [
+          0.3274,
+          0.8027,
+          1.1034
+        ],
+        "dimensions": [
+          0.6436,
+          0.5975,
+          1.0974
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 33,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 301.0,
+          "frame_span": 300.0,
+          "duration_seconds": 5.0
+        }
+      ],
+      "max_animation_duration_seconds": 5.0,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Shooting Gun.fbx",
+      "size_bytes": 825760,
+      "size_mb": 0.788,
+      "status": "ok",
+      "scene_fps": 30.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.009",
+        "mat0.010",
+        "mat0.011",
+        "mat0.012",
+        "mat0.013",
+        "mat0.014"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 4414,
+      "total_polygons": 6712,
+      "bounds": {
+        "min": [
+          -0.2954,
+          -0.1612,
+          0.0069
+        ],
+        "max": [
+          0.3083,
+          0.1922,
+          1.1326
+        ],
+        "dimensions": [
+          0.6037,
+          0.3534,
+          1.1257
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 33,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 160.0,
+          "frame_span": 159.0,
+          "duration_seconds": 5.3
+        }
+      ],
+      "max_animation_duration_seconds": 5.3,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Surprise Uppercut (1).fbx",
+      "size_bytes": 1209376,
+      "size_mb": 1.153,
+      "status": "ok",
+      "scene_fps": 30.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.001mat",
+        "mat0.002mat",
+        "mat0.003mat",
+        "mat0.004mat",
+        "mat0.005mat",
+        "mat0mat"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 5896,
+      "total_polygons": 8339,
+      "bounds": {
+        "min": [
+          -0.0117,
+          -0.0256,
+          -0.0006
+        ],
+        "max": [
+          0.0142,
+          0.0152,
+          0.0687
+        ],
+        "dimensions": [
+          0.0259,
+          0.0408,
+          0.0693
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 65,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandThumb1",
+            "mixamorig:LeftHandThumb2",
+            "mixamorig:LeftHandThumb3",
+            "mixamorig:LeftHandThumb4",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4",
+            "mixamorig:LeftHandRing1",
+            "mixamorig:LeftHandRing2",
+            "mixamorig:LeftHandRing3",
+            "mixamorig:LeftHandRing4",
+            "mixamorig:LeftHandPinky1",
+            "mixamorig:LeftHandPinky2",
+            "mixamorig:LeftHandPinky3",
+            "mixamorig:LeftHandPinky4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandThumb1",
+            "mixamorig:RightHandThumb2",
+            "mixamorig:RightHandThumb3",
+            "mixamorig:RightHandThumb4",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:RightHandMiddle1",
+            "mixamorig:RightHandMiddle2",
+            "mixamorig:RightHandMiddle3",
+            "mixamorig:RightHandMiddle4",
+            "mixamorig:RightHandRing1",
+            "mixamorig:RightHandRing2",
+            "mixamorig:RightHandRing3",
+            "mixamorig:RightHandRing4",
+            "mixamorig:RightHandPinky1",
+            "mixamorig:RightHandPinky2",
+            "mixamorig:RightHandPinky3",
+            "mixamorig:RightHandPinky4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 106.0,
+          "frame_span": 105.0,
+          "duration_seconds": 3.5
+        }
+      ],
+      "max_animation_duration_seconds": 3.5,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Surprise Uppercut (2).fbx",
+      "size_bytes": 774848,
+      "size_mb": 0.739,
+      "status": "ok",
+      "scene_fps": 30.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.009",
+        "mat0.010",
+        "mat0.011",
+        "mat0.012",
+        "mat0.013",
+        "mat0.014"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 4414,
+      "total_polygons": 6712,
+      "bounds": {
+        "min": [
+          -0.2643,
+          -0.415,
+          -0.0056
+        ],
+        "max": [
+          0.2355,
+          0.2564,
+          1.0326
+        ],
+        "dimensions": [
+          0.4998,
+          0.6714,
+          1.0382
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 33,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 106.0,
+          "frame_span": 105.0,
+          "duration_seconds": 3.5
+        }
+      ],
+      "max_animation_duration_seconds": 3.5,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Surprise Uppercut (3).fbx",
+      "size_bytes": 786496,
+      "size_mb": 0.75,
+      "status": "ok",
+      "scene_fps": 30.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.009",
+        "mat0.010",
+        "mat0.011",
+        "mat0.012",
+        "mat0.013",
+        "mat0.014"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 4414,
+      "total_polygons": 6712,
+      "bounds": {
+        "min": [
+          -0.2538,
+          -0.4042,
+          -0.0056
+        ],
+        "max": [
+          0.2497,
+          0.281,
+          1.0324
+        ],
+        "dimensions": [
+          0.5035,
+          0.6852,
+          1.038
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 33,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 106.0,
+          "frame_span": 105.0,
+          "duration_seconds": 3.5
+        }
+      ],
+      "max_animation_duration_seconds": 3.5,
+      "classification": "mixed rigged character/model + animation"
+    },
+    {
+      "file": "Surprise Uppercut.fbx",
+      "size_bytes": 1209360,
+      "size_mb": 1.153,
+      "status": "ok",
+      "scene_fps": 30.0,
+      "object_count": 7,
+      "mesh_count": 6,
+      "armature_count": 1,
+      "material_count": 6,
+      "materials": [
+        "mat0.001mat",
+        "mat0.002mat",
+        "mat0.003mat",
+        "mat0.004mat",
+        "mat0.005mat",
+        "mat0mat"
+      ],
+      "materials_truncated": false,
+      "total_vertices": 5896,
+      "total_polygons": 8339,
+      "bounds": {
+        "min": [
+          -0.0117,
+          -0.0256,
+          -0.0006
+        ],
+        "max": [
+          0.0142,
+          0.0152,
+          0.0687
+        ],
+        "dimensions": [
+          0.0259,
+          0.0408,
+          0.0693
+        ]
+      },
+      "armatures": [
+        {
+          "object_name": "Armature",
+          "data_name": "Armature",
+          "bone_count": 65,
+          "root_bones": [
+            "mixamorig:Hips"
+          ],
+          "assigned_action": "Armature|mixamo.com|Layer0",
+          "nla_strips": [],
+          "bone_names": [
+            "mixamorig:Hips",
+            "mixamorig:Spine",
+            "mixamorig:Spine1",
+            "mixamorig:Spine2",
+            "mixamorig:Neck",
+            "mixamorig:Head",
+            "mixamorig:HeadTop_End",
+            "mixamorig:LeftShoulder",
+            "mixamorig:LeftArm",
+            "mixamorig:LeftForeArm",
+            "mixamorig:LeftHand",
+            "mixamorig:LeftHandThumb1",
+            "mixamorig:LeftHandThumb2",
+            "mixamorig:LeftHandThumb3",
+            "mixamorig:LeftHandThumb4",
+            "mixamorig:LeftHandIndex1",
+            "mixamorig:LeftHandIndex2",
+            "mixamorig:LeftHandIndex3",
+            "mixamorig:LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4",
+            "mixamorig:LeftHandRing1",
+            "mixamorig:LeftHandRing2",
+            "mixamorig:LeftHandRing3",
+            "mixamorig:LeftHandRing4",
+            "mixamorig:LeftHandPinky1",
+            "mixamorig:LeftHandPinky2",
+            "mixamorig:LeftHandPinky3",
+            "mixamorig:LeftHandPinky4",
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandThumb1",
+            "mixamorig:RightHandThumb2",
+            "mixamorig:RightHandThumb3",
+            "mixamorig:RightHandThumb4",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4",
+            "mixamorig:RightHandMiddle1",
+            "mixamorig:RightHandMiddle2",
+            "mixamorig:RightHandMiddle3",
+            "mixamorig:RightHandMiddle4",
+            "mixamorig:RightHandRing1",
+            "mixamorig:RightHandRing2",
+            "mixamorig:RightHandRing3",
+            "mixamorig:RightHandRing4",
+            "mixamorig:RightHandPinky1",
+            "mixamorig:RightHandPinky2",
+            "mixamorig:RightHandPinky3",
+            "mixamorig:RightHandPinky4",
+            "mixamorig:LeftUpLeg",
+            "mixamorig:LeftLeg",
+            "mixamorig:LeftFoot",
+            "mixamorig:LeftToeBase",
+            "mixamorig:LeftToe_End",
+            "mixamorig:RightUpLeg",
+            "mixamorig:RightLeg",
+            "mixamorig:RightFoot",
+            "mixamorig:RightToeBase",
+            "mixamorig:RightToe_End"
+          ],
+          "bone_names_truncated": false
+        }
+      ],
+      "rig_clues": [
+        "humanoid-hips",
+        "mixamo"
+      ],
+      "action_count": 1,
+      "actions": [
+        {
+          "name": "Armature|mixamo.com|Layer0",
+          "frame_start": 1.0,
+          "frame_end": 106.0,
+          "frame_span": 105.0,
+          "duration_seconds": 3.5
+        }
+      ],
+      "max_animation_duration_seconds": 3.5,
+      "classification": "mixed rigged character/model + animation"
+    }
+  ]
+}
