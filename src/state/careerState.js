@@ -22,7 +22,21 @@ export const careerState = {
 
 /**
  * Apply the outcome of a completed race to the career state.
- * @param {{ finished: boolean, lapsCompleted: number, totalLaps: number }} result
+ * Existing prototype reward values stay here; the race runtime only supplies
+ * measured race/session metadata and never invents progression rules.
+ * @param {{
+ *   finished: boolean,
+ *   lapsCompleted: number,
+ *   totalLaps: number,
+ *   trackId?: string,
+ *   raceNumber?: number,
+ *   winnerSide?: 'A'|'B',
+ *   classificationPosition?: number|null,
+ *   finishPosition?: number|null,
+ *   finishTimeMs?: number|null,
+ *   classification?: string[],
+ *   finishOrder?: string[]
+ * }} result
  */
 export function applyRaceResult(result) {
   careerState.week += 1;
@@ -38,9 +52,21 @@ export function applyRaceResult(result) {
 
   careerState.raceHistory.push({
     week: careerState.week - 1,
-    finished: result.finished,
+    finished: Boolean(result.finished),
     lapsCompleted: result.lapsCompleted,
-    totalLaps: result.totalLaps
+    totalLaps: result.totalLaps,
+    trackId: result.trackId ?? null,
+    raceNumber: Number.isInteger(result.raceNumber) ? result.raceNumber : null,
+    winnerSide: result.winnerSide ?? null,
+    classificationPosition: result.classificationPosition ?? null,
+    finishPosition: result.finishPosition ?? null,
+    finishTimeMs: Number.isFinite(result.finishTimeMs) ? result.finishTimeMs : null,
+    classification: Array.isArray(result.classification)
+      ? [...result.classification]
+      : [],
+    finishOrder: Array.isArray(result.finishOrder)
+      ? [...result.finishOrder]
+      : []
   });
 }
 
