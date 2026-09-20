@@ -106,16 +106,22 @@ def world_bounds(meshes):
     }
 
 
-def import_fbx(path):
-    try:
-        bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
-        return
-    except Exception as first_error:
+def import_asset(path):
+    ext = path.suffix.lower()
+    if ext == ".fbx":
         try:
-            bpy.ops.wm.fbx_import(filepath=str(path))
+            bpy.ops.import_scene.fbx(filepath=str(path), use_anim=True)
             return
-        except Exception:
-            raise first_error
+        except Exception as first_error:
+            try:
+                bpy.ops.wm.fbx_import(filepath=str(path))
+                return
+            except Exception:
+                raise first_error
+    if ext in (".glb", ".gltf"):
+        bpy.ops.import_scene.gltf(filepath=str(path))
+        return
+    raise RuntimeError("Unsupported asset format: {}".format(ext))
 
 
 def classify(mesh_count, armature_count, action_count):
@@ -143,7 +149,7 @@ def inspect_one(path):
         "status": "ok",
     }
     try:
-        import_fbx(path)
+        import_asset(path)
         scene = bpy.context.scene
         fps = float(scene.render.fps) / float(scene.render.fps_base or 1.0)
         objects = list(scene.objects)
@@ -244,7 +250,7 @@ def build_markdown(report):
         "Generated automatically by the local Blender worker.",
         "",
         "- Blender: **{}**".format(report["blender_version"]),
-        "- FBX files inspected: **{}**".format(report["summary"]["files"]),
+        "- 3D assets inspected: **{}**".format(report["summary"]["files"]),
         "- Successful imports: **{}**".format(report["summary"]["ok"]),
         "- Failed imports: **{}**".format(report["summary"]["errors"]),
         "",
@@ -316,7 +322,7 @@ def build_markdown(report):
         "",
         "- Classification is structural, not artistic: an armature plus animation actions but no mesh is likely an animation/emote FBX.",
         "- Exact retargeting quality still depends on skeleton compatibility, rest pose, bone orientation, root motion, and hand/foot contact.",
-        "- Source FBX files are intentionally not uploaded by this worker.",
+        "- Source FBX/GLB/GLTF files are intentionally not uploaded by this worker.",
         "",
     ])
     return "\n".join(lines)
@@ -324,7 +330,7 @@ def build_markdown(report):
 
 def make_report(input_dir):
     files = sorted(
-        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() == ".fbx"],
+        [p for p in input_dir.iterdir() if p.is_file() and p.suffix.lower() in (".fbx", ".glb", ".gltf")],
         key=lambda p: p.name.lower(),
     )
     assets = []
@@ -410,8 +416,11 @@ def main():
 
     if not input_dir.exists():
         raise SystemExit("Input folder does not exist: {}".format(input_dir))
-    if not any(p.is_file() and p.suffix.lower() == ".fbx" for p in input_dir.iterdir()):
-        raise SystemExit("No FBX files found in: {}".format(input_dir))
+    if not any(
+        p.is_file() and p.suffix.lower() in (".fbx", ".glb", ".gltf")
+        for p in input_dir.iterdir()
+    ):
+        raise SystemExit("No FBX, GLB or GLTF files found in: {}".format(input_dir))
 
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = output_dir / "asset-report.json"
