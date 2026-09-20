@@ -18,8 +18,11 @@ export class RaceSceneRuntimeBridge {
   }
 
   start(nowMs = performance.now()) {
+    // One bridge instance represents one race session. Render/setup controls
+    // may call start more than once before the finish, but a committed result
+    // must never be reopened and counted as the next faction race.
+    if (this.completionDelivered) return false;
     this.started = this.runtime.start(nowMs);
-    this.completionDelivered = false;
     return this.started;
   }
 
@@ -45,6 +48,7 @@ export class RaceSceneRuntimeBridge {
 
     if (completion && !this.completionDelivered) {
       this.completionDelivered = true;
+      this.started = false;
       this.onCompletion?.(completion);
     }
 
@@ -52,10 +56,12 @@ export class RaceSceneRuntimeBridge {
   }
 
   beginAuthoring(position) {
+    if (this.completionDelivered) return false;
     return this.runtime.beginLineRecording(position);
   }
 
   finishAuthoring() {
+    if (this.completionDelivered) return 0;
     return this.runtime.finishLineRecording();
   }
 
@@ -64,7 +70,9 @@ export class RaceSceneRuntimeBridge {
   }
 
   clearAuthoring() {
+    if (this.completionDelivered) return false;
     this.runtime.clearLine();
+    return true;
   }
 
   saveGrid(spawn) {
