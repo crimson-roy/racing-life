@@ -16,6 +16,7 @@ rem   RacingLife-Blender.bat process
 rem   RacingLife-Blender.bat validate-rig
 rem   RacingLife-Blender.bat compare-skeletons
 rem   RacingLife-Blender.bat extract-animation
+rem   RacingLife-Blender.bat inspect-target
 rem
 rem Optional:
 rem   add a folder path to use it instead of Blender\worker_input
@@ -32,6 +33,8 @@ set "OUTPUT_DIR=%REPO_ROOT%\Blender\worker_output"
 set "LOCAL_ONLY=0"
 set "TARGET_HEIGHT=%RACING_LIFE_TARGET_HEIGHT%"
 if not defined TARGET_HEIGHT set "TARGET_HEIGHT=1.80"
+set "TARGET_RIG=%RACING_LIFE_TARGET_RIG%"
+if not defined TARGET_RIG set "TARGET_RIG=%REPO_ROOT%\Blender\male_base_mesh.glb"
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -73,6 +76,11 @@ if /I "%~1"=="compare-skeletons" (
 )
 if /I "%~1"=="extract-animation" (
     set "MODE=extract-animation"
+    shift
+    goto parse_args
+)
+if /I "%~1"=="inspect-target" (
+    set "MODE=inspect-target"
     shift
     goto parse_args
 )
