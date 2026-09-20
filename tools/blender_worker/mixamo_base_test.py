@@ -279,17 +279,24 @@ def mesh_world_center(mesh):
     return total / len(mesh.data.vertices)
 
 
-HELPER_GROUP_MAP = {
-    "pelvisl": "leftupleg",
-    "pelvisr": "rightupleg",
-    "heel02l": "leftfoot",
-    "heel02r": "rightfoot",
+# Rigify's pelvis helper bones have no direct Mixamo equivalent.
+# Sending 100% of those weights to the thighs fixed the legs but pinched the
+# waist. Split them between Hips and the matching upper leg so the waist keeps
+# its volume while the thigh still follows the leg correctly.
+HELPER_GROUP_SPLITS = {
+    "pelvisl": (("hips", 0.60), ("leftupleg", 0.40)),
+    "pelvisr": (("hips", 0.60), ("rightupleg", 0.40)),
+    "heel02l": (("leftfoot", 1.00),),
+    "heel02r": (("rightfoot", 1.00),),
 }
 
 
-def group_to_canonical(group_name):
+def group_destinations(group_name):
     canonical = target_canonical_name(group_name)
-    return HELPER_GROUP_MAP.get(canonical, canonical)
+    return HELPER_GROUP_SPLITS.get(
+        canonical,
+        ((canonical, 1.0),),
+    )
 
 
 def nearest_target_bone(mesh, target_arm, target_mapping):
@@ -391,16 +398,23 @@ def bake_mesh_into_mixamo_rest_pose(
             if not group_name:
                 continue
 
-            canonical = group_to_canonical(group_name)
-            transfer = transfers.get(canonical)
-
-            if transfer is None:
-                unmapped_weight += float(membership.weight)
-                continue
-
             weight = float(membership.weight)
-            mapped_sum += (transfer @ original_world) * weight
-            mapped_weight += weight
+            resolved_weight = 0.0
+
+            for canonical, split_factor in group_destinations(group_name):
+                transfer = transfers.get(canonical)
+                if transfer is None:
+                    continue
+
+                split_weight = weight * float(split_factor)
+                mapped_sum += (
+                    transfer @ original_world
+                ) * split_weight
+                mapped_weight += split_weight
+                resolved_weight += split_weight
+
+            if resolved_weight <= 1e-8:
+                unmapped_weight += weight
 
         if mapped_weight > 1e-8:
             # Normalize mapped weights. Any genuinely unmapped helper influence
@@ -435,96 +449,88 @@ def remap_vertex_groups(
     mesh,
     source_mapping,
 ):
-    original_names = [group.name for group in mesh.vertex_groups]
-
-    # Capture helper weights before deleting/merging those groups.
-    helper_weights = {}
-    for helper_raw, destination_canonical in HELPER_GROUP_MAP.items():
-        helper_group = None
-        for group in mesh.vertex_groups:
-            if normalize_bone_name(group.name) == helper_raw:
-                helper_group = group
-                break
-
-        if helper_group is None:
-            continue
-
-        weights = {}
-        for vertex in mesh.data.vertices:
-            try:
-                weight = helper_group.weight(vertex.index)
-            except RuntimeError:
-                continue
-            if weight > 0:
-                weights[vertex.index] = float(weight)
-
-        helper_weights[helper_group.name] = (
-            destination_canonical,
-            weights,
-        )
-
-    rename_plan = []
+    # Snapshot old weights first, then rebuild the groups cleanly. This allows
+    # one Rigify helper group (pelvis.L/R) to split across multiple Mixamo
+    # bones without duplicate .001 groups or lost weights.
+    original_groups = list(mesh.vertex_groups)
+    destination_weights = {}
     unmapped_groups = []
+    mapped_source_groups = 0
+    split_source_groups = []
 
-    for group_name in original_names:
-        canonical = group_to_canonical(group_name)
-        source_bone_name = source_mapping.get(canonical)
+    for group in original_groups:
+        resolved_destinations = []
 
-        if source_bone_name:
-            rename_plan.append(
-                (group_name, source_bone_name, canonical)
-            )
-        else:
-            unmapped_groups.append(group_name)
+        for canonical, split_factor in group_destinations(group.name):
+            source_bone_name = source_mapping.get(canonical)
+            if source_bone_name and split_factor > 0:
+                resolved_destinations.append(
+                    (
+                        source_bone_name,
+                        float(split_factor),
+                        canonical,
+                    )
+                )
 
-    # Rename through temporary names so collisions cannot create .001 groups.
-    for index, (old_name, new_name, canonical) in enumerate(rename_plan):
-        group = mesh.vertex_groups.get(old_name)
-        if group is not None:
-            group.name = "__RL_TMP_{}__".format(index)
-
-    final_groups = {}
-    mapped_count = 0
-
-    for index, (old_name, new_name, canonical) in enumerate(rename_plan):
-        group = mesh.vertex_groups.get("__RL_TMP_{}__".format(index))
-        if group is None:
+        if not resolved_destinations:
+            unmapped_groups.append(group.name)
             continue
 
-        existing = final_groups.get(new_name)
-        if existing is None:
-            group.name = new_name
-            final_groups[new_name] = group
-            mapped_count += 1
-            continue
+        mapped_source_groups += 1
+        if len(resolved_destinations) > 1:
+            split_source_groups.append({
+                "source_group": group.name,
+                "destinations": [
+                    {
+                        "canonical": canonical,
+                        "mixamo_bone": source_bone_name,
+                        "factor": split_factor,
+                    }
+                    for source_bone_name, split_factor, canonical
+                    in resolved_destinations
+                ],
+            })
 
-        # Multiple old helper/deform groups can intentionally collapse into
-        # one Mixamo bone. Merge their vertex weights rather than keeping a
-        # duplicate group with a .001 suffix.
         for vertex in mesh.data.vertices:
             try:
-                weight = group.weight(vertex.index)
+                original_weight = float(group.weight(vertex.index))
             except RuntimeError:
                 continue
-            if weight > 0:
-                existing.add(
-                    [vertex.index],
-                    weight,
-                    "ADD",
-                )
-        mesh.vertex_groups.remove(group)
 
-    # Remove any still-unmapped helper groups that have no Mixamo equivalent.
-    removed_groups = []
-    for group_name in list(unmapped_groups):
-        group = mesh.vertex_groups.get(group_name)
-        if group is not None:
-            mesh.vertex_groups.remove(group)
-            removed_groups.append(group_name)
+            if original_weight <= 0:
+                continue
+
+            for source_bone_name, split_factor, canonical in resolved_destinations:
+                weighted = original_weight * split_factor
+                if weighted <= 0:
+                    continue
+
+                per_bone = destination_weights.setdefault(
+                    source_bone_name,
+                    {},
+                )
+                per_bone[vertex.index] = (
+                    per_bone.get(vertex.index, 0.0)
+                    + weighted
+                )
+
+    mesh.vertex_groups.clear()
+
+    for source_bone_name, weights in destination_weights.items():
+        group = mesh.vertex_groups.new(name=source_bone_name)
+
+        for vertex_index, weight in weights.items():
+            group.add(
+                [vertex_index],
+                weight,
+                "REPLACE",
+            )
 
     return {
-        "mapped_group_count": mapped_count,
-        "removed_unmapped_groups": removed_groups,
+        "mapped_source_group_count": mapped_source_groups,
+        "generated_mixamo_group_count": len(destination_weights),
+        "unmapped_groups": unmapped_groups,
+        "split_source_groups": split_source_groups,
         "remaining_group_count": len(mesh.vertex_groups),
     }
 
@@ -912,7 +918,7 @@ def main():
         "blender_version": bpy.app.version_string,
         "source_file": source_path.name,
         "target_file": target_path.name,
-        "strategy": "bake-prototype-bind-pose-to-mixamo-rest-and-reuse-skin-weights",
+        "strategy": "mixamo-rest-bake-with-split-pelvis-weight-transfer",
         "status": "ok",
     }
 
