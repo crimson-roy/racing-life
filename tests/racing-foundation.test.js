@@ -45,6 +45,20 @@ test('RaceProgress requires ordered checkpoints before finishing a lap', () => {
   assert.equal(state.finishTimeMs, 4000);
 });
 
+test('RaceProgress counts an ordered checkpoint crossed between physics samples', () => {
+  const race = new RaceProgress({ totalLaps: 1, checkpointRadius: 1 });
+  race.registerRacer('player');
+  race.setCheckpoints([point(10, 0), point(20, 0)]);
+
+  race.updateRacer('player', point(7, 0), 1000);
+  race.updateRacer('player', point(13, 0), 1100);
+
+  const state = race.getRacerState('player');
+  assert.equal(state.checkpointsPassed, 1);
+  assert.equal(state.nextCheckpoint, 1);
+  assert.deepEqual(state.previousPosition, point(13, 0));
+});
+
 test('RaceController treats authored point zero as finish rather than instant grid progress', () => {
   const controller = new RaceController({ totalLaps: 1, checkpointRadius: 1 });
   controller.configure([point(0, 0), point(10, 0), point(20, 0)]);
