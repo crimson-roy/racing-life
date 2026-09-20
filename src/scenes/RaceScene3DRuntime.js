@@ -37,26 +37,33 @@ export class RaceScene3DRuntime extends RaceScene3D {
 
     this.runtimeSetup = this.runtimeBridge.load();
 
-    // RaceScene3D already owns the render/physics loop. This hook runs once
-    // after each player physics step without duplicating that large loop.
-    this.playerCar.afterDrive = ({ dt }) => {
-      if (this.setupMode || !this.runtimeBridge?.started) return;
-
-      const { snapshot } = this.runtimeBridge.update({
-        playerCar: this.playerCar,
-        opponentCar: this.opponentCar,
-        dt,
-        driveOpponent: true,
-        details: {
-          raceNumber: this.session.raceNumber
-        }
-      });
-
-      // Keep AI on the imported venue surface. Collision ownership stays in
-      // RaceScene3D; grounding here prevents authored Y noise from accumulating.
-      this.snapCarToSurface(this.opponentCar);
-      this.updateRaceHud(snapshot);
+    // RaceScene3D already owns the stable render/physics loop. Wrap only the
+    // player instance's drive method so P0 state advances exactly once per
+    // driving frame without copying that large loop into this integration.
+    const basePlayerDrive = this.playerCar.drive.bind(this.playerCar);
+    this.playerCar.drive = (throttle, brake, steering, dt) => {
+      basePlayerDrive(throttle, brake, steering, dt);
+      this.afterPlayerPhysicsStep(dt);
     };
+  }
+
+  afterPlayerPhysicsStep(dt) {
+    if (this.setupMode || !this.runtimeBridge?.started) return;
+
+    const { snapshot } = this.runtimeBridge.update({
+      playerCar: this.playerCar,
+      opponentCar: this.opponentCar,
+      dt,
+      driveOpponent: true,
+      details: {
+        raceNumber: this.session.raceNumber
+      }
+    });
+
+    // Keep AI on the imported venue surface. Collision/camera ownership stays
+    // in RaceScene3D; this only grounds the opponent after controller input.
+    this.snapCarToSurface(this.opponentCar);
+    this.updateRaceHud(snapshot);
   }
 
   createOverlay() {
@@ -164,7 +171,7 @@ export class RaceScene3DRuntime extends RaceScene3D {
       const hud = this.runtimeBridge.getHudState();
       if (hud.ready) {
         this.runtimeBridge.start(performance.now());
-        this.runtimeResultElement && (this.runtimeResultElement.textContent = '');
+        if (this.runtimeResultElement) this.runtimeResultElement.textContent = '';
         this.setStatus(`Race started · ${hud.racingLinePointCount} authored points`);
       } else {
         this.setStatus('Driving mode · press C for setup, author a racing line with L for race/AI');
@@ -195,7 +202,9 @@ export class RaceScene3DRuntime extends RaceScene3D {
     const order = completion.finishOrder.join(' → ');
     const summary = completion.matchSummary;
     const score = summary ? ` · MATCH ${summary.scoreA}-${summary.scoreB}` : '';
-    const matchEnd = summary?.completed ? ` · ${summary.winner === 'A' ? 'AZURE' : 'CRIMSON'} WINS MATCH` : '';
+    const matchEnd = summary?.completed
+      ? ` · ${summary.winner === 'A' ? 'AZURE' : 'CRIMSON'} WINS MATCH`
+      : '';
     this.runtimeResultElement.textContent = `${winner} WINS · ${order}${score}${matchEnd}`;
   }
 
