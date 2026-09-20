@@ -463,6 +463,36 @@ def render_preview(path, target_objects, frame):
     bpy.data.objects.remove(camera, do_unlink=True)
 
 
+def ascii_preview(path, columns=48, rows=48):
+    image = bpy.data.images.load(str(path), check_existing=False)
+    try:
+        width, height = int(image.size[0]), int(image.size[1])
+        pixels = list(image.pixels[:])
+        chars = " .:-=+*#%@"
+        lines = []
+
+        for row in range(rows):
+            source_y = min(
+                height - 1,
+                max(0, int((rows - 1 - row + 0.5) * height / rows)),
+            )
+            line = []
+            for col in range(columns):
+                source_x = min(
+                    width - 1,
+                    max(0, int((col + 0.5) * width / columns)),
+                )
+                idx = (source_y * width + source_x) * 4
+                r, g, b = pixels[idx], pixels[idx + 1], pixels[idx + 2]
+                luminance = max(0.0, min(1.0, 0.2126 * r + 0.7152 * g + 0.0722 * b))
+                char_index = int(round(luminance * (len(chars) - 1)))
+                line.append(chars[char_index])
+            lines.append("".join(line).rstrip())
+        return "\n".join(lines)
+    finally:
+        bpy.data.images.remove(image)
+
+
 def publish_reports(repo_root, json_path, md_path, preview_files=None):
     if not (repo_root / ".git").exists():
         return False
@@ -569,6 +599,23 @@ def markdown(report):
         "- Mid: {}".format(report.get("published_previews", {}).get("preview_mid", "-")),
         "- End: {}".format(report.get("published_previews", {}).get("preview_end", "-")),
         "",
+        "## ASCII diagnostic previews",
+        "",
+    ])
+
+    for label in ("start", "mid", "end"):
+        preview = report.get("ascii_previews", {}).get(label)
+        if preview:
+            lines.extend([
+                "### {}".format(label.title()),
+                "",
+                "~~~text",
+                preview,
+                "~~~",
+                "",
+            ])
+
+    lines.extend([
         "## Interpretation",
         "",
         "This is a first-pass matrix-delta retarget bake. It compensates for different rest-bone orientations instead of directly copying Mixamo rotation channels. Visual inspection is still required before treating the result as production-ready.",
@@ -699,6 +746,12 @@ def main():
         render_preview(preview_start, target_objects, frame_start)
         render_preview(preview_mid, target_objects, middle_frame)
         render_preview(preview_end, target_objects, frame_end)
+
+        report["ascii_previews"] = {
+            "start": ascii_preview(preview_start),
+            "mid": ascii_preview(preview_mid),
+            "end": ascii_preview(preview_end),
+        }
 
         report["outputs"] = {
             "glb": str(glb_path.relative_to(output_root)).replace("\\", "/"),
