@@ -189,4 +189,14 @@ test('RaceSceneRuntimeBridge commits match and career completion exactly once', 
   assert.equal(match.getSummary().results.length, 1);
   assert.equal(careerResults.length, 1);
   assert.equal(delivered.length, 1);
+
+  // Scene controls may try to restart/re-author after a finish. The same
+  // bridge must stay locked to this one race rather than scoring race #2.
+  assert.equal(bridge.start(3000), false);
+  assert.equal(bridge.beginAuthoring(player.position), false);
+  assert.equal(bridge.clearAuthoring(), false);
+  bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false });
+  assert.equal(match.getSummary().results.length, 1);
+  assert.equal(careerResults.length, 1);
+  assert.equal(delivered.length, 1);
 });
