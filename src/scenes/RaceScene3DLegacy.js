@@ -1,0 +1,3183 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+import { RaceSubaru } from '../vehicles/RaceSubaru.js';
+import { getTrack } from '../racing/TrackRegistry.js';
+import { getFaction } from '../racing/Factions.js';
+
+export class RaceScene3D {
+  constructor(options = {}) {
+    this.container = options.container ?? document.body;
+    this.session = options.session ?? {
+      raceNumber: 1,
+      trackId: 'barcelona',
+      factionA: 'azure',
+      factionB: 'crimson',
+      scoreA: 0,
+      scoreB: 0
+    };
+
+    this.onExit = options.onExit ?? (() => {});
+
+    this.running = false;
+    this.disposed = false;
+    this.rafId = null;
+    this.lastTime = performance.now();
+
+    this.keys = new Set();
+    this.trackRoot = null;
+    this.trackBounds = null;
+    this.playableBounds = null;
+    this.trackSurfaceObjects = [];
+    this.playableMeshCenters = [];
+
+    // Static obstacle collision generated from the imported venue.
+    // These are lightweight world-space AABBs for buildings, barriers,
+    // poles, walls, trees, etc. Roads/ground/background are excluded.
+    this.solidColliders = [];
+
+    // Give the Subaru a little breathing room so it cannot visually clip
+    // half-way into walls/buildings before collision stops it.
+    this.PLAYER_COLLISION_RADIUS = 1.38;
+    this.PLAYER_COLLISION_HEIGHT = 1.45;
+    this.OBSTACLE_COLLISION_PADDING = 0.48;
+    this.RADIAL_COLLISION_RADIUS = 1.55;
+
+    // Chase-camera terrain protection.
+    this.CAMERA_MIN_GROUND_CLEARANCE = 1.65;
+    this.CAMERA_FOLLOW_HEIGHT = 4.6;
+    this.CAMERA_FOLLOW_DISTANCE = 9.5;
+    this.denseOverviewCenter = null;
+    this.denseOverviewRadius = null;
+
+    // Development setup mode: show the entire imported venue first.
+    // This prevents the camera from spawning somewhere useless before
+    // we know the real start-grid coordinates of each downloaded track.
+    this.setupMode = true;
+    this.trackSize = new THREE.Vector3();
+    this.trackCenter = new THREE.Vector3();
+
+    this.trackRaycaster = new THREE.Raycaster();
+    this.trackRayOrigin = new THREE.Vector3();
+    this.trackRayDirection = new THREE.Vector3(0, -1, 0);
+
+    this.pointerRaycaster = new THREE.Raycaster();
+    this.pointerNdc = new THREE.Vector2();
+
+    this.vehicleRaycaster = new THREE.Raycaster();
+    this.cameraCollisionRaycaster = new THREE.Raycaster();
+
+    this.lastValidPlayerPosition =
+      new THREE.Vector3();
+
+    this.lastValidPlayerRotationY =
+      0;
+
+    this.collisionStatusUntil =
+      0;
+
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x8eb8ce);
+
+    // Keep a reusable driving fog, but disable it while we are in
+    // track-overview setup mode. Some downloaded circuits are several
+    // kilometres wide, so a fixed 5,000-unit fog distance can hide the
+    // entire venue even though the GLB loaded correctly.
+    this.drivingFog = new THREE.Fog(
+      0x8eb8ce,
+      500,
+      5000
+    );
+
+    this.scene.fog = null;
+
+    this.camera = new THREE.PerspectiveCamera(
+      58,
+      Math.max(1, window.innerWidth) / Math.max(1, window.innerHeight),
+      0.1,
+      8000
+    );
+
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true
+    });
+
+    this.renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio || 1, 2)
+    );
+
+    this.renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    Object.assign(
+      this.renderer.domElement.style,
+      {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '30',
+        width: '100%',
+        height: '100%'
+      }
+    );
+
+    this.container.appendChild(
+      this.renderer.domElement
+    );
+
+    this.controls = new OrbitControls(
+      this.camera,
+      this.renderer.domElement
+    );
+
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+
+    // Setup camera should feel like a map/editor camera:
+    // - wheel zooms toward the mouse cursor, not the old water-center target
+    // - right-drag pans freely
+    // - left-drag orbits
+    this.controls.enablePan = true;
+    this.controls.screenSpacePanning = true;
+    // OrbitControls' normal wheel zoom always remains tied to its orbit
+    // target. On these huge imported maps that makes the camera feel like
+    // it is being dragged back to one fixed point. We disable its wheel
+    // zoom and handle wheel navigation ourselves below.
+    this.controls.zoomToCursor = false;
+    this.controls.enableZoom = false;
+    this.controls.zoomSpeed = 1.15;
+    this.controls.panSpeed = 1.0;
+    this.controls.rotateSpeed = 0.65;
+
+    this.controls.minDistance = 3;
+    this.controls.maxDistance = 20000;
+
+    this.controls.mouseButtons.LEFT =
+      THREE.MOUSE.ROTATE;
+
+    this.controls.mouseButtons.MIDDLE =
+      THREE.MOUSE.DOLLY;
+
+    this.controls.mouseButtons.RIGHT =
+      THREE.MOUSE.PAN;
+
+    this.controls.enabled = true;
+
+    this.loader = new GLTFLoader();
+
+    this.setupLights();
+    this.createCars();
+    this.createOverlay();
+    this.bindEvents();
+    this.loadTrack();
+    this.start();
+  }
+
+  setupLights() {
+    const hemi = new THREE.HemisphereLight(
+      0xffffff,
+      0x25303a,
+      2.1
+    );
+
+    this.scene.add(hemi);
+
+    const sun = new THREE.DirectionalLight(
+      0xffffff,
+      2.6
+    );
+
+    sun.position.set(120, 220, 90);
+    sun.castShadow = true;
+
+    this.scene.add(sun);
+  }
+
+  createCars() {
+    const factionA = getFaction(
+      this.session.factionA
+    );
+
+    const factionB = getFaction(
+      this.session.factionB
+    );
+
+    this.playerCar = new RaceSubaru({
+      maxSpeed: 22,
+      acceleration: 8.8,
+      brakePower: 14,
+      turnRate:
+        THREE.MathUtils.degToRad(
+          72
+        )
+    });
+
+    this.opponentCar = new RaceSubaru({
+      maxSpeed: 21,
+      acceleration: 8.4,
+      brakePower: 13.5,
+      turnRate:
+        THREE.MathUtils.degToRad(
+          70
+        )
+    });
+
+    this.tintVehicle(
+      this.playerCar,
+      factionA
+    );
+
+    this.tintVehicle(
+      this.opponentCar,
+      factionB
+    );
+
+    this.scene.add(
+      this.playerCar,
+      this.opponentCar
+    );
+  }
+
+  tintVehicle(vehicle, faction) {
+    if (!vehicle) return;
+
+    vehicle.setFactionColor(
+      faction.primary
+    );
+  }
+
+  createOverlay() {
+    const factionA = getFaction(
+      this.session.factionA
+    );
+
+    const factionB = getFaction(
+      this.session.factionB
+    );
+
+    const track = getTrack(
+      this.session.trackId
+    );
+
+    this.ui = document.createElement('div');
+
+    Object.assign(
+      this.ui.style,
+      {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '31',
+        pointerEvents: 'none',
+        color: '#fff',
+        fontFamily:
+          'Inter, system-ui, sans-serif'
+      }
+    );
+
+    this.ui.innerHTML = `
+      <div style="
+        position:absolute;
+        top:18px;
+        left:50%;
+        transform:translateX(-50%);
+        min-width:340px;
+        padding:12px 18px;
+        border-radius:14px;
+        background:rgba(7,10,14,.78);
+        text-align:center;
+        border:1px solid rgba(255,255,255,.12);
+      ">
+        <div style="
+          font-size:12px;
+          opacity:.7;
+          letter-spacing:.16em;
+        ">
+          FACTION MATCH · RACE ${this.session.raceNumber}
+        </div>
+
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:14px;
+          margin-top:6px;
+          font-weight:800;
+          font-size:18px;
+        ">
+          <span style="color:#${factionA.primary.toString(16).padStart(6, '0')}">
+            ${factionA.name}
+          </span>
+
+          <span>
+            ${this.session.scoreA} - ${this.session.scoreB}
+          </span>
+
+          <span style="color:#${factionB.primary.toString(16).padStart(6, '0')}">
+            ${factionB.name}
+          </span>
+        </div>
+
+        <div style="
+          margin-top:4px;
+          font-size:13px;
+          opacity:.8;
+        ">
+          ${track.name}
+        </div>
+      </div>
+
+      <div style="
+        position:absolute;
+        left:18px;
+        bottom:18px;
+        max-width:390px;
+        padding:12px 14px;
+        border-radius:12px;
+        background:rgba(7,10,14,.78);
+        border:1px solid rgba(255,255,255,.12);
+        font-size:13px;
+        line-height:1.55;
+      ">
+        <strong>Subaru Race Test</strong><br>
+        <strong>SETUP:</strong> wheel = free zoom to cursor · left-drag = orbit · right-drag = pan<br>
+        Double-click the road = place cars there · P = place at screen center<br>
+        F refocus track · C toggle overview/driving · G save grid · R reset<br>
+        <strong>DRIVE:</strong> W/S accelerate & reverse · A/D steer · optimized collision ON<br>
+        Esc return home
+        <div id="race-debug-status" style="
+          margin-top:6px;
+          opacity:.72;
+        ">
+          Loading track…
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(
+      this.ui
+    );
+
+    this.statusElement =
+      this.ui.querySelector(
+        '#race-debug-status'
+      );
+  }
+
+  bindEvents() {
+    this.handleKeyDown =
+      (event) => {
+        if (event.repeat) return;
+
+        this.keys.add(
+          event.code
+        );
+
+        if (event.code === 'Escape') {
+          this.onExit();
+        }
+
+        if (event.code === 'KeyR') {
+          this.resetCarsToGrid();
+        }
+
+        if (event.code === 'KeyG') {
+          this.saveGridFromPlayer();
+        }
+
+        if (event.code === 'KeyP') {
+          this.placeGridFromCameraRay(
+            0,
+            0
+          );
+        }
+
+        if (event.code === 'KeyC') {
+          this.toggleSetupMode();
+        }
+
+        if (event.code === 'KeyF') {
+          this.frameTrackOverview();
+        }
+      };
+
+    this.handleKeyUp =
+      (event) => {
+        this.keys.delete(
+          event.code
+        );
+      };
+
+    this.handleWheelZoom =
+      (event) => {
+        if (
+          !this.setupMode ||
+          !this.trackRoot
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        const rect =
+          this.renderer.domElement
+            .getBoundingClientRect();
+
+        const ndcX =
+          (
+            (
+              event.clientX -
+              rect.left
+            ) /
+            Math.max(
+              1,
+              rect.width
+            )
+          ) *
+            2 -
+          1;
+
+        const ndcY =
+          -(
+            (
+              event.clientY -
+              rect.top
+            ) /
+            Math.max(
+              1,
+              rect.height
+            )
+          ) *
+            2 +
+          1;
+
+        this.pointerNdc.set(
+          ndcX,
+          ndcY
+        );
+
+        this.pointerRaycaster
+          .setFromCamera(
+            this.pointerNdc,
+            this.camera
+          );
+
+        const hits =
+          this.pointerRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
+
+        const hit =
+          this.choosePlacementHit(
+            hits
+          );
+
+        let focusPoint =
+          null;
+
+        if (hit) {
+          focusPoint =
+            hit.point.clone();
+        } else {
+          // Fallback for sky/empty-space scrolling: intersect the cursor ray
+          // with a horizontal plane passing through the current orbit target.
+          const plane =
+            new THREE.Plane(
+              new THREE.Vector3(
+                0,
+                1,
+                0
+              ),
+              -this.controls.target.y
+            );
+
+          const fallback =
+            new THREE.Vector3();
+
+          if (
+            this.pointerRaycaster.ray
+              .intersectPlane(
+                plane,
+                fallback
+              )
+          ) {
+            focusPoint =
+              fallback;
+          }
+        }
+
+        if (!focusPoint) {
+          return;
+        }
+
+        const fromFocus =
+          this.camera.position
+            .clone()
+            .sub(
+              focusPoint
+            );
+
+        const distance =
+          Math.max(
+            0.001,
+            fromFocus.length()
+          );
+
+        const zoomIn =
+          event.deltaY <
+          0;
+
+        // Browser wheel events can fire in large bursts. Use a bounded,
+        // exponential step so mouse wheels and touchpads both zoom smoothly.
+        const wheelStrength =
+          THREE.MathUtils.clamp(
+            Math.abs(
+              event.deltaY
+            ) /
+              100,
+            0.20,
+            1
+          );
+
+        const factor =
+          Math.exp(
+            (
+              zoomIn
+                ? -1
+                : 1
+            ) *
+              0.055 *
+              wheelStrength
+          );
+
+        const nextDistance =
+          THREE.MathUtils.clamp(
+            distance *
+              factor,
+            this.controls.minDistance,
+            this.controls.maxDistance
+          );
+
+        if (
+          fromFocus.lengthSq() <
+          0.000001
+        ) {
+          fromFocus.set(
+            0,
+            1,
+            1
+          );
+        }
+
+        fromFocus
+          .normalize()
+          .multiplyScalar(
+            nextDistance
+          );
+
+        this.camera.position
+          .copy(
+            focusPoint
+          )
+          .add(
+            fromFocus
+          );
+
+        // Crucial bit: the orbit target follows the point under the cursor.
+        // After zooming into a street/building area, future orbiting happens
+        // around THAT area instead of snapping back to the old water center.
+        const targetFollow =
+          zoomIn
+            ? 0.32
+            : 0.18;
+
+        this.controls.target.lerp(
+          focusPoint,
+          targetFollow
+        );
+
+        this.camera.lookAt(
+          this.controls.target
+        );
+
+        this.controls.update();
+      };
+
+    this.handleDoubleClick =
+      (event) => {
+        if (
+          !this.setupMode ||
+          !this.trackRoot
+        ) {
+          return;
+        }
+
+        const rect =
+          this.renderer.domElement
+            .getBoundingClientRect();
+
+        const x =
+          (
+            (
+              event.clientX -
+              rect.left
+            ) /
+            Math.max(
+              1,
+              rect.width
+            )
+          ) *
+            2 -
+          1;
+
+        const y =
+          -(
+            (
+              event.clientY -
+              rect.top
+            ) /
+            Math.max(
+              1,
+              rect.height
+            )
+          ) *
+            2 +
+          1;
+
+        this.placeGridFromCameraRay(
+          x,
+          y
+        );
+      };
+
+    this.handleResize =
+      () => {
+        this.camera.aspect =
+          Math.max(
+            1,
+            window.innerWidth
+          ) /
+          Math.max(
+            1,
+            window.innerHeight
+          );
+
+        this.camera
+          .updateProjectionMatrix();
+
+        this.renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+      };
+
+    window.addEventListener(
+      'keydown',
+      this.handleKeyDown
+    );
+
+    window.addEventListener(
+      'keyup',
+      this.handleKeyUp
+    );
+
+    window.addEventListener(
+      'resize',
+      this.handleResize
+    );
+
+    this.renderer.domElement
+      .addEventListener(
+        'dblclick',
+        this.handleDoubleClick
+      );
+
+    this.renderer.domElement
+      .addEventListener(
+        'wheel',
+        this.handleWheelZoom,
+        {
+          passive: false
+        }
+      );
+  }
+
+  loadTrack() {
+    const track = getTrack(
+      this.session.trackId
+    );
+
+    this.setStatus(
+      `Loading ${track.name}…`
+    );
+
+    this.loader.load(
+      track.path,
+
+      (gltf) => {
+        if (this.disposed) {
+          return;
+        }
+
+        this.trackRoot = gltf.scene;
+
+        this.trackRoot.traverse(
+          (object) => {
+            if (!object.isMesh) return;
+
+            object.receiveShadow = true;
+            object.castShadow = false;
+          }
+        );
+
+        this.scene.add(
+          this.trackRoot
+        );
+
+        this.trackRoot
+          .updateMatrixWorld(true);
+
+        this.trackBounds =
+          new THREE.Box3()
+            .setFromObject(
+              this.trackRoot
+            );
+
+        this.analyzePlayableGeometry();
+        this.buildStaticColliders();
+
+        const activeBounds =
+          this.playableBounds ??
+          this.trackBounds;
+
+        const size =
+          activeBounds.getSize(
+            new THREE.Vector3()
+          );
+
+        const center =
+          activeBounds.getCenter(
+            new THREE.Vector3()
+          );
+
+        this.trackSize.copy(
+          size
+        );
+
+        this.trackCenter.copy(
+          center
+        );
+
+        console.log(
+          'RaceScene3D: track loaded.',
+          {
+            track: track.name,
+            path: track.path,
+            center: {
+              x: center.x,
+              y: center.y,
+              z: center.z
+            },
+            size: {
+              x: size.x,
+              y: size.y,
+              z: size.z
+            },
+            fullMin: {
+              x: this.trackBounds.min.x,
+              y: this.trackBounds.min.y,
+              z: this.trackBounds.min.z
+            },
+            fullMax: {
+              x: this.trackBounds.max.x,
+              y: this.trackBounds.max.y,
+              z: this.trackBounds.max.z
+            },
+            playableMin: this.playableBounds
+              ? {
+                  x: this.playableBounds.min.x,
+                  y: this.playableBounds.min.y,
+                  z: this.playableBounds.min.z
+                }
+              : null,
+            playableMax: this.playableBounds
+              ? {
+                  x: this.playableBounds.max.x,
+                  y: this.playableBounds.max.y,
+                  z: this.playableBounds.max.z
+                }
+              : null
+          }
+        );
+
+        this.applyInitialGrid(
+          center,
+          size
+        );
+
+        this.frameTrackOverview();
+
+        this.setStatus(
+          `Loaded ${track.name} · ${size.x.toFixed(1)} × ${size.z.toFixed(1)} · P place grid · C drive`
+        );
+      },
+
+      (event) => {
+        if (
+          !event.total ||
+          !this.statusElement
+        ) {
+          return;
+        }
+
+        const percent =
+          Math.round(
+            (event.loaded /
+              event.total) *
+              100
+          );
+
+        this.setStatus(
+          `Loading track… ${percent}%`
+        );
+      },
+
+      (error) => {
+        console.error(
+          'RaceScene3D: failed to load track:',
+          error
+        );
+
+        this.setStatus(
+          `Could not load ${track.path}. Put the GLB in public/assets/tracks/.`
+        );
+
+        this.applyInitialGrid(
+          new THREE.Vector3(),
+          new THREE.Vector3(
+            40,
+            1,
+            80
+          )
+        );
+      }
+    );
+  }
+
+  analyzePlayableGeometry() {
+    if (
+      !this.trackRoot ||
+      !this.trackBounds ||
+      this.trackBounds.isEmpty()
+    ) {
+      return;
+    }
+
+    const fullSize =
+      this.trackBounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const candidates = [];
+    const excluded = [];
+
+    this.trackRoot.traverse(
+      (object) => {
+        if (!object.isMesh) {
+          return;
+        }
+
+        const box =
+          new THREE.Box3()
+            .setFromObject(
+              object
+            );
+
+        if (box.isEmpty()) {
+          return;
+        }
+
+        const size =
+          box.getSize(
+            new THREE.Vector3()
+          );
+
+        const coversMostOfMap =
+          size.x >=
+            fullSize.x * 0.72 &&
+          size.z >=
+            fullSize.z * 0.72;
+
+        if (coversMostOfMap) {
+          excluded.push({
+            name:
+              object.name ||
+              '(unnamed mesh)',
+            x:
+              Number(
+                size.x.toFixed(1)
+              ),
+            y:
+              Number(
+                size.y.toFixed(1)
+              ),
+            z:
+              Number(
+                size.z.toFixed(1)
+              )
+          });
+
+          return;
+        }
+
+        candidates.push({
+          object,
+          box,
+          center:
+            box.getCenter(
+              new THREE.Vector3()
+            )
+        });
+      }
+    );
+
+    if (
+      candidates.length ===
+      0
+    ) {
+      this.playableBounds =
+        this.trackBounds.clone();
+
+      this.trackSurfaceObjects =
+        [];
+
+      return;
+    }
+
+    const playable =
+      new THREE.Box3();
+
+    playable.makeEmpty();
+
+    for (
+      const candidate
+      of candidates
+    ) {
+      playable.union(
+        candidate.box
+      );
+    }
+
+    const playableSize =
+      playable.getSize(
+        new THREE.Vector3()
+      );
+
+    const usable =
+      !playable.isEmpty() &&
+      playableSize.x >
+        fullSize.x * 0.05 &&
+      playableSize.z >
+        fullSize.z * 0.05;
+
+    this.playableBounds =
+      usable
+        ? playable
+        : this.trackBounds.clone();
+
+    this.trackSurfaceObjects =
+      usable
+        ? candidates.map(
+            (entry) =>
+              entry.object
+          )
+        : [];
+
+    this.playableMeshCenters =
+      usable
+        ? candidates.map(
+            (entry) =>
+              entry.center.clone()
+          )
+        : [];
+
+    this.computeDenseOverview();
+
+    console.log(
+      'RaceScene3D: excluded huge background meshes from setup bounds.',
+      excluded
+    );
+
+    console.log(
+      'RaceScene3D: playable geometry meshes:',
+      this.trackSurfaceObjects.length
+    );
+  }
+
+  getMeshDescriptor(object) {
+    const materialNames =
+      (
+        Array.isArray(
+          object?.material
+        )
+          ? object.material
+          : [
+              object?.material
+            ]
+      )
+        .map(
+          (material) =>
+            String(
+              material?.name ||
+              ''
+            )
+        )
+        .join(
+          ' '
+        );
+
+    return `${object?.name || ''} ${materialNames}`
+      .toLowerCase();
+  }
+
+  isDriveableLikeMesh(
+    object,
+    size
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    // Sidewalks/footpaths are deliberately NOT considered driveable.
+    // They become pedestrian-zone colliders below.
+    if (
+      /sidewalk|footpath|pedestrian|curb|kerb/.test(
+        descriptor
+      )
+    ) {
+      return false;
+    }
+
+    if (
+      /road|street|asphalt|tarmac|ground|floor|track|lane|crosswalk|pavement|terrain|landscape|grass|sand|dirt|soil|water|sea|ocean|sky|cloud|background|dome/.test(
+        descriptor
+      )
+    ) {
+      return true;
+    }
+
+    // Very flat meshes are normally ground/road decals, not solid walls.
+    return size.y <
+      0.38;
+  }
+
+  shouldUseAsSolidCollider(
+    object,
+    box,
+    fullSize
+  ) {
+    if (
+      !object?.isMesh ||
+      !box ||
+      box.isEmpty() ||
+      this.isBackgroundLikeMesh(
+        object
+      )
+    ) {
+      return false;
+    }
+
+    const size =
+      box.getSize(
+        new THREE.Vector3()
+      );
+
+    if (
+      this.isDriveableLikeMesh(
+        object,
+        size
+      )
+    ) {
+      return false;
+    }
+
+    // Ignore enormous scenery chunks/mountains. Their AABBs can cover
+    // roads even when the real triangles do not.
+    const tooWide =
+      size.x >
+        fullSize.x * 0.16 ||
+      size.z >
+        fullSize.z * 0.16;
+
+    if (tooWide) {
+      return false;
+    }
+
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    // Decorative/helper meshes from imported scenes should never block cars.
+    // Barcelona contains anti-flickering pivot meshes that sit around walls
+    // and were being mistaken for real collision geometry.
+    if (
+      this.isHelperLikeMesh(
+        object
+      )
+    ) {
+      return false;
+    }
+
+    const explicitObstacle =
+      /building|house|wall|barrier|guard|rail|fence|tree|palm|trunk|vegetation|bush|pole|lamp|light|sign|bollard|gate|garage|shop|store|storefront|stand|grandstand|bridge|column|pillar|container|crate|sidewalk|footpath|pedestrian|curb|kerb/.test(
+        descriptor
+      );
+
+    // Unknown meshes still become colliders if they have meaningful height.
+    // This catches oddly named imported buildings without hardcoding Barcelona.
+    const tallEnough =
+      size.y >=
+        0.85;
+
+    return explicitObstacle ||
+      tallEnough;
+  }
+
+  buildStaticColliders() {
+    this.solidColliders = [];
+
+    if (
+      !this.trackRoot ||
+      !this.trackBounds
+    ) {
+      return;
+    }
+
+    const fullSize =
+      this.trackBounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const names = [];
+
+    this.trackRoot.traverse(
+      (object) => {
+        if (!object.isMesh) {
+          return;
+        }
+
+        const box =
+          new THREE.Box3()
+            .setFromObject(
+              object
+            );
+
+        if (
+          !this.shouldUseAsSolidCollider(
+            object,
+            box,
+            fullSize
+          )
+        ) {
+          return;
+        }
+
+        // Expand outward so the car stops before its visible body clips into
+        // walls/buildings/curbs. This also makes thin barriers reliable.
+        box.expandByScalar(
+          this.OBSTACLE_COLLISION_PADDING
+        );
+
+        this.solidColliders.push({
+          object,
+          box
+        });
+
+        if (
+          names.length <
+          30
+        ) {
+          names.push(
+            object.name ||
+            '(unnamed)'
+          );
+        }
+      }
+    );
+
+    console.log(
+      'RaceScene3D: static object colliders built.',
+      {
+        count:
+          this.solidColliders.length,
+        examples:
+          names
+      }
+    );
+
+    const helperColliders =
+      this.solidColliders
+        .filter(
+          ({ object }) =>
+            /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder/i.test(
+              this.getMeshDescriptor(
+                object
+              )
+            )
+        );
+
+    if (
+      helperColliders.length >
+        0
+    ) {
+      console.warn(
+        'RaceScene3D: unexpected helper colliders remain:',
+        helperColliders.map(
+          ({ object }) =>
+            object.name
+        )
+      );
+    }
+  }
+
+  circleOverlapsBoxXZ(
+    x,
+    z,
+    radius,
+    box
+  ) {
+    const closestX =
+      THREE.MathUtils.clamp(
+        x,
+        box.min.x,
+        box.max.x
+      );
+
+    const closestZ =
+      THREE.MathUtils.clamp(
+        z,
+        box.min.z,
+        box.max.z
+      );
+
+    const dx =
+      x -
+      closestX;
+
+    const dz =
+      z -
+      closestZ;
+
+    return (
+      dx * dx +
+      dz * dz
+    ) <=
+      radius * radius;
+  }
+
+  getCarObjectCollision(
+    car
+  ) {
+    if (
+      !car ||
+      this.solidColliders.length ===
+        0
+    ) {
+      return null;
+    }
+
+    const carBottom =
+      car.position.y +
+      0.08;
+
+    const carTop =
+      carBottom +
+      this.PLAYER_COLLISION_HEIGHT;
+
+    for (
+      const collider
+      of this.solidColliders
+    ) {
+      const box =
+        collider.box;
+
+      // Cheap Y rejection first.
+      if (
+        box.max.y <
+          carBottom ||
+        box.min.y >
+          carTop
+      ) {
+        continue;
+      }
+
+      if (
+        !this.circleOverlapsBoxXZ(
+          car.position.x,
+          car.position.z,
+          this.PLAYER_COLLISION_RADIUS,
+          box
+        )
+      ) {
+        continue;
+      }
+
+      return collider;
+    }
+
+    return null;
+  }
+
+  isHelperLikeMesh(
+    object
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    return /anti[_\s-]?flick|pivot|helper|decal|shadow|reflection|occluder|collision[_\s-]?helper/.test(
+      descriptor
+    );
+  }
+
+  isPedestrianZoneMesh(
+    object
+  ) {
+    const descriptor =
+      this.getMeshDescriptor(
+        object
+      );
+
+    return /sidewalk|footpath|pedestrian|walkway|walk_path|curb|kerb|pavement/.test(
+      descriptor
+    );
+  }
+
+  getWorldNormalFromHit(
+    hit
+  ) {
+    if (
+      !hit?.face ||
+      !hit?.object
+    ) {
+      return null;
+    }
+
+    return hit.face.normal
+      .clone()
+      .transformDirection(
+        hit.object.matrixWorld
+      );
+  }
+
+  isSolidRayHit(
+    hit
+  ) {
+    if (
+      !hit?.object ||
+      this.isBackgroundLikeMesh(
+        hit.object
+      ) ||
+      this.isHelperLikeMesh(
+        hit.object
+      )
+    ) {
+      return false;
+    }
+
+    if (
+      this.isPedestrianZoneMesh(
+        hit.object
+      )
+    ) {
+      return true;
+    }
+
+    const descriptor =
+      this.getMeshDescriptor(
+        hit.object
+      );
+
+    if (
+      /building|house|wall|barrier|guard|rail|fence|tree|palm|trunk|vegetation|bush|pole|lamp|light|sign|bollard|gate|garage|shop|store|storefront|stand|grandstand|bridge|column|pillar|container|crate/.test(
+        descriptor
+      )
+    ) {
+      return true;
+    }
+
+    const normal =
+      this.getWorldNormalFromHit(
+        hit
+      );
+
+    // Any steep/vertical face behaves like a wall even if the imported
+    // object has a useless generated name.
+    if (
+      normal &&
+      Math.abs(
+        normal.y
+      ) <
+        0.72
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  isBlockingHorizontalHit(
+    hit
+  ) {
+    if (
+      !hit?.object ||
+      this.isBackgroundLikeMesh(
+        hit.object
+      ) ||
+      this.isHelperLikeMesh(
+        hit.object
+      )
+    ) {
+      return false;
+    }
+
+    const normal =
+      this.getWorldNormalFromHit(
+        hit
+      );
+
+    // A nearly-horizontal face is road/ground. Anything significantly
+    // steeper behaves like an obstacle, even when the imported mesh has
+    // a useless generated name.
+    if (
+      normal &&
+      Math.abs(
+        normal.y
+      ) >
+        0.80
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  getSweptVehicleCollision(
+    car,
+    beforeMove
+  ) {
+    if (
+      !car ||
+      !beforeMove ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    const movement =
+      car.position
+        .clone()
+        .sub(
+          beforeMove
+        );
+
+    movement.y =
+      0;
+
+    const distance =
+      movement.length();
+
+    if (
+      distance <
+      0.0005
+    ) {
+      return null;
+    }
+
+    const direction =
+      movement
+        .clone()
+        .normalize();
+
+    const right =
+      new THREE.Vector3(
+        -direction.z,
+        0,
+        direction.x
+      );
+
+    const baseY =
+      Math.max(
+        beforeMove.y,
+        car.position.y
+      ) +
+      0.72;
+
+    const sideOffset =
+      this.PLAYER_COLLISION_RADIUS *
+      0.72;
+
+    const origins = [
+      beforeMove.clone(),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          sideOffset * 0.55
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          -sideOffset * 0.55
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          sideOffset
+        ),
+      beforeMove
+        .clone()
+        .addScaledVector(
+          right,
+          -sideOffset
+        )
+    ];
+
+    const far =
+      distance +
+      this.PLAYER_COLLISION_RADIUS +
+      0.35;
+
+    for (
+      const origin
+      of origins
+    ) {
+      origin.y =
+        baseY;
+
+      this.vehicleRaycaster.set(
+        origin,
+        direction
+      );
+
+      this.vehicleRaycaster.near =
+        0;
+
+      this.vehicleRaycaster.far =
+        far;
+
+      const hits =
+        this.vehicleRaycaster
+          .intersectObject(
+            this.trackRoot,
+            true
+          );
+
+      const blocker =
+        hits.find(
+          (hit) =>
+            hit.distance <=
+              far &&
+            this.isBlockingHorizontalHit(
+              hit
+            )
+        );
+
+      if (blocker) {
+        return {
+          object:
+            blocker.object,
+          hit:
+            blocker,
+          type:
+            'swept'
+        };
+      }
+    }
+
+    return null;
+  }
+
+  getRadialGeometryCollision(
+    car
+  ) {
+    if (
+      !car ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    // Some imported tree packs are merged into large meshes with useless
+    // names/AABBs. Probe the real triangles around the car instead of
+    // relying on object names or bounding boxes.
+    const directions = [
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(0, 0, 1),
+      new THREE.Vector3(0, 0, -1),
+      new THREE.Vector3(1, 0, 1).normalize(),
+      new THREE.Vector3(-1, 0, 1).normalize(),
+      new THREE.Vector3(1, 0, -1).normalize(),
+      new THREE.Vector3(-1, 0, -1).normalize()
+    ];
+
+    const probeHeights = [
+      0.48,
+      0.95
+    ];
+
+    for (
+      const height
+      of probeHeights
+    ) {
+      const origin =
+        car.position
+          .clone();
+
+      origin.y +=
+        height;
+
+      for (
+        const direction
+        of directions
+      ) {
+        this.vehicleRaycaster.set(
+          origin,
+          direction
+        );
+
+        this.vehicleRaycaster.near =
+          0.02;
+
+        this.vehicleRaycaster.far =
+          this.RADIAL_COLLISION_RADIUS;
+
+        const hits =
+          this.vehicleRaycaster
+            .intersectObject(
+              this.trackRoot,
+              true
+            );
+
+        const blocker =
+          hits.find(
+            (hit) =>
+              hit.distance <=
+                this.RADIAL_COLLISION_RADIUS &&
+              this.isSolidRayHit(
+                hit
+              )
+          );
+
+        if (blocker) {
+          return {
+            object:
+              blocker.object,
+            hit:
+              blocker,
+            type:
+              'radial-geometry'
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  getPedestrianZoneCollision(
+    car
+  ) {
+    const hit =
+      this.findGroundHitForCar(
+        car
+      );
+
+    if (
+      hit &&
+      this.isPedestrianZoneMesh(
+        hit.object
+      )
+    ) {
+      return {
+        object:
+          hit.object,
+        hit,
+        type:
+          'pedestrian-zone'
+      };
+    }
+
+    return null;
+  }
+
+  getCameraObstruction(
+    target,
+    cameraPoint
+  ) {
+    if (
+      !this.trackRoot ||
+      !target ||
+      !cameraPoint
+    ) {
+      return null;
+    }
+
+    const direction =
+      cameraPoint
+        .clone()
+        .sub(
+          target
+        );
+
+    const distance =
+      direction.length();
+
+    if (
+      distance <
+      0.01
+    ) {
+      return null;
+    }
+
+    direction.normalize();
+
+    this.cameraCollisionRaycaster
+      .set(
+        target,
+        direction
+      );
+
+    this.cameraCollisionRaycaster.near =
+      0.35;
+
+    this.cameraCollisionRaycaster.far =
+      distance;
+
+    const hits =
+      this.cameraCollisionRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    return hits.find(
+      (hit) =>
+        hit.distance <
+          distance &&
+        this.isSolidRayHit(
+          hit
+        )
+    ) ??
+      null;
+  }
+
+  clampCameraAgainstGeometry(
+    target,
+    cameraPoint
+  ) {
+    const obstruction =
+      this.getCameraObstruction(
+        target,
+        cameraPoint
+      );
+
+    if (!obstruction) {
+      return cameraPoint;
+    }
+
+    const direction =
+      cameraPoint
+        .clone()
+        .sub(
+          target
+        )
+        .normalize();
+
+    const safeDistance =
+      Math.max(
+        1.25,
+        obstruction.distance -
+          0.65
+      );
+
+    return target
+      .clone()
+      .addScaledVector(
+        direction,
+        safeDistance
+      );
+  }
+
+  computeDenseOverview() {
+    if (
+      this.playableMeshCenters.length <
+      6
+    ) {
+      this.denseOverviewCenter =
+        null;
+
+      this.denseOverviewRadius =
+        null;
+
+      return;
+    }
+
+    const xs =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            point.x
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const zs =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            point.z
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const median = (
+      values
+    ) => {
+      const middle =
+        Math.floor(
+          values.length /
+          2
+        );
+
+      return values.length %
+        2 ===
+        0
+        ? (
+            values[
+              middle - 1
+            ] +
+            values[
+              middle
+            ]
+          ) /
+            2
+        : values[
+            middle
+          ];
+    };
+
+    const centerX =
+      median(
+        xs
+      );
+
+    const centerZ =
+      median(
+        zs
+      );
+
+    const distances =
+      this.playableMeshCenters
+        .map(
+          (point) =>
+            Math.hypot(
+              point.x -
+                centerX,
+              point.z -
+                centerZ
+            )
+        )
+        .sort(
+          (a, b) =>
+            a - b
+        );
+
+    const percentileIndex =
+      Math.min(
+        distances.length -
+          1,
+        Math.floor(
+          distances.length *
+            0.62
+        )
+      );
+
+    const clusterRadius =
+      Math.max(
+        220,
+        distances[
+          percentileIndex
+        ] *
+          1.15
+      );
+
+    const closePoints =
+      this.playableMeshCenters
+        .filter(
+          (point) =>
+            Math.hypot(
+              point.x -
+                centerX,
+              point.z -
+                centerZ
+            ) <=
+            clusterRadius
+        );
+
+    const centerY =
+      closePoints.length >
+        0
+        ? closePoints.reduce(
+            (
+              total,
+              point
+            ) =>
+              total +
+              point.y,
+            0
+          ) /
+          closePoints.length
+        : this.trackCenter.y;
+
+    this.denseOverviewCenter =
+      new THREE.Vector3(
+        centerX,
+        centerY,
+        centerZ
+      );
+
+    this.denseOverviewRadius =
+      clusterRadius;
+
+    console.log(
+      'RaceScene3D: dense overview.',
+      {
+        center: {
+          x:
+            centerX.toFixed(
+              1
+            ),
+          y:
+            centerY.toFixed(
+              1
+            ),
+          z:
+            centerZ.toFixed(
+              1
+            )
+        },
+        radius:
+          clusterRadius.toFixed(
+            1
+          ),
+        meshes:
+          closePoints.length
+      }
+    );
+  }
+
+  frameTrackOverview() {
+    const bounds =
+      this.playableBounds ??
+      this.trackBounds;
+
+    if (
+      !bounds ||
+      bounds.isEmpty()
+    ) {
+      return;
+    }
+
+    const boundsCenter =
+      bounds.getCenter(
+        new THREE.Vector3()
+      );
+
+    const size =
+      bounds.getSize(
+        new THREE.Vector3()
+      );
+
+    const fullRadius =
+      Math.max(
+        size.x,
+        size.y,
+        size.z,
+        20
+      );
+
+    const center =
+      this.denseOverviewCenter
+        ? this.denseOverviewCenter
+            .clone()
+        : boundsCenter;
+
+    const radius =
+      this.denseOverviewRadius
+        ? Math.max(
+            220,
+            Math.min(
+              this.denseOverviewRadius,
+              fullRadius *
+                0.32
+            )
+          )
+        : fullRadius *
+            0.24;
+
+    this.camera.near =
+      Math.max(
+        0.1,
+        radius / 10000
+      );
+
+    this.camera.far =
+      Math.max(
+        8000,
+        radius * 10
+      );
+
+    this.camera
+      .updateProjectionMatrix();
+
+    this.controls.target.copy(
+      center
+    );
+
+    // Focus on the dense cluster of track/city meshes rather than
+    // the whole mountain/coast environment.
+    const horizontalDistance =
+      Math.max(
+        170,
+        radius * 0.95
+      );
+
+    const verticalDistance =
+      Math.max(
+        120,
+        radius * 0.58
+      );
+
+    this.camera.position.set(
+      center.x + horizontalDistance,
+      center.y + verticalDistance,
+      center.z + horizontalDistance
+    );
+
+    this.camera.lookAt(
+      center
+    );
+
+    this.controls.enabled =
+      true;
+
+    // Overview must stay clear regardless of map size.
+    this.scene.fog =
+      null;
+
+    this.controls.update();
+
+    this.setupMode =
+      true;
+  }
+
+  toggleSetupMode() {
+    if (!this.trackRoot) {
+      return;
+    }
+
+    this.setupMode =
+      !this.setupMode;
+
+    this.controls.enabled =
+      this.setupMode;
+
+    if (this.setupMode) {
+      this.frameTrackOverview();
+
+      this.setStatus(
+        'Overview mode · orbit/pan with mouse · P places grid at view target'
+      );
+    } else {
+      const mapRadius =
+        Math.max(
+          this.trackSize.x,
+          this.trackSize.z,
+          100
+        );
+
+      this.drivingFog.near =
+        Math.max(
+          500,
+          mapRadius * 0.10
+        );
+
+      this.drivingFog.far =
+        Math.max(
+          5000,
+          mapRadius * 1.75
+        );
+
+      this.scene.fog =
+        this.drivingFog;
+
+      this.updateCamera(
+        true
+      );
+
+      this.setStatus(
+        'Driving mode · W/S drive · A/D steer · C returns to overview'
+      );
+    }
+  }
+
+  isBackgroundLikeMesh(object) {
+    if (!object) {
+      return false;
+    }
+
+    const materialNames =
+      (
+        Array.isArray(
+          object.material
+        )
+          ? object.material
+          : [
+              object.material
+            ]
+      )
+        .map(
+          (material) =>
+            String(
+              material?.name ||
+              ''
+            )
+        )
+        .join(
+          ' '
+        );
+
+    const descriptor =
+      `${object.name || ''} ${materialNames}`
+        .toLowerCase();
+
+    return /sky|cloud|water|sea|ocean|background|dome/.test(
+      descriptor
+    );
+  }
+
+  choosePlacementHit(hits) {
+    if (
+      !hits ||
+      hits.length ===
+        0
+    ) {
+      return null;
+    }
+
+    const normalWorld =
+      new THREE.Vector3();
+
+    const usable =
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            !hit.face
+          ) {
+            return true;
+          }
+
+          normalWorld
+            .copy(
+              hit.face.normal
+            )
+            .transformDirection(
+              hit.object.matrixWorld
+            );
+
+          // Reject near-vertical walls for car placement.
+          return normalWorld.y >
+            0.30;
+        }
+      );
+
+    return usable[0] ??
+      hits.find(
+        (hit) =>
+          !this.isBackgroundLikeMesh(
+            hit.object
+          )
+      ) ??
+      null;
+  }
+
+  placeGridFromCameraRay(
+    ndcX,
+    ndcY
+  ) {
+    if (
+      !this.trackRoot
+    ) {
+      return;
+    }
+
+    this.pointerNdc.set(
+      ndcX,
+      ndcY
+    );
+
+    this.pointerRaycaster
+      .setFromCamera(
+        this.pointerNdc,
+        this.camera
+      );
+
+    // Always raycast the complete imported hierarchy recursively.
+    // Some downloaded tracks wrap road meshes inside nested groups, so
+    // raycasting only our filtered mesh list can miss visible road pieces.
+    const hits =
+      this.pointerRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    const hit =
+      this.choosePlacementHit(
+        hits
+      );
+
+    if (!hit) {
+      console.warn(
+        'RaceScene3D: pointer ray hit nothing usable.',
+        {
+          totalHits:
+            hits.length,
+          hitNames:
+            hits
+              .slice(
+                0,
+                12
+              )
+              .map(
+                (entry) =>
+                  entry.object?.name ||
+                  '(unnamed)'
+              )
+        }
+      );
+
+      this.setStatus(
+        'No usable road surface there. Double-click directly on the visible road.'
+      );
+
+      return;
+    }
+
+    console.log(
+      'RaceScene3D: grid surface selected.',
+      {
+        object:
+          hit.object?.name ||
+          '(unnamed)',
+        point: {
+          x:
+            hit.point.x.toFixed(
+              2
+            ),
+          y:
+            hit.point.y.toFixed(
+              2
+            ),
+          z:
+            hit.point.z.toFixed(
+              2
+            )
+        }
+      }
+    );
+
+    const cameraDirection =
+      this.camera.getWorldDirection(
+        new THREE.Vector3()
+      );
+
+    cameraDirection.y =
+      0;
+
+    if (
+      cameraDirection.lengthSq() <
+      0.0001
+    ) {
+      cameraDirection.set(
+        0,
+        0,
+        1
+      );
+    }
+
+    cameraDirection.normalize();
+
+    const spawn = {
+      x:
+        hit.point.x,
+      y:
+        hit.point.y +
+        0.04,
+      z:
+        hit.point.z,
+      yaw:
+        Math.atan2(
+          cameraDirection.x,
+          cameraDirection.z
+        )
+    };
+
+    this.setCarsFromSpawn(
+      spawn
+    );
+
+    this.controls.target.copy(
+      hit.point
+    );
+
+    this.controls.update();
+
+    this.setStatus(
+      `Grid preview on ${hit.object?.name || 'track surface'} · X ${spawn.x.toFixed(1)} Z ${spawn.z.toFixed(1)} · G saves`
+    );
+  }
+
+  findGroundHitForCar(
+    car
+  ) {
+    if (
+      !car ||
+      !this.trackRoot
+    ) {
+      return null;
+    }
+
+    const rayHeight =
+      18;
+
+    this.trackRayOrigin.set(
+      car.position.x,
+      car.position.y +
+        rayHeight,
+      car.position.z
+    );
+
+    this.trackRaycaster.set(
+      this.trackRayOrigin,
+      this.trackRayDirection
+    );
+
+    this.trackRaycaster.near =
+      0;
+
+    this.trackRaycaster.far =
+      45;
+
+    const hits =
+      this.trackRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    const candidates =
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (!hit.face) {
+            return true;
+          }
+
+          const normal =
+            hit.face.normal
+              .clone()
+              .transformDirection(
+                hit.object.matrixWorld
+              );
+
+          return normal.y >
+            0.25;
+        }
+      );
+
+    if (
+      candidates.length ===
+        0
+    ) {
+      return null;
+    }
+
+    let best =
+      candidates[0];
+
+    let bestDelta =
+      Math.abs(
+        best.point.y -
+        car.position.y
+      );
+
+    for (
+      const hit
+      of candidates
+    ) {
+      const delta =
+        Math.abs(
+          hit.point.y -
+          car.position.y
+        );
+
+      if (
+        delta <
+        bestDelta
+      ) {
+        best =
+          hit;
+
+        bestDelta =
+          delta;
+      }
+    }
+
+    return best;
+  }
+
+  findGroundHitAt(
+    x,
+    z,
+    referenceY,
+    rayHeight = 24,
+    rayDepth = 70
+  ) {
+    if (!this.trackRoot) {
+      return null;
+    }
+
+    this.trackRayOrigin.set(
+      x,
+      referenceY +
+        rayHeight,
+      z
+    );
+
+    this.trackRaycaster.set(
+      this.trackRayOrigin,
+      this.trackRayDirection
+    );
+
+    this.trackRaycaster.near =
+      0;
+
+    this.trackRaycaster.far =
+      rayHeight +
+      rayDepth;
+
+    const hits =
+      this.trackRaycaster
+        .intersectObject(
+          this.trackRoot,
+          true
+        );
+
+    const candidates =
+      hits.filter(
+        (hit) => {
+          if (
+            this.isBackgroundLikeMesh(
+              hit.object
+            )
+          ) {
+            return false;
+          }
+
+          if (!hit.face) {
+            return true;
+          }
+
+          const normal =
+            hit.face.normal
+              .clone()
+              .transformDirection(
+                hit.object.matrixWorld
+              );
+
+          return normal.y >
+            0.25;
+        }
+      );
+
+    if (
+      candidates.length ===
+        0
+    ) {
+      return null;
+    }
+
+    let best =
+      candidates[0];
+
+    let bestDelta =
+      Math.abs(
+        best.point.y -
+        referenceY
+      );
+
+    for (
+      const hit
+      of candidates
+    ) {
+      const delta =
+        Math.abs(
+          hit.point.y -
+          referenceY
+        );
+
+      if (
+        delta <
+        bestDelta
+      ) {
+        best =
+          hit;
+
+        bestDelta =
+          delta;
+      }
+    }
+
+    return best;
+  }
+
+  snapCarToSurface(
+    car
+  ) {
+    const hit =
+      this.findGroundHitForCar(
+        car
+      );
+
+    if (!hit) {
+      return false;
+    }
+
+    car.position.y =
+      hit.point.y +
+      0.035;
+
+    return true;
+  }
+
+  setCarsFromSpawn(spawn) {
+    const right =
+      new THREE.Vector3(
+        1,
+        0,
+        0
+      ).applyAxisAngle(
+        new THREE.Vector3(
+          0,
+          1,
+          0
+        ),
+        spawn.yaw
+      );
+
+    this.playerCar.position.set(
+      spawn.x,
+      spawn.y,
+      spawn.z
+    );
+
+    this.playerCar.position
+      .addScaledVector(
+        right,
+        -2.1
+      );
+
+    this.playerCar.rotation.y =
+      spawn.yaw;
+
+    this.opponentCar.position.set(
+      spawn.x,
+      spawn.y,
+      spawn.z
+    );
+
+    this.opponentCar.position
+      .addScaledVector(
+        right,
+        2.1
+      );
+
+    this.opponentCar.rotation.y =
+      spawn.yaw;
+
+    this.playerCar.speed = 0;
+    this.opponentCar.speed = 0;
+
+    this.snapCarToSurface(
+      this.playerCar
+    );
+
+    this.snapCarToSurface(
+      this.opponentCar
+    );
+
+    this.lastValidPlayerPosition
+      .copy(
+        this.playerCar.position
+      );
+
+    this.lastValidPlayerRotationY =
+      this.playerCar.rotation.y;
+  }
+
+  applyInitialGrid(center, size) {
+    const saved =
+      this.loadSavedGrid();
+
+    const spawn = saved ?? {
+      x: center.x,
+      y:
+        this.playableBounds
+          ? this.playableBounds.min.y + 1
+          : this.trackBounds
+            ? this.trackBounds.min.y + 1
+            : center.y + Math.max(0.6, size.y * 0.02),
+      z: center.z,
+      yaw: 0
+    };
+
+    this.setCarsFromSpawn(
+      spawn
+    );
+
+    if (
+      !this.setupMode
+    ) {
+      this.updateCamera(
+        true
+      );
+    }
+  }
+
+  saveGridFromPlayer() {
+    const midpoint =
+      this.playerCar.position
+        .clone()
+        .add(
+          this.opponentCar.position
+        )
+        .multiplyScalar(
+          0.5
+        );
+
+    const value = {
+      x:
+        midpoint.x,
+      y:
+        midpoint.y,
+      z:
+        midpoint.z,
+      yaw:
+        this.playerCar.rotation.y
+    };
+
+    localStorage.setItem(
+      `racingLifeGrid:v2:${this.session.trackId}`,
+      JSON.stringify(value)
+    );
+
+    this.setStatus(
+      'Grid saved for this track.'
+    );
+  }
+
+  loadSavedGrid() {
+    try {
+      return JSON.parse(
+        localStorage.getItem(
+          `racingLifeGrid:v2:${this.session.trackId}`
+        ) || 'null'
+      );
+    } catch {
+      return null;
+    }
+  }
+
+  resetCarsToGrid() {
+    const center =
+      this.trackBounds
+        ? this.trackBounds.getCenter(
+            new THREE.Vector3()
+          )
+        : new THREE.Vector3();
+
+    const size =
+      this.trackBounds
+        ? this.trackBounds.getSize(
+            new THREE.Vector3()
+          )
+        : new THREE.Vector3(
+            40,
+            1,
+            80
+          );
+
+    this.applyInitialGrid(
+      center,
+      size
+    );
+  }
+
+  readPlayerControls() {
+    const throttle =
+      this.keys.has('KeyW') ||
+      this.keys.has('ArrowUp')
+        ? 1
+        : 0;
+
+    const brake =
+      this.keys.has('KeyS') ||
+      this.keys.has('ArrowDown')
+        ? 1
+        : 0;
+
+    let steering = 0;
+
+    if (
+      this.keys.has('KeyA') ||
+      this.keys.has('ArrowLeft')
+    ) {
+      steering -= 1;
+    }
+
+    if (
+      this.keys.has('KeyD') ||
+      this.keys.has('ArrowRight')
+    ) {
+      steering += 1;
+    }
+
+    return {
+      throttle,
+      brake,
+      steering
+    };
+  }
+
+  updateCamera(
+    force = false,
+    dt = 1 / 60
+  ) {
+    if (!this.playerCar) {
+      return;
+    }
+
+    const target =
+      this.playerCar.position
+        .clone()
+        .add(
+          new THREE.Vector3(
+            0,
+            1.15,
+            0
+          )
+        );
+
+    const desired =
+      new THREE.Vector3(
+        0,
+        this.CAMERA_FOLLOW_HEIGHT,
+        -this.CAMERA_FOLLOW_DISTANCE
+      )
+        .applyQuaternion(
+          this.playerCar.quaternion
+        )
+        .add(
+          this.playerCar.position
+        );
+
+    // Keep the chase camera above whatever surface sits under its own X/Z.
+    // This prevents the camera from cutting through the road on downhill
+    // sections while it is catching up to the car's new elevation.
+    const cameraGround =
+      this.findGroundHitAt(
+        desired.x,
+        desired.z,
+        this.playerCar.position.y,
+        30,
+        90
+      );
+
+    if (cameraGround) {
+      desired.y =
+        Math.max(
+          desired.y,
+          cameraGround.point.y +
+            this.CAMERA_MIN_GROUND_CLEARANCE
+        );
+    }
+
+    const collisionSafeDesired =
+      this.clampCameraAgainstGeometry(
+        target,
+        desired
+      );
+
+    if (force) {
+      this.camera.position.copy(
+        collisionSafeDesired
+      );
+    } else {
+      // Frame-rate independent smoothing. Vertical movement follows faster
+      // than horizontal movement so slopes do not leave the camera behind.
+      const horizontalAlpha =
+        1 -
+        Math.exp(
+          -7.5 *
+          Math.max(
+            0.001,
+            dt
+          )
+        );
+
+      const verticalAlpha =
+        1 -
+        Math.exp(
+          -15 *
+          Math.max(
+            0.001,
+            dt
+          )
+        );
+
+      this.camera.position.x =
+        THREE.MathUtils.lerp(
+          this.camera.position.x,
+          collisionSafeDesired.x,
+          horizontalAlpha
+        );
+
+      this.camera.position.z =
+        THREE.MathUtils.lerp(
+          this.camera.position.z,
+          collisionSafeDesired.z,
+          horizontalAlpha
+        );
+
+      this.camera.position.y =
+        THREE.MathUtils.lerp(
+          this.camera.position.y,
+          collisionSafeDesired.y,
+          verticalAlpha
+        );
+    }
+
+    // Final safety clamp after smoothing in case an old camera position was
+    // already below the road.
+    const currentGround =
+      this.findGroundHitAt(
+        this.camera.position.x,
+        this.camera.position.z,
+        this.playerCar.position.y,
+        30,
+        90
+      );
+
+    if (currentGround) {
+      this.camera.position.y =
+        Math.max(
+          this.camera.position.y,
+          currentGround.point.y +
+            this.CAMERA_MIN_GROUND_CLEARANCE
+        );
+    }
+
+    const safeCurrentCamera =
+      this.clampCameraAgainstGeometry(
+        target,
+        this.camera.position
+      );
+
+    this.camera.position.copy(
+      safeCurrentCamera
+    );
+
+    this.camera.lookAt(
+      target
+    );
+  }
+
+  readStatus() {
+    if (
+      !this.playerCar ||
+      !this.trackRoot
+    ) {
+      return;
+    }
+
+    if (
+      performance.now() <
+      this.collisionStatusUntil
+    ) {
+      return;
+    }
+
+    const speed =
+      Math.abs(
+        this.playerCar.speed ?? 0
+      );
+
+    this.setStatus(
+      `Speed ${speed.toFixed(1)} · G saves grid · R resets`
+    );
+  }
+
+  setStatus(text) {
+    if (
+      this.statusElement
+    ) {
+      this.statusElement.textContent =
+        text;
+    }
+  }
+
+  start() {
+    if (this.running) return;
+
+    this.running = true;
+
+    const tick =
+      (time) => {
+        if (
+          !this.running ||
+          this.disposed
+        ) {
+          return;
+        }
+
+        const dt =
+          Math.min(
+            0.05,
+            Math.max(
+              0,
+              (time -
+                this.lastTime) /
+                1000
+            )
+          );
+
+        this.lastTime = time;
+
+        const input =
+          this.readPlayerControls();
+
+        if (!this.setupMode) {
+          const beforeMove =
+            this.playerCar.position
+              .clone();
+
+          const beforeRotation =
+            this.playerCar.rotation.y;
+
+          this.playerCar.drive(
+            input.throttle,
+            input.brake,
+            input.steering,
+            dt
+          );
+
+          const grounded =
+            this.snapCarToSurface(
+              this.playerCar
+            );
+
+          const sweptCollision =
+            grounded
+              ? this.getSweptVehicleCollision(
+                  this.playerCar,
+                  beforeMove
+                )
+              : null;
+
+          const pedestrianCollision =
+            grounded
+              ? this.getPedestrianZoneCollision(
+                  this.playerCar
+                )
+              : null;
+
+          const boxCollision =
+            grounded
+              ? this.getCarObjectCollision(
+                  this.playerCar
+                )
+              : null;
+
+          const objectCollision =
+            sweptCollision ??
+            pedestrianCollision ??
+            boxCollision;
+
+          if (
+            !grounded ||
+            objectCollision
+          ) {
+            this.playerCar.position
+              .copy(
+                beforeMove
+              );
+
+            this.playerCar.rotation.y =
+              beforeRotation;
+
+            this.playerCar.speed =
+              0;
+
+            if (
+              objectCollision &&
+              this.statusElement
+            ) {
+              this.collisionStatusUntil =
+                performance.now() +
+                500;
+
+              this.setStatus(
+                `Collision (${objectCollision.type || 'object'}): ${objectCollision.object?.name || 'track object'}`
+              );
+            }
+          } else {
+            this.lastValidPlayerPosition
+              .copy(
+                this.playerCar.position
+              );
+
+            this.lastValidPlayerRotationY =
+              this.playerCar.rotation.y;
+          }
+
+          this.updateCamera(
+            false,
+            dt
+          );
+          this.readStatus();
+        } else {
+          this.controls.update();
+        }
+
+        this.renderer.render(
+          this.scene,
+          this.camera
+        );
+
+        this.rafId =
+          requestAnimationFrame(
+            tick
+          );
+      };
+
+    this.rafId =
+      requestAnimationFrame(
+        tick
+      );
+  }
+
+  dispose() {
+    if (this.disposed) return;
+
+    this.disposed = true;
+    this.running = false;
+
+    if (this.rafId) {
+      cancelAnimationFrame(
+        this.rafId
+      );
+    }
+
+    window.removeEventListener(
+      'keydown',
+      this.handleKeyDown
+    );
+
+    window.removeEventListener(
+      'keyup',
+      this.handleKeyUp
+    );
+
+    window.removeEventListener(
+      'resize',
+      this.handleResize
+    );
+
+    this.renderer?.domElement
+      ?.removeEventListener(
+        'dblclick',
+        this.handleDoubleClick
+      );
+
+    this.renderer?.domElement
+      ?.removeEventListener(
+        'wheel',
+        this.handleWheelZoom
+      );
+
+    if (
+      this.renderer?.domElement
+        ?.parentNode
+    ) {
+      this.renderer.domElement
+        .parentNode
+        .removeChild(
+          this.renderer.domElement
+        );
+    }
+
+    if (
+      this.ui?.parentNode
+    ) {
+      this.ui.parentNode
+        .removeChild(
+          this.ui
+        );
+    }
+
+    this.renderer.dispose();
+  }
+}
