@@ -279,6 +279,19 @@ def mesh_world_center(mesh):
     return total / len(mesh.data.vertices)
 
 
+HELPER_GROUP_MAP = {
+    "pelvisl": "hips",
+    "pelvisr": "hips",
+    "heel02l": "leftfoot",
+    "heel02r": "rightfoot",
+}
+
+
+def group_to_canonical(group_name):
+    canonical = target_canonical_name(group_name)
+    return HELPER_GROUP_MAP.get(canonical, canonical)
+
+
 def nearest_target_bone(mesh, target_arm, target_mapping):
     center = mesh_world_center(mesh)
     best = None
@@ -305,6 +318,217 @@ def nearest_target_bone(mesh, target_arm, target_mapping):
     return best, best_distance
 
 
+def mapped_rest_transfer_matrices(
+    old_target_armature,
+    target_mapping,
+    source_arm,
+    source_mapping,
+):
+    transfers = {}
+
+    for canonical in sorted(set(target_mapping) & set(source_mapping)):
+        target_bone = old_target_armature.data.bones[
+            target_mapping[canonical]
+        ]
+        source_bone = source_arm.data.bones[
+            source_mapping[canonical]
+        ]
+
+        target_world = (
+            old_target_armature.matrix_world
+            @ target_bone.matrix_local
+        )
+        source_world = (
+            source_arm.matrix_world
+            @ source_bone.matrix_local
+        )
+
+        transfers[canonical] = (
+            source_world
+            @ target_world.inverted()
+        )
+
+    return transfers
+
+
+def bake_mesh_into_mixamo_rest_pose(
+    mesh,
+    old_target_armature,
+    target_mapping,
+    source_arm,
+    source_mapping,
+):
+    transfers = mapped_rest_transfer_matrices(
+        old_target_armature,
+        target_mapping,
+        source_arm,
+        source_mapping,
+    )
+
+    mesh_world = mesh.matrix_world.copy()
+    mesh_world_inverse = mesh_world.inverted()
+
+    group_names = {
+        group.index: group.name
+        for group in mesh.vertex_groups
+    }
+
+    moved_vertices = 0
+    max_world_move = 0.0
+    unmapped_weight_total = 0.0
+
+    new_positions = []
+
+    for vertex in mesh.data.vertices:
+        original_world = mesh_world @ vertex.co
+
+        mapped_sum = Vector((0.0, 0.0, 0.0))
+        mapped_weight = 0.0
+        unmapped_weight = 0.0
+
+        for membership in vertex.groups:
+            group_name = group_names.get(membership.group)
+            if not group_name:
+                continue
+
+            canonical = group_to_canonical(group_name)
+            transfer = transfers.get(canonical)
+
+            if transfer is None:
+                unmapped_weight += float(membership.weight)
+                continue
+
+            weight = float(membership.weight)
+            mapped_sum += (transfer @ original_world) * weight
+            mapped_weight += weight
+
+        if mapped_weight > 1e-8:
+            # Normalize mapped weights. Any genuinely unmapped helper influence
+            # is deliberately excluded instead of leaving vertices behind in
+            # the old A-pose, which created the long waist/heel spikes.
+            new_world = mapped_sum / mapped_weight
+            new_local = mesh_world_inverse @ new_world
+            move = float((new_world - original_world).length)
+            max_world_move = max(max_world_move, move)
+            if move > 1e-6:
+                moved_vertices += 1
+        else:
+            new_local = vertex.co.copy()
+
+        unmapped_weight_total += unmapped_weight
+        new_positions.append(new_local)
+
+    for vertex, position in zip(mesh.data.vertices, new_positions):
+        vertex.co = position
+
+    mesh.data.update()
+
+    return {
+        "vertices": len(mesh.data.vertices),
+        "vertices_reposed": moved_vertices,
+        "max_world_vertex_move": round(max_world_move, 6),
+        "unmapped_weight_total": round(unmapped_weight_total, 6),
+    }
+
+
+def remap_vertex_groups(
+    mesh,
+    source_mapping,
+):
+    original_names = [group.name for group in mesh.vertex_groups]
+
+    # Capture helper weights before deleting/merging those groups.
+    helper_weights = {}
+    for helper_raw, destination_canonical in HELPER_GROUP_MAP.items():
+        helper_group = None
+        for group in mesh.vertex_groups:
+            if normalize_bone_name(group.name) == helper_raw:
+                helper_group = group
+                break
+
+        if helper_group is None:
+            continue
+
+        weights = {}
+        for vertex in mesh.data.vertices:
+            try:
+                weight = helper_group.weight(vertex.index)
+            except RuntimeError:
+                continue
+            if weight > 0:
+                weights[vertex.index] = float(weight)
+
+        helper_weights[helper_group.name] = (
+            destination_canonical,
+            weights,
+        )
+
+    rename_plan = []
+    unmapped_groups = []
+
+    for group_name in original_names:
+        canonical = group_to_canonical(group_name)
+        source_bone_name = source_mapping.get(canonical)
+
+        if source_bone_name:
+            rename_plan.append(
+                (group_name, source_bone_name, canonical)
+            )
+        else:
+            unmapped_groups.append(group_name)
+
+    # Rename through temporary names so collisions cannot create .001 groups.
+    for index, (old_name, new_name, canonical) in enumerate(rename_plan):
+        group = mesh.vertex_groups.get(old_name)
+        if group is not None:
+            group.name = "__RL_TMP_{}__".format(index)
+
+    final_groups = {}
+    mapped_count = 0
+
+    for index, (old_name, new_name, canonical) in enumerate(rename_plan):
+        group = mesh.vertex_groups.get("__RL_TMP_{}__".format(index))
+        if group is None:
+            continue
+
+        existing = final_groups.get(new_name)
+        if existing is None:
+            group.name = new_name
+            final_groups[new_name] = group
+            mapped_count += 1
+            continue
+
+        # Multiple old helper/deform groups can intentionally collapse into
+        # one Mixamo bone. Merge their vertex weights rather than keeping a
+        # duplicate group with a .001 suffix.
+        for vertex in mesh.data.vertices:
+            try:
+                weight = group.weight(vertex.index)
+            except RuntimeError:
+                continue
+            if weight > 0:
+                existing.add(
+                    [vertex.index],
+                    weight,
+                    "ADD",
+                )
+        mesh.vertex_groups.remove(group)
+
+    # Remove any still-unmapped helper groups that have no Mixamo equivalent.
+    removed_groups = []
+    for group_name in list(unmapped_groups):
+        group = mesh.vertex_groups.get(group_name)
+        if group is not None:
+            mesh.vertex_groups.remove(group)
+            removed_groups.append(group_name)
+
+    return {
+        "mapped_group_count": mapped_count,
+        "removed_unmapped_groups": removed_groups,
+        "remaining_group_count": len(mesh.vertex_groups),
+    }
+
+
 def rebind_using_existing_weights(
     target_objects,
     old_target_armature,
@@ -329,15 +553,10 @@ def rebind_using_existing_weights(
             "mesh": mesh.name,
             "vertices": len(mesh.data.vertices),
             "status": "pending",
-            "mapped_groups": 0,
-            "unmapped_groups": [],
         }
 
         world_matrix = mesh.matrix_world.copy()
 
-        # Remove the old armature relationship but KEEP the prototype's
-        # authored vertex weights. Those weights already deform this body
-        # correctly; we only remap their group names to Mixamo bone names.
         for modifier in list(mesh.modifiers):
             if modifier.type == "ARMATURE":
                 mesh.modifiers.remove(modifier)
@@ -345,34 +564,25 @@ def rebind_using_existing_weights(
         mesh.parent = None
         mesh.matrix_world = world_matrix
 
-        original_groups = [group.name for group in mesh.vertex_groups]
-        rename_plan = []
+        if len(mesh.vertex_groups) > 0:
+            # Repose the geometry from the prototype/metarig bind pose into
+            # the aligned Mixamo bind pose BEFORE swapping the armature.
+            # This is the missing step that caused elbows/joints to separate:
+            # correct old weights were being driven by bones whose rest joints
+            # lived in a different pose.
+            record["rest_pose_bake"] = bake_mesh_into_mixamo_rest_pose(
+                mesh,
+                old_target_armature,
+                target_mapping,
+                source_arm,
+                source_mapping,
+            )
 
-        for group_name in original_groups:
-            canonical = target_canonical_name(group_name)
-            source_bone_name = source_mapping.get(canonical)
+            record["group_remap"] = remap_vertex_groups(
+                mesh,
+                source_mapping,
+            )
 
-            if source_bone_name:
-                rename_plan.append((group_name, source_bone_name, canonical))
-            else:
-                record["unmapped_groups"].append(group_name)
-
-        # Rename through unique temporary names first to avoid Blender adding
-        # .001 suffixes when target names overlap.
-        for index, (old_name, new_name, canonical) in enumerate(rename_plan):
-            group = mesh.vertex_groups.get(old_name)
-            if group is None:
-                continue
-            group.name = "__RL_TMP_{}__".format(index)
-
-        for index, (old_name, new_name, canonical) in enumerate(rename_plan):
-            group = mesh.vertex_groups.get("__RL_TMP_{}__".format(index))
-            if group is None:
-                continue
-            group.name = new_name
-            record["mapped_groups"] += 1
-
-        if record["mapped_groups"] > 0:
             modifier = mesh.modifiers.new(
                 name="RacingLifeMixamoArmature",
                 type="ARMATURE",
@@ -380,13 +590,13 @@ def rebind_using_existing_weights(
             modifier.object = source_arm
 
             weighted_meshes.append(mesh)
-            record["status"] = "weight-groups-remapped"
-            record["method"] = "reuse-prototype-skin-weights"
+            record["status"] = "rest-pose-baked-and-remapped"
+            record["method"] = (
+                "prototype-weights-plus-rest-pose-geometry-transfer"
+            )
             record["vertex_groups"] = len(mesh.vertex_groups)
+
         else:
-            # Small helper meshes such as the 42-vertex Icosphere may have no
-            # skin weights at all. Attach those rigidly to the nearest mapped
-            # body bone so they do not remain behind when the character moves.
             canonical, distance = nearest_target_bone(
                 mesh,
                 old_target_armature,
@@ -646,7 +856,7 @@ def main():
         "blender_version": bpy.app.version_string,
         "source_file": source_path.name,
         "target_file": target_path.name,
-        "strategy": "reuse-prototype-skin-weights-on-canonical-mixamo-skeleton",
+        "strategy": "bake-prototype-bind-pose-to-mixamo-rest-and-reuse-skin-weights",
         "status": "ok",
     }
 
