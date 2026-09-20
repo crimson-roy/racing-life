@@ -8,6 +8,7 @@ import { RaceSceneRuntimeBridge } from '../src/racing/RaceSceneRuntimeBridge.js'
 import { MatchManager, getActiveMatchManager } from '../src/racing/MatchManager.js';
 import { commitRaceToMatch, createCareerRaceResult } from '../src/racing/RaceSession.js';
 import { TrackSetupStore } from '../src/racing/TrackSetupStore.js';
+import { getTrack, isTrackAvailable } from '../src/racing/TrackRegistry.js';
 
 class MemoryStorage {
   constructor(entries = {}) {
@@ -49,10 +50,8 @@ test('RaceProgress counts an ordered checkpoint crossed between physics samples'
   const race = new RaceProgress({ totalLaps: 1, checkpointRadius: 1 });
   race.registerRacer('player');
   race.setCheckpoints([point(10, 0), point(20, 0)]);
-
   race.updateRacer('player', point(7, 0), 1000);
   race.updateRacer('player', point(13, 0), 1100);
-
   const state = race.getRacerState('player');
   assert.equal(state.checkpointsPassed, 1);
   assert.equal(state.nextCheckpoint, 1);
@@ -91,6 +90,14 @@ test('latest MatchManager is available to incrementally integrated 3D race scene
   assert.equal(getActiveMatchManager(), match);
 });
 
+test('TrackRegistry never silently substitutes Barcelona for missing or unavailable circuits', () => {
+  assert.equal(getTrack('barcelona').id, 'barcelona');
+  assert.equal(isTrackAvailable('barcelona'), true);
+  assert.equal(isTrackAvailable('glen_canyon_dam'), false);
+  assert.equal(isTrackAvailable('track_05'), false);
+  assert.equal(getTrack('does-not-exist'), null);
+});
+
 test('RaceSession commits one completed 1v1 result into MatchManager only when finished', () => {
   const controller = new RaceController({ totalLaps: 1, checkpointRadius: 1 });
   controller.configure([point(0, 0), point(10, 0)]);
@@ -105,11 +112,7 @@ test('RaceSession commits one completed 1v1 result into MatchManager only when f
   assert.equal(summary.results[0].trackId, 'barcelona');
   assert.equal(summary.results[0].source, 'p0-test');
   assert.deepEqual(summary.results[0].finishOrder, ['player']);
-
-  const career = createCareerRaceResult(controller, {
-    trackId: 'barcelona',
-    raceNumber: 1
-  });
+  const career = createCareerRaceResult(controller, { trackId: 'barcelona', raceNumber: 1 });
   assert.equal(career.finished, true);
   assert.equal(career.lapsCompleted, 1);
   assert.equal(career.totalLaps, 1);
@@ -198,32 +201,15 @@ test('RaceSceneRuntimeBridge commits match and career completion exactly once', 
   const match = new MatchManager({ trackOrder: ['barcelona', 'next'], winTarget: 2 });
   const careerResults = [];
   const delivered = [];
-  const bridge = new RaceSceneRuntimeBridge({
-    runtime,
-    matchManager: match,
-    applyCareerResult: (result) => careerResults.push(result),
-    onCompletion: (completion) => delivered.push(completion)
-  });
+  const bridge = new RaceSceneRuntimeBridge({ runtime, matchManager: match, applyCareerResult: (result) => careerResults.push(result), onCompletion: (completion) => delivered.push(completion) });
   bridge.load();
   bridge.start(1000);
   const player = carAt(10, 0);
   const opponent = carAt(100, 100);
   bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false });
   player.position = point(0, 0);
-  const first = bridge.update({
-    playerCar: player,
-    opponentCar: opponent,
-    dt: 1 / 60,
-    driveOpponent: false,
-    details: { raceNumber: 1 }
-  });
-  const second = bridge.update({
-    playerCar: player,
-    opponentCar: opponent,
-    dt: 1 / 60,
-    driveOpponent: false,
-    details: { raceNumber: 1 }
-  });
+  const first = bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false, details: { raceNumber: 1 } });
+  const second = bridge.update({ playerCar: player, opponentCar: opponent, dt: 1 / 60, driveOpponent: false, details: { raceNumber: 1 } });
   assert.equal(first.completion.winnerSide, 'A');
   assert.equal(first.completion.raceNumber, 1);
   assert.equal(first.completion.careerResult.trackId, 'barcelona');
@@ -234,9 +220,6 @@ test('RaceSceneRuntimeBridge commits match and career completion exactly once', 
   assert.equal(match.getSummary().results.length, 1);
   assert.equal(careerResults.length, 1);
   assert.equal(delivered.length, 1);
-
-  // Scene controls may try to restart/re-author after a finish. The same
-  // bridge must stay locked to this one race rather than scoring race #2.
   assert.equal(bridge.start(3000), false);
   assert.equal(bridge.beginAuthoring(player.position), false);
   assert.equal(bridge.clearAuthoring(), false);
