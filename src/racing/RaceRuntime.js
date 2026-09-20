@@ -121,6 +121,7 @@ export class RaceRuntime {
       completed: snapshot.completed,
       winnerSide: snapshot.winnerSide,
       finishOrder: [...snapshot.finishOrder],
+      classification: snapshot.racers.map((racer) => racer.id),
       totalLaps: snapshot.totalLaps,
       checkpointCount: snapshot.checkpointCount,
       racingLinePointCount: snapshot.racingLinePointCount,
@@ -161,6 +162,7 @@ export class RaceRuntime {
       trackId: this.trackId,
       winnerSide: snapshot.winnerSide,
       finishOrder: [...snapshot.finishOrder],
+      classification: snapshot.racers.map((racer) => racer.id),
       careerResult,
       matchSummary
     };
