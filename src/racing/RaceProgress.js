@@ -21,30 +21,33 @@ function distanceSqXZ(a, b) {
   return dx * dx + dz * dz;
 }
 
-// A fast car can move from one side of a checkpoint to the other between two
-// render/physics samples. Measure the checkpoint against the accepted movement
-// segment as well as the current point so legitimate crossings are not lost.
-function distanceSqPointToSegmentXZ(point, start, end) {
+// Return where along a movement segment the racer comes closest to a checkpoint.
+// Keeping the projection parameter lets one physics sample legitimately cross
+// several ordered checkpoints without accepting them in reverse travel order.
+function checkpointHitOnSegmentXZ(point, start, end, radiusSq, minT = 0) {
   const segmentX = end.x - start.x;
   const segmentZ = end.z - start.z;
   const lengthSq = segmentX * segmentX + segmentZ * segmentZ;
 
   if (lengthSq <= Number.EPSILON) {
-    return distanceSqXZ(point, end);
+    return distanceSqXZ(point, end) <= radiusSq ? 1 : null;
   }
 
   const offsetX = point.x - start.x;
   const offsetZ = point.z - start.z;
-  const t = Math.max(0, Math.min(1, (
+  const projectionT = (
     offsetX * segmentX + offsetZ * segmentZ
-  ) / lengthSq));
+  ) / lengthSq;
+  const t = Math.max(minT, Math.min(1, projectionT));
+
+  if (t > 1) return null;
 
   const closest = {
     x: start.x + segmentX * t,
     z: start.z + segmentZ * t
   };
 
-  return distanceSqXZ(point, closest);
+  return distanceSqXZ(point, closest) <= radiusSq ? t : null;
 }
 
 export class RaceProgress {
@@ -114,46 +117,71 @@ export class RaceProgress {
     }
 
     const currentPosition = normalizePoint(position);
-    const checkpoint = this.checkpoints[state.nextCheckpoint];
+    const previousPosition = state.previousPosition;
     const radiusSq = this.checkpointRadius * this.checkpointRadius;
-    const reachedAtCurrentPosition = distanceSqXZ(currentPosition, checkpoint) <= radiusSq;
-    const crossedBetweenFrames = state.previousPosition
-      ? distanceSqPointToSegmentXZ(
-          checkpoint,
-          state.previousPosition,
-          currentPosition
-        ) <= radiusSq
-      : false;
 
     // Always remember the latest accepted scene position, even when no
     // checkpoint was reached. RaceScene3D only calls this after collision
     // rollback, so rejected wall/sidewalk movement never enters this segment.
     state.previousPosition = currentPosition;
 
-    if (!reachedAtCurrentPosition && !crossedBetweenFrames) {
+    // The first accepted sample has no movement segment. It may still be inside
+    // its next checkpoint, but it cannot sweep through any later checkpoints.
+    if (!previousPosition) {
+      const checkpoint = this.checkpoints[state.nextCheckpoint];
+      if (distanceSqXZ(currentPosition, checkpoint) <= radiusSq) {
+        this.advanceCheckpoint(state, elapsedMs);
+      }
       return this.getRacerState(id);
     }
 
-    state.checkpointsPassed += 1;
-    state.nextCheckpoint += 1;
+    // A fast car can cross more than one checkpoint between physics samples.
+    // Consume every checkpoint hit by the segment in authored order, while
+    // requiring monotonically increasing segment time so reverse-order geometry
+    // cannot award impossible progress. The bound prevents looping forever on
+    // overlapping checkpoints or a multi-lap line whose start/finish coincides.
+    let segmentT = 0;
+    const maxAdvances = this.checkpoints.length;
 
-    if (state.nextCheckpoint >= this.checkpoints.length) {
-      state.completedLaps += 1;
+    for (let advances = 0; advances < maxAdvances && !state.finished; advances += 1) {
+      const checkpoint = this.checkpoints[state.nextCheckpoint];
+      const hitT = checkpointHitOnSegmentXZ(
+        checkpoint,
+        previousPosition,
+        currentPosition,
+        radiusSq,
+        segmentT
+      );
 
-      if (state.completedLaps >= this.totalLaps) {
-        state.finished = true;
-        state.lap = this.totalLaps;
-        state.nextCheckpoint = 0;
-        state.finishPosition = this.finishOrder.length + 1;
-        state.finishTimeMs = Number.isFinite(elapsedMs) ? elapsedMs : null;
-        this.finishOrder.push(id);
-      } else {
-        state.lap = state.completedLaps + 1;
-        state.nextCheckpoint = 0;
-      }
+      if (hitT === null) break;
+
+      segmentT = Math.min(1, hitT + Number.EPSILON);
+      this.advanceCheckpoint(state, elapsedMs);
     }
 
     return this.getRacerState(id);
+  }
+
+  advanceCheckpoint(state, elapsedMs = null) {
+    state.checkpointsPassed += 1;
+    state.nextCheckpoint += 1;
+
+    if (state.nextCheckpoint < this.checkpoints.length) return;
+
+    state.completedLaps += 1;
+
+    if (state.completedLaps >= this.totalLaps) {
+      state.finished = true;
+      state.lap = this.totalLaps;
+      state.nextCheckpoint = 0;
+      state.finishPosition = this.finishOrder.length + 1;
+      state.finishTimeMs = Number.isFinite(elapsedMs) ? elapsedMs : null;
+      this.finishOrder.push(state.id);
+      return;
+    }
+
+    state.lap = state.completedLaps + 1;
+    state.nextCheckpoint = 0;
   }
 
   getRacerState(id) {
