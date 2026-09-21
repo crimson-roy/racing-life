@@ -66,6 +66,27 @@ test('RaceRuntime itself rejects restart and authoring mutations while race is l
   assert.deepEqual(after.finishOrder, before.finishOrder);
 });
 
+test('RaceRuntime keeps setup immutable after a result is committed', () => {
+  const { runtime, store } = createRuntime();
+  const storedBefore = store.load();
+
+  assert.equal(runtime.start(1000), true);
+  runtime.controller.update(point(10), point(100, 100), 1000);
+  runtime.controller.update(point(20), point(100, 100), 2000);
+  runtime.controller.update(point(0), point(100, 100), 3000);
+  assert.ok(runtime.commitCompletion());
+  assert.equal(runtime.resultCommitted, true);
+
+  assert.equal(runtime.start(4000), false);
+  assert.equal(runtime.beginLineRecording(point(50)), false);
+  assert.equal(runtime.sampleLine(point(60)), false);
+  assert.equal(runtime.finishLineRecording(), 0);
+  assert.equal(runtime.cancelLineRecording(), false);
+  assert.equal(runtime.clearLine(), false);
+  assert.equal(runtime.saveGrid({ x: 9, y: 0, z: 9, yaw: 1 }), false);
+  assert.deepEqual(store.load(), storedBefore);
+});
+
 test('RaceSceneRuntimeBridge blocks grid and authoring writes after completion delivery', () => {
   const { runtime, store } = createRuntime();
   const bridge = new RaceSceneRuntimeBridge({ runtime });
