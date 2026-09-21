@@ -37,7 +37,7 @@ test('track authoring cannot begin or clear the route during an active race', ()
 
 test('race cannot start while racing-line authoring is still recording', () => {
   const { bridge, runtime } = createBridge();
-  assert.equal(bridge.beginAuthoring(point(0)), true);
+  assert.ok(bridge.beginAuthoring(point(0)));
   assert.equal(runtime.recordingLine, true);
   assert.equal(bridge.start(1000), false);
   assert.equal(runtime.getSnapshot().started, false);
