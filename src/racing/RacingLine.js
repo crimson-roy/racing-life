@@ -14,6 +14,28 @@ function normalizePoint(point) {
   };
 }
 
+function pointDistanceSquared(a, b) {
+  const dx = a.x - b.x;
+  const dz = a.z - b.z;
+  return dx * dx + dz * dz;
+}
+
+function segmentDistanceSquared(point, start, end) {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const lengthSquared = dx * dx + dz * dz;
+  if (lengthSquared <= 1e-9) return pointDistanceSquared(point, start);
+
+  const t = Math.max(0, Math.min(1,
+    ((point.x - start.x) * dx + (point.z - start.z) * dz) / lengthSquared
+  ));
+  const closest = {
+    x: start.x + dx * t,
+    z: start.z + dz * t
+  };
+  return pointDistanceSquared(point, closest);
+}
+
 export class RacingLine {
   constructor(points = [], options = {}) {
     this.reachRadius = Math.max(1, options.reachRadius ?? 7);
@@ -36,14 +58,30 @@ export class RacingLine {
     return this.points[wrapped];
   }
 
-  advanceIndex(index, position) {
+  advanceIndex(index, position, previousPosition = null) {
     if (this.points.length === 0 || !position) return 0;
-    const target = this.getPoint(index);
-    const dx = target.x - position.x;
-    const dz = target.z - position.z;
-    return dx * dx + dz * dz <= this.reachRadius * this.reachRadius
-      ? (index + 1) % this.points.length
-      : index;
+
+    let nextIndex = ((index % this.points.length) + this.points.length) % this.points.length;
+    const radiusSquared = this.reachRadius * this.reachRadius;
+    const maxAdvances = this.points.length;
+
+    // A fast vehicle can cross more than one authored waypoint in one physics
+    // frame. Check both the current position and the travelled segment, and
+    // keep advancing in authored order while waypoints were genuinely crossed.
+    // This prevents the AI from turning back toward a waypoint it skipped at
+    // speed without allowing it to jump arbitrarily around the lap.
+    for (let advances = 0; advances < maxAdvances; advances += 1) {
+      const target = this.getPoint(nextIndex);
+      const reachedAtEnd = pointDistanceSquared(target, position) <= radiusSquared;
+      const crossedThisFrame = previousPosition
+        ? segmentDistanceSquared(target, previousPosition, position) <= radiusSquared
+        : false;
+
+      if (!reachedAtEnd && !crossedThisFrame) break;
+      nextIndex = (nextIndex + 1) % this.points.length;
+    }
+
+    return nextIndex;
   }
 }
 
