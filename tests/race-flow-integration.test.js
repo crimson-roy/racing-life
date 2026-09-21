@@ -58,11 +58,13 @@ function finishRace(runtime, winner) {
   return runtime.update(player, opponent);
 }
 
-test('three race runtimes advance one first-to-three match and persist career results once', () => {
+test('five race runtimes can complete a full first-to-three match and persist career results once', () => {
   const tracks = ['barcelona', 'glen_canyon_dam', 'lake_como', 'mount_rainier', 'track_05'];
-  const match = new MatchManager({ trackOrder: tracks, winTarget: 2 });
+  // Use the production win target (3) and force a 2-2 split so this exercises
+  // every configured track before the deciding fifth race.
+  const match = new MatchManager({ trackOrder: tracks });
   const careerResults = [];
-  const winners = ['A', 'B', 'A'];
+  const winners = ['A', 'B', 'A', 'B', 'A'];
 
   winners.forEach((winner, index) => {
     const currentRace = match.getCurrentRace();
@@ -102,14 +104,18 @@ test('three race runtimes advance one first-to-three match and persist career re
     );
     assert.equal(careerResults.length, index + 1);
     assert.equal(match.getSummary().results.length, index + 1);
+
+    if (index < winners.length - 1) {
+      assert.equal(match.getSummary().completed, false);
+    }
   });
 
   const summary = match.getSummary();
   assert.equal(summary.completed, true);
   assert.equal(summary.winner, 'A');
-  assert.equal(summary.scoreA, 2);
-  assert.equal(summary.scoreB, 1);
-  assert.equal(summary.results.length, 3);
+  assert.equal(summary.scoreA, 3);
+  assert.equal(summary.scoreB, 2);
+  assert.equal(summary.results.length, 5);
   assert.equal(match.getCurrentRace(), null);
 
   assert.deepEqual(
@@ -122,7 +128,9 @@ test('three race runtimes advance one first-to-three match and persist career re
     [
       { trackId: tracks[0], raceNumber: 1, winnerSide: 'A', classificationPosition: 1 },
       { trackId: tracks[1], raceNumber: 2, winnerSide: 'B', classificationPosition: 2 },
-      { trackId: tracks[2], raceNumber: 3, winnerSide: 'A', classificationPosition: 1 }
+      { trackId: tracks[2], raceNumber: 3, winnerSide: 'A', classificationPosition: 1 },
+      { trackId: tracks[3], raceNumber: 4, winnerSide: 'B', classificationPosition: 2 },
+      { trackId: tracks[4], raceNumber: 5, winnerSide: 'A', classificationPosition: 1 }
     ]
   );
 });
