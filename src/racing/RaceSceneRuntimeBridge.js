@@ -75,16 +75,17 @@ export class RaceSceneRuntimeBridge {
   }
 
   cancelAuthoring() {
-    this.runtime.cancelLineRecording();
+    if (this.started || this.completionDelivered) return false;
+    return this.runtime.cancelLineRecording();
   }
 
   clearAuthoring() {
     if (this.started || this.completionDelivered) return false;
-    this.runtime.clearLine();
-    return true;
+    return this.runtime.clearLine();
   }
 
   saveGrid(spawn) {
+    if (this.started || this.completionDelivered) return false;
     return this.runtime.saveGrid(spawn);
   }
 
