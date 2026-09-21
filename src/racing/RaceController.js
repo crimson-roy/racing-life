@@ -100,7 +100,13 @@ export class RaceController {
   }
 
   update(playerPosition, opponentPosition, elapsedMs = this.elapsedMs) {
-    if (!this.ready || !Number.isFinite(this.startedAtMs)) return this.getSnapshot();
+    if (
+      !this.ready ||
+      !Number.isFinite(this.startedAtMs) ||
+      this.completed
+    ) {
+      return this.getSnapshot();
+    }
 
     this.progress.updateRacer(this.playerId, playerPosition, elapsedMs);
     this.progress.updateRacer(this.opponentId, opponentPosition, elapsedMs);
