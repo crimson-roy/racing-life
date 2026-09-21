@@ -19,6 +19,7 @@ export class RaceController {
     this.progress.registerRacer(this.playerId);
     this.progress.registerRacer(this.opponentId);
     this.opponentWaypointIndex = 0;
+    this.opponentPreviousPosition = null;
     this.startedAtMs = null;
     this.completed = false;
   }
@@ -39,6 +40,7 @@ export class RaceController {
 
     this.progress.setCheckpoints(lapCheckpoints);
     this.opponentWaypointIndex = count > 1 ? 1 : 0;
+    this.opponentPreviousPosition = null;
     this.startedAtMs = null;
     this.completed = false;
     return count;
@@ -55,6 +57,7 @@ export class RaceController {
 
     this.progress.resetRace();
     this.opponentWaypointIndex = this.racingLine.length > 1 ? 1 : 0;
+    this.opponentPreviousPosition = null;
     this.startedAtMs = nowMs;
     this.completed = false;
     return true;
@@ -72,8 +75,15 @@ export class RaceController {
 
     this.opponentWaypointIndex = this.racingLine.advanceIndex(
       this.opponentWaypointIndex,
-      car.position
+      car.position,
+      this.opponentPreviousPosition
     );
+
+    this.opponentPreviousPosition = {
+      x: car.position.x,
+      y: Number.isFinite(car.position.y) ? car.position.y : 0,
+      z: car.position.z
+    };
 
     const target = this.racingLine.getPoint(this.opponentWaypointIndex);
     return getWaypointControls(car, target);
