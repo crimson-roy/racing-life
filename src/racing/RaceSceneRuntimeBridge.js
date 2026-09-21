@@ -22,8 +22,15 @@ export class RaceSceneRuntimeBridge {
     // requests while that session is already live; restarting RaceRuntime here
     // would reset checkpoints/laps and the race clock mid-race. A committed
     // result is likewise terminal for this bridge instance so it cannot become
-    // the next faction race by accident.
-    if (this.started || this.completionDelivered) return false;
+    // the next faction race by accident. Finish/cancel track authoring first so
+    // a recording cannot mutate the controller after the green light.
+    if (
+      this.started ||
+      this.completionDelivered ||
+      this.runtime.recordingLine
+    ) {
+      return false;
+    }
     this.started = this.runtime.start(nowMs);
     return this.started;
   }
@@ -58,12 +65,12 @@ export class RaceSceneRuntimeBridge {
   }
 
   beginAuthoring(position) {
-    if (this.completionDelivered) return false;
+    if (this.started || this.completionDelivered) return false;
     return this.runtime.beginLineRecording(position);
   }
 
   finishAuthoring() {
-    if (this.completionDelivered) return 0;
+    if (this.started || this.completionDelivered) return 0;
     return this.runtime.finishLineRecording();
   }
 
@@ -72,7 +79,7 @@ export class RaceSceneRuntimeBridge {
   }
 
   clearAuthoring() {
-    if (this.completionDelivered) return false;
+    if (this.started || this.completionDelivered) return false;
     this.runtime.clearLine();
     return true;
   }
