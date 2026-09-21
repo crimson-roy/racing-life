@@ -18,10 +18,12 @@ export class RaceSceneRuntimeBridge {
   }
 
   start(nowMs = performance.now()) {
-    // One bridge instance represents one race session. Render/setup controls
-    // may call start more than once before the finish, but a committed result
-    // must never be reopened and counted as the next faction race.
-    if (this.completionDelivered) return false;
+    // One bridge instance represents one race session. Ignore duplicate start
+    // requests while that session is already live; restarting RaceRuntime here
+    // would reset checkpoints/laps and the race clock mid-race. A committed
+    // result is likewise terminal for this bridge instance so it cannot become
+    // the next faction race by accident.
+    if (this.started || this.completionDelivered) return false;
     this.started = this.runtime.start(nowMs);
     return this.started;
   }
