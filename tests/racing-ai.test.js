@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { getWaypointControls } from '../src/racing/RacingLine.js';
+import { RaceController } from '../src/racing/RaceController.js';
+import { RacingLine, getWaypointControls } from '../src/racing/RacingLine.js';
 
 function makeCar(front = { x: 0, z: 1 }) {
   return {
@@ -38,4 +39,57 @@ test('AI uses the Subaru reported front direction rather than raw group yaw', ()
   const controls = getWaypointControls(car, { x: 20, y: 0, z: 0 });
   assert.ok(Math.abs(controls.steering) < 1e-9);
   assert.equal(controls.throttle, 1);
+});
+
+test('racing line advances across a waypoint crossed between frames', () => {
+  const line = new RacingLine([
+    { x: 0, z: 0 },
+    { x: 0, z: 20 },
+    { x: 0, z: 40 }
+  ], { reachRadius: 3 });
+
+  const next = line.advanceIndex(
+    1,
+    { x: 0, z: 30 },
+    { x: 0, z: 10 }
+  );
+
+  assert.equal(next, 2);
+});
+
+test('racing line can advance multiple ordered waypoints in one fast frame', () => {
+  const line = new RacingLine([
+    { x: 0, z: 0 },
+    { x: 0, z: 20 },
+    { x: 0, z: 40 },
+    { x: 0, z: 60 }
+  ], { reachRadius: 2 });
+
+  const next = line.advanceIndex(
+    1,
+    { x: 0, z: 50 },
+    { x: 0, z: 10 }
+  );
+
+  assert.equal(next, 3);
+});
+
+test('race controller remembers previous AI position for swept waypoint checks', () => {
+  const controller = new RaceController({ waypointRadius: 2 });
+  controller.configure([
+    { x: 0, z: 0 },
+    { x: 0, z: 20 },
+    { x: 0, z: 40 },
+    { x: 0, z: 60 }
+  ]);
+  assert.equal(controller.start(0), true);
+
+  const car = makeCar();
+  car.position.z = 10;
+  controller.getOpponentControls(car);
+  assert.equal(controller.opponentWaypointIndex, 1);
+
+  car.position.z = 50;
+  controller.getOpponentControls(car);
+  assert.equal(controller.opponentWaypointIndex, 3);
 });
