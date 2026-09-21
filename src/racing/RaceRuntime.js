@@ -31,6 +31,13 @@ export class RaceRuntime {
     return snapshot.started && !snapshot.completed;
   }
 
+  // A committed runtime represents a terminal race session. Setup mutations
+  // must wait for a fresh runtime/scene so a stale caller cannot silently alter
+  // the grid or authoring state that produced the recorded result.
+  get setupLocked() {
+    return this.raceActive || this.resultCommitted;
+  }
+
   load() {
     const setup = this.store.load();
     this.loadedSetup = setup;
@@ -47,24 +54,24 @@ export class RaceRuntime {
   }
 
   saveGrid(spawn) {
-    if (this.raceActive) return false;
+    if (this.setupLocked) return false;
     const grid = this.store.saveGrid(spawn);
     this.loadedSetup = this.store.load();
     return grid;
   }
 
   beginLineRecording(position = null) {
-    if (this.raceActive || this.resultCommitted) return false;
+    if (this.setupLocked) return false;
     return this.authoring.start(position);
   }
 
   sampleLine(position) {
-    if (this.raceActive || this.resultCommitted) return false;
+    if (this.setupLocked) return false;
     return this.authoring.sample(position);
   }
 
   finishLineRecording() {
-    if (this.raceActive || this.resultCommitted) return 0;
+    if (this.setupLocked) return 0;
     const points = this.authoring.stop();
     if (points.length < 2) return 0;
     this.authoring.saveTo(this.store);
@@ -76,13 +83,13 @@ export class RaceRuntime {
   }
 
   cancelLineRecording() {
-    if (this.raceActive) return false;
+    if (this.setupLocked) return false;
     this.authoring.clear();
     return true;
   }
 
   clearLine() {
-    if (this.raceActive || this.resultCommitted) return false;
+    if (this.setupLocked) return false;
     this.authoring.clear();
     this.store.clearRacingLine();
     this.controller.configure([]);
@@ -101,7 +108,7 @@ export class RaceRuntime {
   }
 
   start(nowMs = performance.now()) {
-    if (this.raceActive || this.resultCommitted || this.recordingLine) return false;
+    if (this.setupLocked || this.recordingLine) return false;
     this.resultCommitted = false;
     this.completion = null;
     return this.controller.start(nowMs);
