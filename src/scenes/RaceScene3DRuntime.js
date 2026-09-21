@@ -138,14 +138,18 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
           const count = this.runtimeBridge.finishAuthoring();
           this.setStatus(count >= 2 ? `Racing line saved · ${count} points · C overview then C starts race` : 'Racing line needs at least two spaced points.');
         } else {
-          this.runtimeBridge.beginAuthoring(this.playerCar?.position);
-          this.setStatus('Recording racing line · drive a full lap · L saves');
+          const started = this.runtimeBridge.beginAuthoring(this.playerCar?.position);
+          this.setStatus(started
+            ? 'Recording racing line · drive a full lap · L saves'
+            : 'Racing line is locked while a race is active.');
         }
         this.updateRaceHud();
       }
       if (event.code === 'KeyX') {
-        this.runtimeBridge.clearAuthoring();
-        this.setStatus('Racing line cleared.');
+        const cleared = this.runtimeBridge.clearAuthoring();
+        this.setStatus(cleared
+          ? 'Racing line cleared.'
+          : 'Racing line is locked while a race is active.');
         this.updateRaceHud();
       }
     };
@@ -190,9 +194,15 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
       }
       const hud = this.runtimeBridge.getHudState();
       if (hud.ready) {
-        this.runtimeBridge.start(performance.now());
-        if (this.runtimeResultElement) this.runtimeResultElement.textContent = '';
-        this.setStatus(`Race started · ${hud.racingLinePointCount} authored points · ${hud.totalLaps} laps`);
+        const started = this.runtimeBridge.start(performance.now());
+        if (started) {
+          if (this.runtimeResultElement) this.runtimeResultElement.textContent = '';
+          this.setStatus(`Race started · ${hud.racingLinePointCount} authored points · ${hud.totalLaps} laps`);
+        } else if (hud.recordingLine) {
+          this.setStatus('Finish or cancel racing-line recording before starting the race.');
+        } else {
+          this.setStatus('Race is already active.');
+        }
       } else {
         this.setStatus('Driving mode · press L to author the racing line · C returns to overview');
       }
