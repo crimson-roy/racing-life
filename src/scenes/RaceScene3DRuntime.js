@@ -29,15 +29,9 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
     super.createCars();
 
     const track = getTrack(this.session.trackId);
-    if (!track) {
-      throw new Error(`Unknown race track "${this.session.trackId}".`);
-    }
+    if (!track) throw new Error(`Unknown race track "${this.session.trackId}".`);
 
-    this.raceRuntime = new RaceRuntime({
-      trackId: this.session.trackId,
-      totalLaps: track.laps
-    });
-
+    this.raceRuntime = new RaceRuntime({ trackId: this.session.trackId, totalLaps: track.laps });
     this.runtimeBridge = new RaceSceneRuntimeBridge({ runtime: this.raceRuntime });
     this.runtimeSetup = this.runtimeBridge.load();
     this.runtimeFrameDt = 0;
@@ -55,15 +49,10 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
       this.setStatus(`Unknown track: ${this.session.trackId} · Esc returns home`);
       return;
     }
-
     if (!isTrackAvailable(track.id)) {
-      // Do not let GLTFLoader fail and then create a fake empty-grid race. The
-      // confirmed match may reference circuits whose licensed GLBs have not
-      // been added yet; that is an asset blocker, not a playable race.
       this.setStatus(`${track.name} asset not installed · race ${this.session.raceNumber} is blocked · Esc returns home`);
       return;
     }
-
     super.loadTrack();
   }
 
@@ -73,19 +62,17 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   }
 
   advanceRuntimeAfterCollision(dt) {
-    if (this.setupMode || !this.runtimeBridge || this.raceSessionCompleted) return;
+    if (this.setupMode || !this.runtimeBridge || this.runtimeBridge.disposed || this.raceSessionCompleted) return;
     if (!this.raceRuntime.recordingLine && !this.runtimeBridge.started) return;
 
     const opponentBefore = this.opponentCar.position.clone();
     const opponentYawBefore = this.opponentCar.rotation.y;
-
     if (this.runtimeBridge.started) {
       this.raceRuntime.driveOpponent(this.opponentCar, dt);
       const grounded = this.snapCarToSurface(this.opponentCar);
       const swept = grounded ? this.getSweptVehicleCollision(this.opponentCar, opponentBefore) : null;
       const pedestrian = grounded ? this.getPedestrianZoneCollision(this.opponentCar) : null;
       const box = grounded ? this.getCarObjectCollision(this.opponentCar) : null;
-
       if (!grounded || swept || pedestrian || box) {
         this.opponentCar.position.copy(opponentBefore);
         this.opponentCar.rotation.y = opponentYawBefore;
@@ -128,7 +115,7 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   bindEvents() {
     super.bindEvents();
     this.handleRuntimeKeyDown = (event) => {
-      if (event.repeat || !this.runtimeBridge) return;
+      if (event.repeat || !this.runtimeBridge || this.runtimeBridge.disposed) return;
       if ((event.code === 'KeyL' || event.code === 'KeyX') && this.raceSessionCompleted) {
         this.setStatus('Race result already committed · Esc returns home for the next match race.');
         return;
@@ -139,17 +126,13 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
           this.setStatus(count >= 2 ? `Racing line saved · ${count} points · C overview then C starts race` : 'Racing line needs at least two spaced points.');
         } else {
           const started = this.runtimeBridge.beginAuthoring(this.playerCar?.position);
-          this.setStatus(started
-            ? 'Recording racing line · drive a full lap · L saves'
-            : 'Racing line is locked while a race is active.');
+          this.setStatus(started ? 'Recording racing line · drive a full lap · L saves' : 'Racing line is locked while a race is active.');
         }
         this.updateRaceHud();
       }
       if (event.code === 'KeyX') {
         const cleared = this.runtimeBridge.clearAuthoring();
-        this.setStatus(cleared
-          ? 'Racing line cleared.'
-          : 'Racing line is locked while a race is active.');
+        this.setStatus(cleared ? 'Racing line cleared.' : 'Racing line is locked while a race is active.');
         this.updateRaceHud();
       }
     };
@@ -167,8 +150,8 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   }
 
   saveGridFromPlayer() {
-    if (!this.runtimeBridge) {
-      super.saveGridFromPlayer();
+    if (!this.runtimeBridge || this.runtimeBridge.disposed) {
+      if (!this.runtimeBridge) super.saveGridFromPlayer();
       return;
     }
     const midpoint = this.playerCar.position.clone().add(this.opponentCar.position).multiplyScalar(0.5);
@@ -183,6 +166,7 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
       this.setStatus(`${track?.name ?? this.session.trackId} asset not installed · cannot start this race · Esc returns home`);
       return;
     }
+    if (this.runtimeBridge?.disposed) return;
 
     const wasSetup = this.setupMode;
     super.toggleSetupMode();
@@ -211,7 +195,7 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   }
 
   updateRaceHud(snapshot = null) {
-    if (!this.runtimeStatusElement || !this.runtimeBridge) return;
+    if (!this.runtimeStatusElement || !this.runtimeBridge || this.runtimeBridge.disposed) return;
     const hud = snapshot ?? this.runtimeBridge.getHudState();
     const player = hud.player;
     const opponent = hud.opponent;
@@ -239,7 +223,12 @@ export class RaceScene3DRuntime extends BaseRaceScene3D {
   }
 
   dispose() {
-    if (this.handleRuntimeKeyDown) window.removeEventListener('keydown', this.handleRuntimeKeyDown);
+    if (this.handleRuntimeKeyDown) {
+      window.removeEventListener('keydown', this.handleRuntimeKeyDown);
+      this.handleRuntimeKeyDown = null;
+    }
+    this.runtimeBridge?.dispose();
+    this.runtimeFrameDt = 0;
     super.dispose();
   }
 }
