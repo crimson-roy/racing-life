@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { RaceController } from '../src/racing/RaceController.js';
 import { RaceRuntime } from '../src/racing/RaceRuntime.js';
 import { RaceSceneRuntimeBridge } from '../src/racing/RaceSceneRuntimeBridge.js';
 import { TrackSetupStore } from '../src/racing/TrackSetupStore.js';
@@ -28,6 +29,20 @@ function createRuntime() {
   runtime.load();
   return { runtime, store };
 }
+
+test('RaceController rejects a duplicate start without erasing live progress', () => {
+  const controller = new RaceController({ checkpointRadius: 1 });
+  controller.configure([point(0), point(10), point(20)]);
+
+  assert.equal(controller.start(1000), true);
+  controller.update(point(10), point(100, 100), 1000);
+  assert.equal(controller.getSnapshot().racers.find((racer) => racer.id === 'player').checkpointsPassed, 1);
+
+  assert.equal(controller.start(2000), false);
+  const player = controller.getSnapshot().racers.find((racer) => racer.id === 'player');
+  assert.equal(player.checkpointsPassed, 1);
+  assert.equal(controller.startedAtMs, 1000);
+});
 
 test('RaceSceneRuntimeBridge ignores duplicate starts without resetting live progress', () => {
   const { runtime } = createRuntime();
