@@ -31,19 +31,11 @@ export class RaceRuntime {
     return snapshot.started && !snapshot.completed;
   }
 
-  // A committed runtime represents a terminal race session. Setup mutations
-  // must wait for a fresh runtime/scene so a stale caller cannot silently alter
-  // the grid or authoring state that produced the recorded result.
   get setupLocked() {
     return this.raceActive || this.resultCommitted;
   }
 
   load() {
-    // Once the green light has gone out (or the result has been committed), the
-    // setup used by this runtime is immutable. TrackSetupStore can be shared by
-    // another scene/tab, so re-reading it here during a live race must not
-    // reconfigure checkpoints/AI underneath cars that are already progressing.
-    // Return the setup snapshot this race actually started with instead.
     if (this.setupLocked && this.loadedSetup) {
       return {
         grid: this.loadedSetup.grid,
@@ -167,9 +159,9 @@ export class RaceRuntime {
   }
 
   // Scene-facing completion bridge. It is deliberately idempotent because a
-  // render loop can observe the completed race for many frames. The first call
-  // commits the 1v1 result; later calls return the same completion payload.
-  // Career mutation remains injected so RaceRuntime does not own reward rules.
+  // render loop can observe the completed race for many frames. The terminal
+  // payload is sealed before injected career persistence runs, so a throwing or
+  // re-entrant callback can never score the same race twice.
   commitCompletion(options = {}) {
     const snapshot = this.controller.getSnapshot();
     if (!snapshot.completed || !snapshot.winnerSide) return null;
@@ -192,9 +184,6 @@ export class RaceRuntime {
       this.controller,
       sessionDetails
     );
-    if (typeof options.applyCareerResult === 'function') {
-      options.applyCareerResult(careerResult);
-    }
 
     const racers = snapshot.racers.map((racer, index) => ({
       id: racer.id,
@@ -206,6 +195,9 @@ export class RaceRuntime {
       checkpointsPassed: racer.checkpointsPassed
     }));
 
+    // Seal the terminal result before handing control to application code.
+    // applyCareerResult may synchronously trigger UI work, call this method
+    // again, or throw. None of those paths may duplicate MatchManager scoring.
     this.resultCommitted = true;
     this.completion = {
       trackId: this.trackId,
@@ -213,14 +205,16 @@ export class RaceRuntime {
         ? sessionDetails.raceNumber
         : null,
       winnerSide: snapshot.winnerSide,
-      // finishOrder contains only cars that crossed the finish before the race
-      // locked. classification is the complete ordered 1v1 result.
       finishOrder: [...snapshot.finishOrder],
       classification: racers.map((racer) => racer.id),
       racers,
       careerResult,
       matchSummary
     };
+
+    if (typeof options.applyCareerResult === 'function') {
+      options.applyCareerResult(careerResult);
+    }
 
     return this.completion;
   }
