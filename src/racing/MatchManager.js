@@ -17,8 +17,24 @@ export function getActiveMatchManager() {
 
 export class MatchManager {
   constructor(options = {}) {
-    this.winTarget = options.winTarget ?? 3;
-    this.trackOrder = options.trackOrder ?? DEFAULT_TRACK_ORDER;
+    const winTarget = options.winTarget ?? 3;
+    const trackOrder = options.trackOrder ?? DEFAULT_TRACK_ORDER;
+
+    if (!Number.isInteger(winTarget) || winTarget < 1) {
+      throw new Error('MatchManager winTarget must be a positive integer.');
+    }
+    if (!Array.isArray(trackOrder) || trackOrder.length === 0) {
+      throw new Error('MatchManager requires at least one race track.');
+    }
+    if (trackOrder.some((trackId) => typeof trackId !== 'string' || trackId.trim() === '')) {
+      throw new Error('MatchManager trackOrder requires non-empty track ids.');
+    }
+    if (winTarget > trackOrder.length) {
+      throw new Error('MatchManager winTarget cannot exceed the available race count.');
+    }
+
+    this.winTarget = winTarget;
+    this.trackOrder = [...trackOrder];
     this.factionA = options.factionA ?? 'azure';
     this.factionB = options.factionB ?? 'crimson';
     this.reset();
