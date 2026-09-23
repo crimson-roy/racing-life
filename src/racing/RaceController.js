@@ -51,7 +51,10 @@ export class RaceController {
   }
 
   start(nowMs = performance.now()) {
-    if (!this.ready) {
+    // RaceRuntime normally owns the session guard, but RaceController is also
+    // reusable on its own. Never let a second start silently erase live
+    // checkpoint/lap progress or move the race clock forward.
+    if (!this.ready || Number.isFinite(this.startedAtMs)) {
       return false;
     }
 
