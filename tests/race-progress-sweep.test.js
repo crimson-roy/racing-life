@@ -50,3 +50,23 @@ test('RaceProgress can finish when a high-speed sample crosses the remaining ord
   assert.equal(state.finishTimeMs, 1200);
   assert.deepEqual(race.finishOrder, ['player']);
 });
+
+test('RaceProgress stationary samples cannot sweep through coincident checkpoints', () => {
+  const race = new RaceProgress({ totalLaps: 1, checkpointRadius: 0.5 });
+  race.registerRacer('player');
+  race.setCheckpoints([point(10), point(10), point(10)]);
+
+  const first = race.updateRacer('player', point(10), 1000);
+  assert.equal(first.checkpointsPassed, 1);
+  assert.equal(first.finished, false);
+
+  const second = race.updateRacer('player', point(10), 1100);
+  assert.equal(second.checkpointsPassed, 2);
+  assert.equal(second.nextCheckpoint, 2);
+  assert.equal(second.finished, false);
+
+  const third = race.updateRacer('player', point(10), 1200);
+  assert.equal(third.checkpointsPassed, 3);
+  assert.equal(third.finished, true);
+  assert.equal(third.finishTimeMs, 1200);
+});
