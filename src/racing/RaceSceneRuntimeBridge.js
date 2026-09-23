@@ -11,9 +11,11 @@ export class RaceSceneRuntimeBridge {
     this.onCompletion = options.onCompletion ?? null;
     this.started = false;
     this.completionDelivered = false;
+    this.disposed = false;
   }
 
   load() {
+    if (this.disposed) return null;
     return this.runtime.load();
   }
 
@@ -25,6 +27,7 @@ export class RaceSceneRuntimeBridge {
     // the next faction race by accident. Finish/cancel track authoring first so
     // a recording cannot mutate the controller after the green light.
     if (
+      this.disposed ||
       this.started ||
       this.completionDelivered ||
       this.runtime.recordingLine
@@ -36,6 +39,10 @@ export class RaceSceneRuntimeBridge {
   }
 
   update(options = {}) {
+    if (this.disposed) {
+      return { snapshot: this.runtime.getSnapshot(), completion: null };
+    }
+
     const { playerCar, opponentCar, dt = 0, driveOpponent = true } = options;
 
     if (this.runtime.recordingLine && playerCar?.position) {
@@ -65,31 +72,42 @@ export class RaceSceneRuntimeBridge {
   }
 
   beginAuthoring(position) {
-    if (this.started || this.completionDelivered) return false;
+    if (this.disposed || this.started || this.completionDelivered) return false;
     return this.runtime.beginLineRecording(position);
   }
 
   finishAuthoring() {
-    if (this.started || this.completionDelivered) return 0;
+    if (this.disposed || this.started || this.completionDelivered) return 0;
     return this.runtime.finishLineRecording();
   }
 
   cancelAuthoring() {
-    if (this.started || this.completionDelivered) return false;
+    if (this.disposed || this.started || this.completionDelivered) return false;
     return this.runtime.cancelLineRecording();
   }
 
   clearAuthoring() {
-    if (this.started || this.completionDelivered) return false;
+    if (this.disposed || this.started || this.completionDelivered) return false;
     return this.runtime.clearLine();
   }
 
   saveGrid(spawn) {
-    if (this.started || this.completionDelivered) return false;
+    if (this.disposed || this.started || this.completionDelivered) return false;
     return this.runtime.saveGrid(spawn);
   }
 
   getHudState() {
     return this.runtime.getHudState();
+  }
+
+  // A scene can be replaced while RAF/event work from the old instance is
+  // still unwinding. Make that old bridge inert so it cannot commit a stale
+  // result, mutate authoring data, or call a completion handler after teardown.
+  dispose() {
+    if (this.disposed) return false;
+    this.disposed = true;
+    this.started = false;
+    this.onCompletion = null;
+    return true;
   }
 }
