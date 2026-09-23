@@ -135,6 +135,17 @@ export class RaceProgress {
       return this.getRacerState(id);
     }
 
+    // A stationary sample is not a sweep. Award at most the current checkpoint
+    // just like the initial sample. This prevents overlapping/coincident
+    // checkpoints from being consumed all at once while a racer is motionless.
+    if (distanceSqXZ(previousPosition, currentPosition) <= Number.EPSILON) {
+      const checkpoint = this.checkpoints[state.nextCheckpoint];
+      if (distanceSqXZ(currentPosition, checkpoint) <= radiusSq) {
+        this.advanceCheckpoint(state, elapsedMs);
+      }
+      return this.getRacerState(id);
+    }
+
     // A fast car can cross more than one checkpoint between physics samples.
     // Consume every checkpoint hit by the segment in authored order, while
     // requiring monotonically increasing segment time so reverse-order geometry
