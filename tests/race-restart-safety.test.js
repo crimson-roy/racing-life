@@ -66,6 +66,29 @@ test('RaceRuntime itself rejects restart and authoring mutations while race is l
   assert.deepEqual(after.finishOrder, before.finishOrder);
 });
 
+test('RaceRuntime load cannot reconfigure an active race from externally changed setup', () => {
+  const { runtime, store } = createRuntime();
+  const committedSetup = runtime.load();
+
+  assert.equal(runtime.start(1000), true);
+  runtime.controller.update(point(10), point(100, 100), 1000);
+  const before = runtime.getSnapshot();
+
+  // Simulate another scene/tab changing the shared persistent setup. The live
+  // runtime must continue using the line and grid it committed at race start.
+  store.saveRacingLine([point(0), point(100), point(200), point(300)]);
+  store.saveGrid({ x: 99, y: 0, z: 99, yaw: 2 });
+
+  const reloaded = runtime.load();
+  const after = runtime.getSnapshot();
+
+  assert.deepEqual(reloaded, committedSetup);
+  assert.equal(after.racingLinePointCount, 3);
+  assert.equal(after.checkpointCount, before.checkpointCount);
+  assert.equal(after.racers.find((racer) => racer.id === 'player').checkpointsPassed, 1);
+  assert.equal(runtime.controller.startedAtMs, 1000);
+});
+
 test('RaceRuntime keeps setup immutable after a result is committed', () => {
   const { runtime, store } = createRuntime();
   const storedBefore = store.load();
