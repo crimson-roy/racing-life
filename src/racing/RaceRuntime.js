@@ -39,6 +39,19 @@ export class RaceRuntime {
   }
 
   load() {
+    // Once the green light has gone out (or the result has been committed), the
+    // setup used by this runtime is immutable. TrackSetupStore can be shared by
+    // another scene/tab, so re-reading it here during a live race must not
+    // reconfigure checkpoints/AI underneath cars that are already progressing.
+    // Return the setup snapshot this race actually started with instead.
+    if (this.setupLocked && this.loadedSetup) {
+      return {
+        grid: this.loadedSetup.grid,
+        racingLinePointCount: this.loadedSetup.racingLine.length,
+        ready: this.controller.ready
+      };
+    }
+
     const setup = this.store.load();
     this.loadedSetup = setup;
     if (setup.racingLine.length >= 2) {
