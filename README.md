@@ -181,3 +181,6 @@ See [`LICENSE`](LICENSE).
 ---
 
 **Racing Life is a work in progress.** The current repository represents an active transition from tested 2D gameplay prototypes toward the full 3D implementation.
+
+
+<!-- ChatGPT write-access test: 2026-09-25 -->
