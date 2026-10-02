@@ -4,6 +4,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { MixamoPlayer } from '../characters/MixamoPlayer.js';
 import { WesternBagger } from '../vehicles/WesternBagger.js';
+import { VehicleRuntimeState } from '../vehicles/interaction/VehicleRuntimeState.js';
+import { VehicleAccessResolver } from '../vehicles/interaction/VehicleAccessResolver.js';
+import { SUBARU_WRX_INTERACTION_PROFILE } from '../vehicles/interaction/SubaruWRXInteractionProfile.js';
 
 class OrientedBoxCollider {
   constructor(
@@ -422,6 +425,16 @@ export class FreeRoamScene {
     this.subaruWheelObjects =
       [];
 
+    // Generic interaction definition/state.
+    // Subaru is the first reference vehicle using this system.
+    this.subaruInteractionProfile =
+      SUBARU_WRX_INTERACTION_PROFILE;
+
+    this.subaruRuntimeState =
+      new VehicleRuntimeState(
+        this.subaruInteractionProfile
+      );
+
     // ========================================================
     // SUBARU INTERACTION POINTS
     // ========================================================
@@ -439,6 +452,9 @@ export class FreeRoamScene {
       null;
 
     this.subaruDriverExitPoint =
+      null;
+
+    this.subaruDriverDoorThresholdPoint =
       null;
 
     this.subaruDriverSeatPoint =
@@ -1050,6 +1066,16 @@ this.hornEmote = {
 
     carRoot.add(
       this.subaruDriverExitPoint
+    );
+
+    this.subaruDriverDoorThresholdPoint =
+      new THREE.Object3D();
+
+    this.subaruDriverDoorThresholdPoint.name =
+      'DriverDoorThresholdPoint';
+
+    carRoot.add(
+      this.subaruDriverDoorThresholdPoint
     );
 
     this.subaruDriverSeatPoint =
@@ -1782,7 +1808,7 @@ model.traverse(
       );
 
     if (
-      /door|seat|steer/i.test(
+      /door|seat|steer|window|glass|handle/i.test(
         name
       )
     ) {
@@ -1984,6 +2010,22 @@ exitWorld.y =
   roadY;
 
 
+// Door threshold is the only legal crossing point from
+// outside the Subaru into the cabin. Keep it just outside
+// the door plane so scripted movement does not cut through
+// the side body before entering the opening.
+const thresholdWorld =
+  doorWorld.clone();
+
+thresholdWorld.addScaledVector(
+  driverSideDirection,
+  0.12
+);
+
+thresholdWorld.y =
+  roadY;
+
+
 // ========================================================
 // STORE ANCHORS
 // ========================================================
@@ -2007,6 +2049,15 @@ this.subaruDriverExitPoint
   .copy(
     carRoot.worldToLocal(
       exitWorld.clone()
+    )
+  );
+
+
+this.subaruDriverDoorThresholdPoint
+  .position
+  .copy(
+    carRoot.worldToLocal(
+      thresholdWorld.clone()
     )
   );
 
@@ -2051,6 +2102,11 @@ if (
 
 this.setInteractionAnchorFacing(
   this.subaruDriverEntryPoint,
+  enterCarFacing
+);
+
+this.setInteractionAnchorFacing(
+  this.subaruDriverDoorThresholdPoint,
   enterCarFacing
 );
 
@@ -2780,6 +2836,14 @@ animateSubaruDriverDoor(
           pivot.rotation.z =
             targetAngle;
 
+          this.subaruRuntimeState
+            .patchDoor(
+              'front-left',
+              {
+                open
+              }
+            );
+
           this.subaruDriverDoorAnimating =
             false;
 
@@ -3001,6 +3065,7 @@ tweenPlayerIntoSubaru(
 ) {
   if (
     !this.player ||
+    !this.subaruDriverDoorThresholdPoint ||
     !this.subaruDriverSeatPoint
   ) {
     return Promise.resolve(
@@ -3011,6 +3076,17 @@ tweenPlayerIntoSubaru(
   const start =
     this.player.position.clone();
 
+  const doorway =
+    new THREE.Vector3();
+
+  this.subaruDriverDoorThresholdPoint
+    .getWorldPosition(
+      doorway
+    );
+
+  doorway.y =
+    this.SUBARU_SPAWN.y;
+
   const seat =
     new THREE.Vector3();
 
@@ -3020,24 +3096,6 @@ tweenPlayerIntoSubaru(
     );
 
   seat.y =
-    this.SUBARU_SPAWN.y;
-
-  // ----------------------------------------------------------
-  // DOOR THRESHOLD
-  //
-  // About halfway between the outside animation position
-  // and the actual driver's seat.
-  // ----------------------------------------------------------
-
-  const doorway =
-    start
-      .clone()
-      .lerp(
-        seat,
-        0.48
-      );
-
-  doorway.y =
     this.SUBARU_SPAWN.y;
 
   return new Promise(
@@ -3076,36 +3134,20 @@ tweenPlayerIntoSubaru(
             );
 
           // ==================================================
-          // PHASE 1 — HAND REACHES DOOR HANDLE
-          // 0% -> 35%
+          // PHASE 1 — APPROACH THE REAL DOOR THRESHOLD
+          // 0% -> 62%
           //
-          // DO NOT MOVE THE PLAYER ROOT.
+          // The player root now follows the actual doorway
+          // anchor instead of cutting directly through the car.
           // ==================================================
 
           if (
             t <
-            0.35
-          ) {
-            this.player.position.copy(
-              start
-            );
-          }
-
-          // ==================================================
-          // PHASE 2 — STEP TOWARD DOOR OPENING
-          // 35% -> 70%
-          // ==================================================
-
-          else if (
-            t <
-            0.70
+            0.62
           ) {
             const localT =
-              (
-                t -
-                0.35
-              ) /
-              0.35;
+              t /
+              0.62;
 
             const smooth =
               localT *
@@ -3125,17 +3167,17 @@ tweenPlayerIntoSubaru(
           }
 
           // ==================================================
-          // PHASE 3 — MOVE INTO DRIVER SEAT
-          // 70% -> 100%
+          // PHASE 2 — CROSS THE OPENING INTO DRIVER SEAT
+          // 62% -> 100%
           // ==================================================
 
           else {
             const localT =
               (
                 t -
-                0.70
+                0.62
               ) /
-              0.30;
+              0.38;
 
             const smooth =
               localT *
@@ -3192,6 +3234,26 @@ async enterSubaru() {
     !this.subaruDriverSeatPoint ||
     !this.player
   ) {
+    return;
+  }
+
+  const entryPlan =
+    VehicleAccessResolver
+      .resolveSeatEntry(
+        this.subaruInteractionProfile,
+        this.subaruRuntimeState,
+        'driver'
+      );
+
+  if (
+    !entryPlan.ok
+  ) {
+    this.showInteractionPrompt(
+      'CANNOT ENTER',
+      entryPlan.reason,
+      'F'
+    );
+
     return;
   }
 
@@ -3392,6 +3454,12 @@ animationStart.addScaledVector(
   this.vehicleState =
     'driving';
 
+  this.subaruRuntimeState
+    .setSeatOccupant(
+      'driver',
+      'player'
+    );
+
   this.interactionBusy =
     false;
 
@@ -3439,6 +3507,26 @@ async exitSubaru() {
     !this.subaruDriverExitPoint ||
     !this.player
   ) {
+    return;
+  }
+
+  const exitPlan =
+    VehicleAccessResolver
+      .resolveSeatExit(
+        this.subaruInteractionProfile,
+        this.subaruRuntimeState,
+        'driver'
+      );
+
+  if (
+    !exitPlan.ok
+  ) {
+    this.showInteractionPrompt(
+      'EXIT BLOCKED',
+      exitPlan.reason,
+      'F'
+    );
+
     return;
   }
 
@@ -3524,6 +3612,12 @@ async exitSubaru() {
 
   this.vehicleState =
     'on-foot';
+
+  this.subaruRuntimeState
+    .setSeatOccupant(
+      'driver',
+      null
+    );
 
   this.interactionBusy =
     false;
