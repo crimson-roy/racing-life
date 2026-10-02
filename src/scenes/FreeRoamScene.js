@@ -454,6 +454,9 @@ export class FreeRoamScene {
     this.subaruDriverExitPoint =
       null;
 
+    this.subaruDriverDoorThresholdPoint =
+      null;
+
     this.subaruDriverSeatPoint =
       null;
 
@@ -1063,6 +1066,16 @@ this.hornEmote = {
 
     carRoot.add(
       this.subaruDriverExitPoint
+    );
+
+    this.subaruDriverDoorThresholdPoint =
+      new THREE.Object3D();
+
+    this.subaruDriverDoorThresholdPoint.name =
+      'DriverDoorThresholdPoint';
+
+    carRoot.add(
+      this.subaruDriverDoorThresholdPoint
     );
 
     this.subaruDriverSeatPoint =
@@ -1997,6 +2010,22 @@ exitWorld.y =
   roadY;
 
 
+// Door threshold is the only legal crossing point from
+// outside the Subaru into the cabin. Keep it just outside
+// the door plane so scripted movement does not cut through
+// the side body before entering the opening.
+const thresholdWorld =
+  doorWorld.clone();
+
+thresholdWorld.addScaledVector(
+  driverSideDirection,
+  0.12
+);
+
+thresholdWorld.y =
+  roadY;
+
+
 // ========================================================
 // STORE ANCHORS
 // ========================================================
@@ -2020,6 +2049,15 @@ this.subaruDriverExitPoint
   .copy(
     carRoot.worldToLocal(
       exitWorld.clone()
+    )
+  );
+
+
+this.subaruDriverDoorThresholdPoint
+  .position
+  .copy(
+    carRoot.worldToLocal(
+      thresholdWorld.clone()
     )
   );
 
@@ -2064,6 +2102,11 @@ if (
 
 this.setInteractionAnchorFacing(
   this.subaruDriverEntryPoint,
+  enterCarFacing
+);
+
+this.setInteractionAnchorFacing(
+  this.subaruDriverDoorThresholdPoint,
   enterCarFacing
 );
 
@@ -3022,6 +3065,7 @@ tweenPlayerIntoSubaru(
 ) {
   if (
     !this.player ||
+    !this.subaruDriverDoorThresholdPoint ||
     !this.subaruDriverSeatPoint
   ) {
     return Promise.resolve(
@@ -3032,6 +3076,17 @@ tweenPlayerIntoSubaru(
   const start =
     this.player.position.clone();
 
+  const doorway =
+    new THREE.Vector3();
+
+  this.subaruDriverDoorThresholdPoint
+    .getWorldPosition(
+      doorway
+    );
+
+  doorway.y =
+    this.SUBARU_SPAWN.y;
+
   const seat =
     new THREE.Vector3();
 
@@ -3041,24 +3096,6 @@ tweenPlayerIntoSubaru(
     );
 
   seat.y =
-    this.SUBARU_SPAWN.y;
-
-  // ----------------------------------------------------------
-  // DOOR THRESHOLD
-  //
-  // About halfway between the outside animation position
-  // and the actual driver's seat.
-  // ----------------------------------------------------------
-
-  const doorway =
-    start
-      .clone()
-      .lerp(
-        seat,
-        0.48
-      );
-
-  doorway.y =
     this.SUBARU_SPAWN.y;
 
   return new Promise(
@@ -3097,36 +3134,20 @@ tweenPlayerIntoSubaru(
             );
 
           // ==================================================
-          // PHASE 1 — HAND REACHES DOOR HANDLE
-          // 0% -> 35%
+          // PHASE 1 — APPROACH THE REAL DOOR THRESHOLD
+          // 0% -> 62%
           //
-          // DO NOT MOVE THE PLAYER ROOT.
+          // The player root now follows the actual doorway
+          // anchor instead of cutting directly through the car.
           // ==================================================
 
           if (
             t <
-            0.35
-          ) {
-            this.player.position.copy(
-              start
-            );
-          }
-
-          // ==================================================
-          // PHASE 2 — STEP TOWARD DOOR OPENING
-          // 35% -> 70%
-          // ==================================================
-
-          else if (
-            t <
-            0.70
+            0.62
           ) {
             const localT =
-              (
-                t -
-                0.35
-              ) /
-              0.35;
+              t /
+              0.62;
 
             const smooth =
               localT *
@@ -3146,17 +3167,17 @@ tweenPlayerIntoSubaru(
           }
 
           // ==================================================
-          // PHASE 3 — MOVE INTO DRIVER SEAT
-          // 70% -> 100%
+          // PHASE 2 — CROSS THE OPENING INTO DRIVER SEAT
+          // 62% -> 100%
           // ==================================================
 
           else {
             const localT =
               (
                 t -
-                0.70
+                0.62
               ) /
-              0.30;
+              0.38;
 
             const smooth =
               localT *
