@@ -1795,7 +1795,7 @@ model.traverse(
       );
 
     if (
-      /door|seat|steer/i.test(
+      /door|seat|steer|window|glass|handle/i.test(
         name
       )
     ) {
