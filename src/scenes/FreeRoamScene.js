@@ -4,6 +4,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { MixamoPlayer } from '../characters/MixamoPlayer.js';
 import { WesternBagger } from '../vehicles/WesternBagger.js';
+import { VehicleRuntimeState } from '../vehicles/interaction/VehicleRuntimeState.js';
+import { VehicleAccessResolver } from '../vehicles/interaction/VehicleAccessResolver.js';
+import { SUBARU_WRX_INTERACTION_PROFILE } from '../vehicles/interaction/SubaruWRXInteractionProfile.js';
 
 class OrientedBoxCollider {
   constructor(
@@ -421,6 +424,16 @@ export class FreeRoamScene {
 
     this.subaruWheelObjects =
       [];
+
+    // Generic interaction definition/state.
+    // Subaru is the first reference vehicle using this system.
+    this.subaruInteractionProfile =
+      SUBARU_WRX_INTERACTION_PROFILE;
+
+    this.subaruRuntimeState =
+      new VehicleRuntimeState(
+        this.subaruInteractionProfile
+      );
 
     // ========================================================
     // SUBARU INTERACTION POINTS
@@ -2780,6 +2793,14 @@ animateSubaruDriverDoor(
           pivot.rotation.z =
             targetAngle;
 
+          this.subaruRuntimeState
+            .patchDoor(
+              'front-left',
+              {
+                open
+              }
+            );
+
           this.subaruDriverDoorAnimating =
             false;
 
@@ -3195,6 +3216,26 @@ async enterSubaru() {
     return;
   }
 
+  const entryPlan =
+    VehicleAccessResolver
+      .resolveSeatEntry(
+        this.subaruInteractionProfile,
+        this.subaruRuntimeState,
+        'driver'
+      );
+
+  if (
+    !entryPlan.ok
+  ) {
+    this.showInteractionPrompt(
+      'CANNOT ENTER',
+      entryPlan.reason,
+      'F'
+    );
+
+    return;
+  }
+
   this.vehicleState =
     'entering';
 
@@ -3392,6 +3433,12 @@ animationStart.addScaledVector(
   this.vehicleState =
     'driving';
 
+  this.subaruRuntimeState
+    .setSeatOccupant(
+      'driver',
+      'player'
+    );
+
   this.interactionBusy =
     false;
 
@@ -3439,6 +3486,26 @@ async exitSubaru() {
     !this.subaruDriverExitPoint ||
     !this.player
   ) {
+    return;
+  }
+
+  const exitPlan =
+    VehicleAccessResolver
+      .resolveSeatExit(
+        this.subaruInteractionProfile,
+        this.subaruRuntimeState,
+        'driver'
+      );
+
+  if (
+    !exitPlan.ok
+  ) {
+    this.showInteractionPrompt(
+      'EXIT BLOCKED',
+      exitPlan.reason,
+      'F'
+    );
+
     return;
   }
 
@@ -3524,6 +3591,12 @@ async exitSubaru() {
 
   this.vehicleState =
     'on-foot';
+
+  this.subaruRuntimeState
+    .setSeatOccupant(
+      'driver',
+      null
+    );
 
   this.interactionBusy =
     false;
